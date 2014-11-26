@@ -1,0 +1,54 @@
+CC=/usr/local/arm/4.2.2-eabi/usr/bin/arm-linux-gcc
+CPP=/usr/local/arm/4.2.2-eabi/usr/bin/arm-linux-g++
+CCUSG=/opt/arm/3.4.1/bin/arm-linux-gcc
+CC4600=/usr/local/hybus-arm-linux-R1.1/bin/arm-linux-gcc
+
+SRC1 = serialsource.c
+SRC2 = sfsock.c
+SRC3 = sf.c
+SRC4 = sfsource.c
+
+LIB_EXPAT = -L../lib -lexpat
+LIB_SQLITE3 = -L../lib -lsqlite3
+#LIB_SQLITE3= -L/work/src/sqlite/sqlite-autoconf-3070800/compiled/lib -lsqlite3
+LIB1 = ./lib/libpointparser.c
+LIB2 = ./lib/librealtimeparser.c
+LIB3 = ./lib/libreleasesharedmemory.c
+LIB4 = ./lib/librtdprocess.c
+LIB5 = ./lib/libsqlite3manage.c
+LIB6 = ./lib/libm2mprocess.c
+
+LIB7 = ./lib/libcommdriver.c
+LIB8 = ./lib/libdeviceparser.c
+
+#PFLAGS += -DDEBUG
+all:
+#	$(CC) -c platform.c
+#	$(CC) -c serialsource.c
+#	$(CC) -c sf.c
+#	$(CC) -c sfsock.c
+#	$(CC) -c sfsource.c
+	$(CC) -lpthread -o CommManager.o serialtonet.c $(SRC1) $(SRC2) $(SRC3) $(SRC4) $(LIB1) $(LIB_EXPAT)
+	$(CC) -lpthread -o RealTimeDataManager.o RealTimeDataManager.c $(LIB1) $(LIB2) $(LIB_EXPAT)
+#$(CC) -lpthread -o motelisten *.o
+
+uart_test:
+	$(CCUSG) -o uart_test.o uart_test.c uart_init.c 
+
+uart_read:
+	$(CCUSG) -o uart_read.o uart_read.c uart_init.c 
+
+PointManager:
+	$(CCUSG) -lpthread -o ../bin/PointManager/PointManager.o PointManager.c $(LIB1) $(LIB3) $(LIB_EXPAT)
+
+CommManager:
+	$(CCUSG) -lpthread -o ../bin/CommManager/CommManager.o serialtonet.c $(SRC1) $(SRC2) $(SRC3) $(SRC4) $(LIB1) $(LIB3) $(LIB7) $(LIB_EXPAT)
+
+RealTimeDataManager:
+	$(CCUSG) -lpthread -o ../bin/RealTimeDataManager/RealTimeDataManager.o RealTimeDataManager.c $(LIB8) $(LIB1) $(LIB2) $(LIB3) $(LIB4) $(LIB5) $(LIB_EXPAT) $(LIB_SQLITE3)
+
+M2MManager:
+	$(CCUSG) -lpthread -o ../bin/M2MManager/M2MManager.o M2MManager.c $(LIB1) $(LIB5) $(LIB6) $(LIB8) $(LIB_SQLITE3) $(LIB_EXPAT)
+
+clean:
+	rm *.o *.*~ -f

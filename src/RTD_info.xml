@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<SINK ver="1.0"> 
+    <DEVINFO> 
+        <PROCESSCYCLE>60</PROCESSCYCLE> 
+        <EXPIRETIME>30</EXPIRETIME> 
+    </DEVINFO> 
+</SINK>
+ 
