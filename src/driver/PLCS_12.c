@@ -123,11 +123,17 @@ int Socket_Manager_12( int *client_sock ) {
 			ReadMsgSize = recv( *client_sock, &DataBuf, BUFFER_SIZE*10, MSG_DONTWAIT);
 			if( ReadMsgSize > 0 ) 
 			{
+				/*
 				for( i = 0; i < ReadMsgSize; i++ ) {
 					//printf("%-3.2x", DataBuf[i]);
 					printf("%C", DataBuf[i]);
 				}
 				printf("\n");
+
+				*/
+				printf("%s\n", DataBuf);
+				writeLog( "/work/smart/comm/log/PLCS12", DataBuf);
+
 				printf("recv data size : %d\n", ReadMsgSize);
 
 				if( ReadMsgSize >= BUFFER_SIZE*10 )
