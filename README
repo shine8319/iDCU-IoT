@@ -1,0 +1,30 @@
+edit 2014.07.29
+release raspberrypi device
+
+edit 2014.07.29
+custimize source code
+
+edit 2014.07.30
+add lib/configRW.c include/configRW.h
+edit SetupManager.c
+=> DEVINFO struct 
+=> config read/write
+add lib/writeLog.c include/writeLog.h
+add lib/sqliteManager.c include/sqliteManager.h
+
+
+add 2014.11.26
+github create
+https://github.com/shine8319/iDCU-IoT.git
+
+...or create a new repository on the command line
+touch README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/shine8319/iDCU-IoT.git
+git push -u origin master
+
+…or push an existing repository from the command line
+git remote add origin https://github.com/shine8319/iDCU-IoT.git
+git push -u origin master
