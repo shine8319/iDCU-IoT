@@ -25,6 +25,7 @@
 */
 #include "./driver/include/PLCS_10.h"
 #include "./driver/include/PLCS_12.h"
+#include "./driver/include/PLCS_12ex.h"
 #include "./driver/include/iDCU_IoT.h"
 
 #include "./include/iDCU.h"
@@ -59,7 +60,15 @@ int main(int argc, char **argv) {
 	{
 	    if( pthread_create(&threads[i], NULL, &PLCS12, (void *)th_data) == -1 )
 	    {
-		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error PLCS10 pthread_create" );
+		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error PLCS12 pthread_create" );
+		printf("error thread\n");
+	    }
+	}
+	else if (strcmp(xmlinfo.tag[i].driver,"PLCS12ex") == 0) 
+	{
+	    if( pthread_create(&threads[i], NULL, &PLCS12ex, (void *)th_data) == -1 )
+	    {
+		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error PLCS12ex pthread_create" );
 		printf("error thread\n");
 	    }
 	}

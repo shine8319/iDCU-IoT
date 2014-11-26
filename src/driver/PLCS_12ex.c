@@ -24,9 +24,10 @@
 #include "../include/TCPSocket.h"
 #include "../include/libpointparser.h"
 
-int plcs_12_id;
+int plcs_12ex_id;
+int indexCount = 1;
 
-void *PLCS12(void *arg) {
+void *PLCS12ex(void *arg) {
 
     int tcp;
     int i;
@@ -46,16 +47,16 @@ void *PLCS12(void *arg) {
     NODEINFO xmlinfo;
     xmlinfo = pointparser("/work/smart/tag_info.xml");
     /***************** MSG Queue **********************/
-    if( -1 == ( plcs_12_id = msgget( (key_t)1, IPC_CREAT | 0666)))
+    if( -1 == ( plcs_12ex_id = msgget( (key_t)1, IPC_CREAT | 0666)))
     {
-	    writeLog( "/work/smart/log", "[PLCS_10] error msgget() plcs_12_id" );
+	    writeLog( "/work/smart/log", "[PLCS_10] error msgget() plcs_12ex_id" );
 	    //perror( "msgget() ½ÇÆÐ");
 	    return;
     }
 
     for( i = 0; i < xmlinfo.getPointSize; i++ )
     {
-	if (strcmp(xmlinfo.tag[i].driver,"PLCS12") == 0) 
+	if (strcmp(xmlinfo.tag[i].driver,"PLCS12ex") == 0) 
 	{
 	    initFail = 0;
 	    xmlOffset = i;
@@ -73,7 +74,7 @@ void *PLCS12(void *arg) {
 	tcp = TCPClient( xmlinfo.tag[xmlOffset].ip, atoi( xmlinfo.tag[xmlOffset].port ) );
 	printf("Connect %d\n", tcp);
 	if( tcp != -1 )
-	    Socket_Manager_12( &tcp ); 
+	    Socket_Manager_12ex( &tcp ); 
 	else
 	    close(tcp);
 
@@ -86,7 +87,7 @@ void *PLCS12(void *arg) {
     return; 
 } 
 
-int Socket_Manager_12( int *client_sock ) {
+int Socket_Manager_12ex( int *client_sock ) {
 
 	fd_set control_msg_readset;
 	struct timeval control_msg_tv;
@@ -132,7 +133,7 @@ int Socket_Manager_12( int *client_sock ) {
 
 				*/
 				printf("%s\n", DataBuf);
-				writeLog( "/work/smart/comm/log/PLCS12", DataBuf);
+				writeLog( "/work/smart/comm/log/PLCS12ex", DataBuf);
 
 				printf("recv data size : %d\n", ReadMsgSize);
 
@@ -145,7 +146,7 @@ int Socket_Manager_12( int *client_sock ) {
 				if( receiveSize >= BUFFER_SIZE*10 )
 				{
 				    printf("Packet Buffer Full~~ %d\n", receiveSize );
-				    writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] Packet Buffer Full~~");
+				    writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] Packet Buffer Full~~");
 
 				    receiveSize = 0;
 				    memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
@@ -154,7 +155,7 @@ int Socket_Manager_12( int *client_sock ) {
 				}
 
 
-				parsingSize = ParsingReceiveValue_12(receiveBuffer, receiveSize, remainder, parsingSize);
+				parsingSize = ParsingReceiveValue_12ex(receiveBuffer, receiveSize, remainder, parsingSize);
 				printf("reminder size %d \n", parsingSize );
 				memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
 				receiveSize = 0;
@@ -195,7 +196,7 @@ int Socket_Manager_12( int *client_sock ) {
 
 }
 
-int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
+int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
 {
 
     unsigned char setBuffer[BUFFER_SIZE*10];
@@ -231,9 +232,14 @@ int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remain
 		}
 
 	
-		for( idOffset = i+9; idOffset < i+78; idOffset++ )
+		// add index value hard coding	2014.11.26
+		printf("Index %d\n", indexCount);
+		sprintf(setString+stringOffset, "%03d:%d;", 100, indexCount++ );
+		stringOffset += strlen( setString );
+
+		for( idOffset = i+10; idOffset < i+78; idOffset++ )
 		{
-		    sprintf(setString+stringOffset, "%03d:%s;", 100-(i+9)+idOffset, parsing[idOffset] );
+		    sprintf(setString+stringOffset, "%03d:%s;", 101-(i+10)+idOffset, parsing[idOffset] );
 
 		    stringOffset += 5 + strlen(parsing[idOffset]);
 
@@ -246,7 +252,7 @@ int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remain
 		i += len-1;
 		remainSize = i+1;
 
-		selectTag_12( setString, strlen(setString) );
+		selectTag_12ex( setString, strlen(setString) );
 	    }
 	    else
 	    {
@@ -255,7 +261,7 @@ int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remain
 		if( len+remainSize >= BUFFER_SIZE*10 )
 		{
 		    printf("packet Buffer Full %d\n", len+remainSize );
-		    writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] Packet Buffer Full~~");
+		    writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] Packet Buffer Full~~");
 		    remainSize = i+1;
 		}
 		else
@@ -280,7 +286,7 @@ int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remain
     return remainSize;
 }
 
-int selectTag_12(unsigned char* buffer, int len )
+int selectTag_12ex(unsigned char* buffer, int len )
 {
 
     t_data data;
@@ -331,11 +337,11 @@ int selectTag_12(unsigned char* buffer, int len )
     data.data_num = offset; 
 
 
-    if ( -1 == msgsnd( plcs_12_id, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
+    if ( -1 == msgsnd( plcs_12ex_id, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
     {
 	//perror( "msgsnd() error ");
 	//writeLog( "msgsnd() error : Queue full" );
-	writeLog("/work/smart/comm/log/PLCS12", "[PLCS12] msgsnd() error : Queue full" );
+	writeLog("/work/smart/comm/log/PLCS12ex", "[PLCS12ex] msgsnd() error : Queue full" );
 	//sleep(1);
 	//return -1;
     }

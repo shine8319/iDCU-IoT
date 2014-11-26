@@ -19,6 +19,7 @@ LIB_ETRIREG = -L../lib -lEtriReg
 LIB_ETRIDEREG = -L../lib -lEtriDereg
 LIB_PLCS_10 = -L./driver -lPLCS_10
 LIB_PLCS_12 = -L./driver -lPLCS_12
+LIB_PLCS_12ex = -L./driver -lPLCS_12ex
 LIB_IDCU_IOT= -L./driver -liDCU_IoT
 #LIB_SQLITE3= -L/work/src/sqlite/sqlite-autoconf-3070800/compiled/lib -lsqlite3
 LIB1 = ./lib/libpointparser.c
@@ -114,7 +115,7 @@ PLCS-12:
 	$(RASCC)  -o $(TARGET0)/PLCS-12.o PLCS-12.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
 
 CommunicationManager:
-	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_IDCU_IOT) $(LIB_EXPAT) -I./include -lpthread
+	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_EXPAT) -I./include -lpthread
 
 
 iDCU-IoT:
