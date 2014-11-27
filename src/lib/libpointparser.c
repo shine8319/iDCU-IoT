@@ -52,6 +52,7 @@ void parser(void *data, const char *s, int len)
 		}
 		else 
 		{
+		    
 			if (strcmp(current_el,"IP") == 0) 
 			{
 				sprintf(taginfo.tag[user_num-1].ip, "%s",buf);
