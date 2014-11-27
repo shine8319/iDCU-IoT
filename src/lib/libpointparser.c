@@ -142,7 +142,7 @@ NODEINFO pointparser(const char *path) {
 	FILE *fp;
 	// xml 파서를 생성한다. 
 	XML_Parser p = XML_ParserCreate(NULL); 
-	printf("XML_Parser p = XML_ParserCreate(NULL); \n");
+	//printf("XML_Parser p = XML_ParserCreate(NULL); \n");
 	if (! p)  
 	{ 
 		fprintf(stderr, "Couldn't allocate memory for parser\n"); 
@@ -151,16 +151,16 @@ NODEINFO pointparser(const char *path) {
 
 	//fp = fopen("usn_node_info.xml","r");
 	fp = fopen(path,"r");
-	printf("fp = fopen(path,r);\n");
+	//printf("fp = fopen(path,r);\n");
 
 	// xml의 element를 만났을 때 호출될 함수를 등록한다.  
 	// start는 처음태그, end는 마지막 태그를 만났을 때 호출된다. 
-	printf("XML_SetElementHandler(p, start, end);\n");
+	//printf("XML_SetElementHandler(p, start, end);\n");
 	XML_SetElementHandler(p, start, end); 
 
 	// 실제 데이터 (예 : <tag>data</tag>의 data)를 처리하기 위해서  
 	// 호출될 함수를 등록한다. 
-	printf("XML_SetCharacterDataHandler(p, parser); \n");
+	//printf("XML_SetCharacterDataHandler(p, parser); \n");
 	XML_SetCharacterDataHandler(p, parser);     
 
 	for (;;)  
@@ -169,7 +169,7 @@ NODEINFO pointparser(const char *path) {
 		int done; 
 		int len; 
 
-		printf("for (;;) \n");
+		//printf("for (;;) \n");
 		len = fread(Buff, 1, BUFFSIZE, fp); 
 		if (ferror(fp)) { 
 			fprintf(stderr, "Read error\n"); 

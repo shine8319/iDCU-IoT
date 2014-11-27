@@ -20,6 +20,7 @@ extern Return_Selectdata el1000_sqlite3_select( sqlite3 *pSQLite3, char *query )
 //extern int UpdateAustemNodeData( sqlite3 **pSQLite3, t_getNode	node );
 static int busy(void *handle, int nTry);
 
+/*
 void writeLog( char* str )
 {
 	FILE    *fp_log;
@@ -44,6 +45,7 @@ void writeLog( char* str )
 
 	fclose( fp_log );
 }
+*/
 
 
 
@@ -73,7 +75,7 @@ int main( void)
 
 	if ( -1 == ( msqid = msgget( (key_t)1111, IPC_CREAT | 0666)))
 	{
-		writeLog( "error msgget() msqid" );
+		//writeLog( "error msgget() msqid" );
 		//perror( "msgget() ½ÇÆÐ");
 		exit( 1);
 	}
@@ -84,7 +86,7 @@ int main( void)
 	//rc = el1000_sqlite3_open( argv[1], &pSQLite3 );
 	if( rc != 0 )
 	{
-		writeLog( "error DB Open" );
+		//writeLog( "error DB Open" );
 		return -1;
 	}
 	else
@@ -95,7 +97,7 @@ int main( void)
 	rc = el1000_sqlite3_customize( &pSQLite3 );
 	if( rc != 0 )
 	{
-		writeLog( "error DB Customize" );
+		//writeLog( "error DB Customize" );
 		return -1;
 	}
 

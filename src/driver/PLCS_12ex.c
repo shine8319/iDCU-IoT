@@ -115,7 +115,6 @@ int Socket_Manager_12ex( int *client_sock ) {
 		//control_msg_tv.tv_usec = 10000;
 		control_msg_tv.tv_usec = 5000000;	// timeout check 5 second
 
-		// ¸®ÅÏ°ª -1Àº ¿À·ù¹ß»ý, 0Àº Å¸ÀÓ¾Æ¿ô, 0º¸´Ù Å©¸é º¯°æµÈ ÆÄÀÏ µð½ºÅ©¸³ÅÍ¼ö
 		nd = select( *client_sock+1, &control_msg_readset, NULL, NULL, &control_msg_tv );		
 		if( nd > 0 ) 
 		{

@@ -104,7 +104,7 @@ INT32 TCPClient(INT8 *serverIP, UINT16 port )
    if( rtrn == -1 )
    {
        close( server_sock );
-       return -1;
+       return -2;
    }
 
     /*
@@ -122,12 +122,12 @@ INT32 TCPClient(INT8 *serverIP, UINT16 port )
     if((flags = fcntl(server_sock, F_GETFL, 0)) == -1 ) {
 	close( server_sock );
 	//perror("fcntl");
-	return -1;
+	return -3;
     }
     if(fcntl(server_sock, F_GETFL, flags | O_NONBLOCK) == -1) {
 	close( server_sock );
 	//perror("fcntl");
-	return -1;
+	return -4;
     }
 
     return server_sock;

@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
 
     int i;
     pid_t pid;
+    int threadCount = 0;
     NODEINFO xmlinfo;
     xmlinfo = pointparser("/work/smart/device_info.xml");
     char th_data[256];
@@ -55,6 +56,12 @@ int main(int argc, char **argv) {
 		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error PLCS10 pthread_create" );
 		printf("error thread\n");
 	    }
+	    else
+	    {
+		threadCount++;
+		printf("threadCount %d\n", threadCount );
+	    }
+
 	}
 	else if (strcmp(xmlinfo.tag[i].driver,"PLCS12") == 0) 
 	{
@@ -63,6 +70,13 @@ int main(int argc, char **argv) {
 		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error PLCS12 pthread_create" );
 		printf("error thread\n");
 	    }
+	    else
+	    {
+		threadCount++;
+		printf("threadCount %d\n", threadCount );
+	    }
+
+
 	}
 	else if (strcmp(xmlinfo.tag[i].driver,"PLCS12ex") == 0) 
 	{
@@ -71,6 +85,13 @@ int main(int argc, char **argv) {
 		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error PLCS12ex pthread_create" );
 		printf("error thread\n");
 	    }
+	    else
+	    {
+		threadCount++;
+		printf("threadCount %d\n", threadCount );
+	    }
+
+
 	}
 	else if (strcmp(xmlinfo.tag[i].driver,"iDCU_IoT") == 0) 
 	{
@@ -79,6 +100,13 @@ int main(int argc, char **argv) {
 		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error iDCU_IoT pthread_create" );
 		printf("error thread\n");
 	    }
+	    else
+	    {
+		threadCount++;
+		printf("threadCount %d\n", threadCount );
+	    }
+
+
 	}
     }
 

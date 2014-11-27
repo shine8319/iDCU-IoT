@@ -82,7 +82,8 @@ void *iDCU_IoT(void *arg) {
 	/***************** connect *********************/
 	tcpiDCU_IoT = TCPClient( xmlinfo.tag[xmlOffset].ip, atoi( xmlinfo.tag[xmlOffset].port ) );
 	printf("Connect %d\n", tcpiDCU_IoT);
-	if( tcpiDCU_IoT != -1 )
+	//if( tcpiDCU_IoT != -1 )
+	if( tcpiDCU_IoT > 0 )
 	{
 	    /***************** send thread **********************/
 	    memcpy( th_data, (void *)&tcpiDCU_IoT, sizeof(tcpiDCU_IoT) );
