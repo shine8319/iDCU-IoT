@@ -27,7 +27,8 @@
 int plcs_12ex_id;
 int indexCount = 1;
 
-void *PLCS12ex(void *arg) {
+//void *PLCS12ex(void *arg) {
+void *PLCS12ex( DEVICEINFO *device) {
 
     int tcp;
     int i;
@@ -56,8 +57,12 @@ void *PLCS12ex(void *arg) {
 
     for( i = 0; i < xmlinfo.getPointSize; i++ )
     {
-	if (strcmp(xmlinfo.tag[i].driver,"PLCS12ex") == 0) 
+	//if (strcmp(xmlinfo.tag[i].driver,"PLCS12ex") == 0) 
+	if (strcmp(xmlinfo.tag[i].id,device->id ) == 0) 
 	{
+	    printf("ID %s\n", xmlinfo.tag[i].id);
+	    printf("IP %s\n", xmlinfo.tag[i].ip);
+	    printf("PORT %s\n", xmlinfo.tag[i].port);
 	    initFail = 0;
 	    xmlOffset = i;
 	}

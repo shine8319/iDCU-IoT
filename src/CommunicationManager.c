@@ -30,10 +30,38 @@
 
 #include "./include/iDCU.h"
 #include "./include/libpointparser.h"
+#include "./include/libDeviceInfoParser.h"
 
 
 void sig_handler( int signo);
-pthread_t threads[8];
+
+	
+void createProcess( DEVICEINFO *device, TAGINFO *tag )
+{
+    char th_data[256];
+
+    if (strcmp(device->driver,"PLCS10") == 0) 
+    {
+	 PLCS10(th_data);
+    }
+    else if (strcmp(device->driver,"PLCS12") == 0) 
+    {
+	 PLCS12(th_data);
+    }
+    else if (strcmp(device->driver,"PLCS12ex") == 0) 
+    {
+	 //PLCS12ex(th_data);
+	 PLCS12ex(device);
+    }
+    else if (strcmp(device->driver,"iDCU_IoT") == 0) 
+    {
+	 iDCU_IoT(th_data);
+    }
+    else
+	printf("no exist~~~~~~\n");
+
+}
+
 
 int main(int argc, char **argv) { 
 
@@ -41,73 +69,34 @@ int main(int argc, char **argv) {
     pid_t pid;
     int threadCount = 0;
     NODEINFO xmlinfo;
-    xmlinfo = pointparser("/work/smart/device_info.xml");
-    char th_data[256];
+    //xmlinfo = pointparser("/work/smart/device_info.xml");
+    xmlinfo = deviceInfoParser("/work/smart/device_info.xml");
 
     signal( SIGINT, (void *)sig_handler);
 
     printf("xmlinfo.getPointSize %d\n", xmlinfo.getPointSize);
     for( i = 0; i < xmlinfo.getPointSize; i++ )
     {
-	if (strcmp(xmlinfo.tag[i].driver,"PLCS10") == 0) 
+	pid = fork();
+	if( pid < 0 )
 	{
-	    if( pthread_create(&threads[i], NULL, &PLCS10, (void *)th_data) == -1 )
-	    {
-		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error PLCS10 pthread_create" );
-		printf("error thread\n");
-	    }
-	    else
-	    {
-		threadCount++;
-		printf("threadCount %d\n", threadCount );
-	    }
-
+	    perror("fork error : ");
+	    writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error fork()" );
+	    printf("error process\n");
 	}
-	else if (strcmp(xmlinfo.tag[i].driver,"PLCS12") == 0) 
+
+	if( pid == 0 )
 	{
-	    if( pthread_create(&threads[i], NULL, &PLCS12, (void *)th_data) == -1 )
-	    {
-		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error PLCS12 pthread_create" );
-		printf("error thread\n");
-	    }
-	    else
-	    {
-		threadCount++;
-		printf("threadCount %d\n", threadCount );
-	    }
-
-
+	    createProcess( &xmlinfo.device[i], &xmlinfo.tag[i] );
+	    exit(0);
 	}
-	else if (strcmp(xmlinfo.tag[i].driver,"PLCS12ex") == 0) 
+	else
 	{
-	    if( pthread_create(&threads[i], NULL, &PLCS12ex, (void *)th_data) == -1 )
-	    {
-		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error PLCS12ex pthread_create" );
-		printf("error thread\n");
-	    }
-	    else
-	    {
-		threadCount++;
-		printf("threadCount %d\n", threadCount );
-	    }
-
-
+	    printf("pid %d\n", pid );
+	    threadCount++;
+	    printf("proces Count %d\n", threadCount );
 	}
-	else if (strcmp(xmlinfo.tag[i].driver,"iDCU_IoT") == 0) 
-	{
-	    if( pthread_create(&threads[i], NULL, &iDCU_IoT, (void *)th_data) == -1 )
-	    {
-		writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error iDCU_IoT pthread_create" );
-		printf("error thread\n");
-	    }
-	    else
-	    {
-		threadCount++;
-		printf("threadCount %d\n", threadCount );
-	    }
 
-
-	}
     }
 
     writeLog("/work/smart/log", "[CommunicationManager] start CommunicationManager.o" );
@@ -128,23 +117,5 @@ void sig_handler( int signo)
 
     printf("ctrl-c\n");
 
-    for (i = 7; i >= 0; i--)
-    {
-	rc = pthread_cancel(threads[i]); // 강제종료
-	if (rc == 0)
-	{
-	    // 자동종료
-	    rc = pthread_join(threads[i], (void **)&status);
-	    if (rc == 0)
-	    {
-		printf("Completed join with thread %d status= %d\n",i, status);
-	    }
-	    else
-	    {
-		printf("ERROR; return code from pthread_join() is %d, thread %d\n", rc, i);
-	    }
-	}
-    }
     exit(1);
 }
-

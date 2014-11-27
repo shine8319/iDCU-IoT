@@ -126,11 +126,18 @@ typedef struct TAGINFO {
 	char basescanrate[MAX_BUFFER];
 } TAGINFO;
 
+typedef struct DEVICEINFO {
+	char driver[MAX_BUFFER];
+	char id[MAX_BUFFER];
+} DEVICEINFO;
+
 
 typedef struct NODEINFO {
+	DEVICEINFO device[MAX_DEVICE];
 	TAGINFO tag[MAX_DEVICE];
 	char getPointSize;
 } NODEINFO;
+
 
 /*
 typedef struct NODEINFO {

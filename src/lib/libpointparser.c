@@ -52,52 +52,25 @@ void parser(void *data, const char *s, int len)
 		}
 		else 
 		{
-			//printf("==> %s (%s)\n", current_el, buf); 
-		    /*
-			if (strcmp(current_el,"NODEID") == 0) 
-			{
-				id = atoi(buf);
-				taginfo.id[user_num-1] = id;
-				printf("  ID = %d\n", taginfo.id[user_num-1]);
-			}
-			else if (strcmp(current_el,"SENSORTYPE") == 0) 
-			{
-				type = atoi(buf);
-				taginfo.type[user_num-1] = type;
-				printf("TYPE = %d\n", taginfo.type[user_num-1]);
-			}
-			else if (strcmp(current_el,"DATAADDR") == 0) 
-			{
-				addr = atoi(buf);
-				taginfo.addr[user_num-1] = addr;
-				printf("ADDR = %d\n", taginfo.addr[user_num-1]);
-			}
-			else if (strcmp(current_el,"DATASIZE") == 0) 
-			{
-				size = atoi(buf);
-				taginfo.size[user_num-1] = size;
-				printf("SIZE = %d\n", taginfo.size[user_num-1]);
-			}
-			*/
 			if (strcmp(current_el,"IP") == 0) 
 			{
 				sprintf(taginfo.tag[user_num-1].ip, "%s",buf);
-				printf("IP = %s\n", taginfo.tag[user_num-1].ip);
+				//printf("IP = %s\n", taginfo.tag[user_num-1].ip);
 			}
 			else if (strcmp(current_el,"PORT") == 0) 
 			{
 				sprintf(taginfo.tag[user_num-1].port, "%s",buf);
-				printf("PORT = %s\n", taginfo.tag[user_num-1].port);
-			}
-			else if (strcmp(current_el,"DRIVER") == 0) 
-			{
-				sprintf(taginfo.tag[user_num-1].driver, "%s",buf);
-				printf("DRIVER = %s\n", taginfo.tag[user_num-1].driver);
+				//printf("PORT = %s\n", taginfo.tag[user_num-1].port);
 			}
 			else if (strcmp(current_el,"BASESCANRATE") == 0) 
 			{
 				sprintf(taginfo.tag[user_num-1].basescanrate, "%s",buf);
-				printf("BASESCANRATE = %s\n", taginfo.tag[user_num-1].basescanrate);
+				//printf("BASESCANRATE = %s\n", taginfo.tag[user_num-1].basescanrate);
+			}
+			else if (strcmp(current_el,"DEVICEID") == 0) 
+			{
+				sprintf(taginfo.tag[user_num-1].id, "%s",buf);
+				//printf("DEVICEID = %s\n", taginfo.tag[user_num-1].id);
 			}
 
 
@@ -118,11 +91,11 @@ start(void *data, const char *el, const char **attr) {
 	current_id = attr; 
 	if(Depth == 0)  
 	{ 
-		printf("Version is %s\n\n", current_id[1]);  
+		//printf("Version is %s\n\n", current_id[1]);  
 	} 
 	if (strcmp(current_el,"NODEINFO") == 0) 
 	{ 
-		printf("[%d] %s \n", user_num, current_el); 
+		//printf("[%d] %s \n", user_num, current_el); 
 		user_num++; 
 	} 
 	Depth++; 
@@ -187,7 +160,7 @@ NODEINFO pointparser(const char *path) {
 		if (done) 
 			break; 
 	} 
-	printf("\n\nNode is : %dea\n", user_num); 
+	printf("\n\nTag is : %dea\n", user_num); 
 	taginfo.getPointSize = user_num;
 
 	XML_ParserFree(p);

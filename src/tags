@@ -36,6 +36,7 @@ BUFFER_SIZE	tagServer.c	23;"	d	file:
 BUFFER_SIZE	usnTowifi.c	15;"	d	file:
 BUFFER_SIZE	wifiTousn.c	13;"	d	file:
 BUFFSIZE	include/PointManager.h	2;"	d
+BUFFSIZE	lib/libDeviceInfoParser.c	11;"	d	file:
 BUFFSIZE	lib/libpointparser.c	12;"	d	file:
 BUFF_SIZE	ETRI_simulator.c	28;"	d	file:
 BUFF_SIZE	PLCS-12.c	29;"	d	file:
@@ -90,6 +91,8 @@ DEBUG	serialtonet.c	9;"	d	file:
 DEBUG	socket_test.c	21;"	d	file:
 DELETENODE	include/CommManager.h	/^	DELETENODE		= 0x04,$/;"	e	enum:__anon9
 DELETENODE	include/M2MManager.h	/^	DELETENODE		= 0x04,$/;"	e	enum:__anon17
+DEVICEINFO	include/iDCU.h	/^typedef struct DEVICEINFO {$/;"	s
+DEVICEINFO	include/iDCU.h	/^} DEVICEINFO;$/;"	t	typeref:struct:DEVICEINFO
 DEVINFO	include/PointManager.h	/^typedef struct DEVINFO {$/;"	s
 DEVINFO	include/PointManager.h	/^} DEVINFO;$/;"	t	typeref:struct:DEVINFO
 DEVINFO	include/iDCU.h	/^typedef struct DEVINFO {$/;"	s
@@ -102,6 +105,7 @@ DataUnit	include/ETRI.h	/^    UINT8		DataUnit[32];$/;"	m	struct:Struct_Transduce
 DataUnitLength	include/ETRI.h	/^    UINT8		DataUnitLength;$/;"	m	struct:Struct_Transducer_Registration
 Data_Length	include/ETRI.h	/^    UINT8   Data_Length;$/;"	m	struct:Struct_TransducerInfo
 DeleteSensorData	lib/libm2mprotocol.c	/^int DeleteSensorData( sqlite3 *pSQLite3, int keepdata )$/;"	f
+Depth	lib/libDeviceInfoParser.c	/^static int Depth = 0; $/;"	v	file:
 Depth	lib/libpointparser.c	/^int Depth = 0; $/;"	v
 ESCAPED_STATE	sfsock.c	/^	ESCAPED_STATE,$/;"	e	enum:__anon32	file:
 ESCAPE_BYTE	serialsource.c	/^	ESCAPE_BYTE = 0x7d,$/;"	e	enum:__anon33	file:
@@ -1118,6 +1122,7 @@ count	serialsource.c	/^		int count;$/;"	m	struct:serial_source::__anon34	file:
 crc	serialsource.c	/^		uint16_t crc;$/;"	m	struct:serial_source::__anon35	file:
 crc_byte	serialsource.c	/^static uint16_t crc_byte(uint16_t crc, uint8_t b)$/;"	f	file:
 crc_packet	serialsource.c	/^static uint16_t crc_packet(uint8_t *data, int len)$/;"	f	file:
+createProcess	CommunicationManager.c	/^void createProcess( DEVICEINFO *device, TAGINFO *tag )$/;"	f
 create_collation	include/sqlite3ext.h	/^  int  (*create_collation)(sqlite3*,const char*,int,void*,$/;"	m	struct:sqlite3_api_routines
 create_collation16	include/sqlite3ext.h	/^  int  (*create_collation16)(sqlite3*,const void*,int,void*,$/;"	m	struct:sqlite3_api_routines
 create_collation_v2	include/sqlite3ext.h	/^  int (*create_collation_v2)(sqlite3*,const char*,int,void*,$/;"	m	struct:sqlite3_api_routines
@@ -1130,8 +1135,10 @@ curCnt	include/RealTimeDataManager.h	/^	unsigned int	curCnt[DI_PORT];$/;"	m	stru
 curCnt	msgsnd.c	/^	unsigned int	curCnt[DI_PORT];$/;"	m	struct:__anon29	file:
 curWo	include/RealTimeDataManager.h	/^	char 			curWo[DI_PORT];$/;"	m	struct:__anon14
 curWo	msgsnd.c	/^	char 			curWo[DI_PORT];$/;"	m	struct:__anon29	file:
+current_el	lib/libDeviceInfoParser.c	/^static const char *current_el;   \/\/ 가장 최근 태그 기억용 $/;"	v	file:
 current_el	lib/libdeviceparser.c	/^const char *current_el;   \/\/ 가장 최근 태그 기억용 $/;"	v
 current_el	lib/libpointparser.c	/^const char *current_el;   \/\/ 가장 최근 태그 기억용 $/;"	v
+current_id	lib/libDeviceInfoParser.c	/^static const char **current_id;  \/\/ 태그의 특성값 기억용 $/;"	v	file:
 current_id	lib/libdeviceparser.c	/^const char **current_id;  \/\/ 태그의 특성값 기억용 $/;"	v
 current_id	lib/libpointparser.c	/^const char **current_id;  \/\/ 태그의 특성값 기억용 $/;"	v
 data	include/expat.h	/^  void *data;$/;"	m	struct:__anon22
@@ -1167,9 +1174,12 @@ declare_vtab	include/sqlite3ext.h	/^  int (*declare_vtab)(sqlite3*,const char*);
 deluge_socket_process	serialtonet.c	/^void* deluge_socket_process(){$/;"	f
 desc	include/sqlite3.h	/^     unsigned char desc;       \/* True for DESC.  False for ASC. *\/$/;"	m	struct:sqlite3_index_info::sqlite3_index_orderby
 detachSharedMem	lib/libreleasesharedmemory.c	/^int detachSharedMem( char type, char nodeid, const void *addr, const void *id )$/;"	f
+devInfo	lib/libDeviceInfoParser.c	/^static NODEINFO devInfo;$/;"	v	file:
 device	ETRI_simulator.c	/^DEVINFO	    device;$/;"	v
 device	PLCS-12.c	/^DEVINFO	    device;$/;"	v
 device	SetupManager.c	/^DEVINFO	    device;$/;"	v
+device	include/iDCU.h	/^	DEVICEINFO device[MAX_DEVICE];$/;"	m	struct:NODEINFO
+deviceInfoParser	lib/libDeviceInfoParser.c	/^static NODEINFO deviceInfoParser(const char *path) { $/;"	f	file:
 deviceparser	lib/libdeviceparser.c	/^DEVINFO deviceparser(const char *path) { $/;"	f
 deviceparser_Buff	lib/libdeviceparser.c	/^char deviceparser_Buff[BUFFSIZE]; $/;"	v
 deviceparser_Depth	lib/libdeviceparser.c	/^int deviceparser_Depth = 0; $/;"	v
@@ -1187,6 +1197,7 @@ dl_port	serialtonet.c	/^char* dl_port="5000";$/;"	v
 done	UartManager.c	/^int done[5];$/;"	v
 double	include/sqlite3.h	264;"	d
 double	include/sqlite3.h	7178;"	d
+driver	include/iDCU.h	/^	char driver[MAX_BUFFER];$/;"	m	struct:DEVICEINFO
 driver	include/iDCU.h	/^	char driver[MAX_BUFFER];$/;"	m	struct:TAGINFO
 dump	serialsource.c	/^static void dump(const char *msg, unsigned char *packet, int len)$/;"	f	file:
 eACK	include/ETRI.h	/^	eACK			    = 0xff,$/;"	e	enum:__anon20
@@ -1218,6 +1229,7 @@ el1000_sqlite3_transaction	lib/libsqlite3manage.c	/^int el1000_sqlite3_transacti
 el1000_sqlite3_update	lib/libsqlite3manage.c	/^int el1000_sqlite3_update( sqlite3 **pSQLite3, char* query )$/;"	f
 enable_shared_cache	include/sqlite3ext.h	/^  int  (*enable_shared_cache)(int);$/;"	m	struct:sqlite3_api_routines
 encoding	include/expat.h	/^XML_ParserCreate(const XML_Char *encoding);$/;"	v
+end	lib/libDeviceInfoParser.c	/^static void end(void *data, const char *el)  $/;"	f	file:
 end	lib/libpointparser.c	/^end(void *data, const char *el)  $/;"	f
 env	tagServer.c	/^READENV env;$/;"	v
 errcode	include/sqlite3ext.h	/^  int  (*errcode)(sqlite3*db);$/;"	m	struct:sqlite3_api_routines
@@ -1306,6 +1318,7 @@ iVersion	include/sqlite3.h	/^  int iVersion;$/;"	m	struct:sqlite3_module
 iVersion	include/sqlite3.h	/^  int iVersion;$/;"	m	struct:sqlite3_pcache_methods2
 id	include/PointManager.h	/^	char id[MAX_POINT];$/;"	m	struct:NODEINFO
 id	include/PointManager.h	/^	const void *id;$/;"	m	struct:POINTINFO
+id	include/iDCU.h	/^	char id[MAX_BUFFER];$/;"	m	struct:DEVICEINFO
 id	include/iDCU.h	/^	char id[MAX_BUFFER];$/;"	m	struct:TAGINFO
 idxNum	include/sqlite3.h	/^  int idxNum;                \/* Number used to identify the index *\/$/;"	m	struct:sqlite3_index_info
 idxStr	include/sqlite3.h	/^  char *idxStr;              \/* String, possibly obtained from sqlite3_malloc *\/$/;"	m	struct:sqlite3_index_info
@@ -1318,6 +1331,7 @@ interruptx	include/sqlite3ext.h	/^  void  (*interruptx)(sqlite3*);$/;"	m	struct:
 io	IoTManager.c	/^UINT8 io[8];$/;"	v
 io	include/iDCU.h	/^	UINT8 io[8];$/;"	m	struct:__anon4
 ip	include/iDCU.h	/^	char ip[MAX_BUFFER];$/;"	m	struct:TAGINFO
+is_value	lib/libDeviceInfoParser.c	/^static int is_value = 0; $/;"	v	file:
 is_value	lib/libpointparser.c	/^int is_value = 0; $/;"	v
 key_flag	include/iDCU.h	/^    unsigned char key_flag;$/;"	m	struct:security_var
 key_mgmt	include/iDCU.h	/^    unsigned char key_mgmt;$/;"	m	struct:security_var
@@ -1347,6 +1361,7 @@ length	include/CommManager.h	/^		unsigned char length;$/;"	m	struct:__anon11
 length	socket_test.c	/^	char length;$/;"	m	struct:_PAC	file:
 length	test/M2MManager.c	/^	char length;$/;"	m	struct:_PAC	file:
 length	test/M2MManager2.c	/^	char length;$/;"	m	struct:_PAC	file:
+libDeivceInfoParser	Makefile	/^libDeivceInfoParser = .\/lib\/libDeviceInfoParser.c$/;"	m
 libpointparser	Makefile	/^libpointparser = .\/lib\/libpointparser.c$/;"	m
 libpointparser	driver/Makefile	/^libpointparser = ..\/lib\/libpointparser.c$/;"	m
 libversion	include/sqlite3ext.h	/^  const char * (*libversion)(void);$/;"	m	struct:sqlite3_api_routines
@@ -1540,6 +1555,7 @@ parser	include/expat.h	/^XML_GetSpecifiedAttributeCount(XML_Parser parser);$/;"	
 parser	include/expat.h	/^XML_ParserFree(XML_Parser parser);$/;"	v
 parser	include/expat.h	/^XML_ResumeParser(XML_Parser parser);$/;"	v
 parser	include/expat.h	/^XML_UseParserAsHandlerArg(XML_Parser parser);$/;"	v
+parser	lib/libDeviceInfoParser.c	/^static void parser(void *data, const char *s, int len) $/;"	f	file:
 parser	lib/libpointparser.c	/^void parser(void *data, const char *s, int len) $/;"	f
 parsing	include/expat.h	/^  enum XML_Parsing parsing;$/;"	m	struct:__anon23	typeref:enum:__anon23::XML_Parsing
 parsing_buffer	sfsock.c	/^int parsing_buffer(char *sockbuf, uint8_t len) {$/;"	f
@@ -1945,6 +1961,7 @@ sqlite_uint64	include/sqlite3.h	/^  typedef unsigned long long int sqlite_uint64
 src	serialtonet.c	/^serial_source src;$/;"	v
 src	sf.c	/^serial_source src;$/;"	v
 ssid	include/iDCU.h	/^    unsigned char ssid[32];$/;"	m	struct:security_var
+start	lib/libDeviceInfoParser.c	/^static void start(void *data, const char *el, const char **attr) { $/;"	f	file:
 start	lib/libpointparser.c	/^start(void *data, const char *el, const char **attr) { $/;"	f
 state	sfsock.c	/^uint16_t state=NULL_STATE;$/;"	v
 status	include/sqlite3ext.h	/^  int (*status)(int,int*,int*,int);$/;"	m	struct:sqlite3_api_routines
@@ -2037,6 +2054,7 @@ uri_int64	include/sqlite3ext.h	/^  sqlite3_int64 (*uri_int64)(const char*,const 
 uri_parameter	include/sqlite3ext.h	/^  const char *(*uri_parameter)(const char*,const char*);$/;"	m	struct:sqlite3_api_routines
 usable	include/sqlite3.h	/^     unsigned char usable;     \/* True if this constraint is usable *\/$/;"	m	struct:sqlite3_index_info::sqlite3_index_constraint
 user_data	include/sqlite3ext.h	/^  void * (*user_data)(sqlite3_context*);$/;"	m	struct:sqlite3_api_routines
+user_num	lib/libDeviceInfoParser.c	/^static int  user_num = 0;   \/\/ 몇개의 레코드가 저장되었는지 검사  $/;"	v	file:
 user_num	lib/libpointparser.c	/^int  user_num = 0;   \/\/ 몇개의 레코드가 저장되었는지 검사  $/;"	v
 user_quit	PointManager.c	/^unsigned char user_quit = 0;$/;"	v
 user_quit	RealTimeDataManager_backup.c	/^unsigned char user_quit = 0;$/;"	v
@@ -2094,9 +2112,10 @@ woPastData	driver/iDCU_IoT.c	/^UINT8 woPastData;$/;"	v
 writeLog	Makefile	/^writeLog = .\/lib\/writeLog.c$/;"	m
 writeLog	RealTimeDataManager(radiopulse_direct_getCnt).c	/^void writeLog( char* str )$/;"	f
 writeLog	driver/Makefile	/^writeLog = ..\/lib\/writeLog.c$/;"	m
-writeLog	lib/writeLog.c	/^void writeLog( UINT8 *name, UINT8 *str )$/;"	f
+writeLog	lib/writeLog.c	/^void writeLog( UINT8 *path, UINT8 *str )$/;"	f
 writeLog	test/M2MManager.c	/^void writeLog( char* str )$/;"	f
 writeLog	test/M2MManager2.c	/^void writeLog( char* str )$/;"	f
+writeLogV2	lib/writeLog.c	/^void writeLogV2( UINT8 *path, UINT8 *filename, UINT8 *str )$/;"	f
 writeTextLog	lib/libcommprocess.c	/^void writeTextLog( char* str )$/;"	f
 writeTextLog	lib/libm2mprocess.c	/^void writeTextLog( char* str )$/;"	f
 writeTextLog	lib/librtdprocess.c	/^void writeTextLog( char* str )$/;"	f

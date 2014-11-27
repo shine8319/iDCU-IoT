@@ -48,7 +48,7 @@ void *PLCS12(void *arg) {
     /***************** MSG Queue **********************/
     if( -1 == ( plcs_12_id = msgget( (key_t)1, IPC_CREAT | 0666)))
     {
-	    writeLog( "/work/smart/log", "[PLCS_10] error msgget() plcs_12_id" );
+	    writeLog( "/work/smart/log", "[PLCS_12] error msgget() plcs_12_id" );
 	    //perror( "msgget() ½ÇÆÐ");
 	    return;
     }
