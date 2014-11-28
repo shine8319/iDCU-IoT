@@ -1,4 +1,5 @@
 #include <stdio.h> 
+#include <ctype.h>
 #include <stdlib.h> 
 #include <string.h> 
 #include <unistd.h>
@@ -23,12 +24,13 @@
 #include "./include/writeLog.h"
 #include "./include/TCPSocket.h"
 */
+#include "./include/iDCU.h"
+
 #include "./driver/include/PLCS_10.h"
 #include "./driver/include/PLCS_12.h"
 #include "./driver/include/PLCS_12ex.h"
 #include "./driver/include/iDCU_IoT.h"
 
-#include "./include/iDCU.h"
 #include "./include/libpointparser.h"
 #include "./include/libDeviceInfoParser.h"
 
@@ -38,24 +40,22 @@ void sig_handler( int signo);
 	
 void createProcess( DEVICEINFO *device, TAGINFO *tag )
 {
-    char th_data[256];
 
     if (strcmp(device->driver,"PLCS10") == 0) 
     {
-	 PLCS10(th_data);
+	 PLCS10(device);
     }
     else if (strcmp(device->driver,"PLCS12") == 0) 
     {
-	 PLCS12(th_data);
+	 PLCS12(device);
     }
     else if (strcmp(device->driver,"PLCS12ex") == 0) 
     {
-	 //PLCS12ex(th_data);
 	 PLCS12ex(device);
     }
     else if (strcmp(device->driver,"iDCU_IoT") == 0) 
     {
-	 iDCU_IoT(th_data);
+	 iDCU_IoT(device);
     }
     else
 	printf("no exist~~~~~~\n");

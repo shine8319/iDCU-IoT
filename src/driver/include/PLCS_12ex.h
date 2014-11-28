@@ -1,1 +1,1 @@
-void *PLCS12ex(void *);
+void *PLCS12ex(DEVICEINFO *device);

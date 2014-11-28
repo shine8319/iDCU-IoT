@@ -43,6 +43,7 @@ TCPSocket = ./lib/TCPSocket.c
 SQLite3Interface = ./lib/SQLite3Interface.c
 libpointparser = ./lib/libpointparser.c
 libDeivceInfoParser = ./lib/libDeviceInfoParser.c
+stringTrim = ./lib/stringTrim.c
 TARGET0 = ./bin
 LIB_TARGET = ./lib
 #PFLAGS += -DDEBUG
@@ -116,7 +117,7 @@ PLCS-12:
 	$(RASCC)  -o $(TARGET0)/PLCS-12.o PLCS-12.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
 
 CommunicationManager:
-	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_EXPAT) -I./include -lpthread
+	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_EXPAT) -I./include -lpthread
 
 
 iDCU-IoT:

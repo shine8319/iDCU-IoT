@@ -1,1 +1,1 @@
-void *iDCU_IoT(void *arg);
+void *iDCU_IoT(DEVICEINFO *device);

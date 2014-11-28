@@ -33,7 +33,7 @@ UINT8 woPastData;
 UINT8 cntPastData[4];
 
 
-void *iDCU_IoT(void *arg) {
+void *iDCU_IoT(DEVICEINFO *device) {
 
     int tcpiDCU_IoT;
     int i;
@@ -64,11 +64,16 @@ void *iDCU_IoT(void *arg) {
 
     for( i = 0; i < xmlinfo.getPointSize; i++ )
     {
-	if (strcmp(xmlinfo.tag[i].driver,"iDCU_IoT") == 0) 
+	//if (strcmp(xmlinfo.tag[i].driver,"iDCU_IoT") == 0) 
+	if (strcmp(xmlinfo.tag[i].id,device->id ) == 0) 
 	{
+	    printf("ID %s\n", xmlinfo.tag[i].id);
+	    printf("IP %s\n", xmlinfo.tag[i].ip);
+	    printf("PORT %s\n", xmlinfo.tag[i].port);
 	    initFail = 0;
 	    xmlOffset = i;
 	}
+
     }
     
     if( initFail == 1 )

@@ -29,17 +29,18 @@ TCPSocket = ../lib/TCPSocket.c
 #ETRI_Registration = ../lib/ETRI_Registration.c
 SQLite3Interface = ../lib/SQLite3Interface.c
 libpointparser = ../lib/libpointparser.c
+stringTrim = ../lib/stringTrim.c
 TARGET0 = ./bin
 LIB_TARGET = ./lib
 #PFLAGS += -DDEBUG
 all:
-	$(RASCC)  -c PLCS_12ex.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
+	$(RASCC)  -c PLCS_12ex.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
 	$(RASAR) rc libPLCS_12ex.a PLCS_12ex.o
 	$(RASRANLIB) libPLCS_12ex.a
-	$(RASCC)  -c PLCS_12.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
+	$(RASCC)  -c PLCS_12.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
 	$(RASAR) rc libPLCS_12.a PLCS_12.o
 	$(RASRANLIB) libPLCS_12.a
-	$(RASCC)  -c PLCS_10.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
+	$(RASCC)  -c PLCS_10.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
 	$(RASAR) rc libPLCS_10.a PLCS_10.o
 	$(RASRANLIB) libPLCS_10.a
 	$(RASCC)  -c iDCU_IoT.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread

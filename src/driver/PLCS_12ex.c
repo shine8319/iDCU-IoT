@@ -23,6 +23,7 @@
 #include "../include/writeLog.h"
 #include "../include/TCPSocket.h"
 #include "../include/libpointparser.h"
+#include "../include/stringTrim.h"
 
 int plcs_12ex_id;
 int indexCount = 1;
@@ -109,6 +110,7 @@ int Socket_Manager_12ex( int *client_sock ) {
 	int i;
 	int nd;
 
+
 	FD_ZERO(&control_msg_readset);
 	printf("Receive Ready!!!\n");
 
@@ -136,13 +138,16 @@ int Socket_Manager_12ex( int *client_sock ) {
 				printf("\n");
 
 				*/
+				printf("recv data size : %d\n", ReadMsgSize);
 				printf("%s\n", DataBuf);
 				writeLog( "/work/smart/comm/log/PLCS12ex", DataBuf);
 
-				printf("recv data size : %d\n", ReadMsgSize);
 
 				if( ReadMsgSize >= BUFFER_SIZE*10 )
+				{
+				    printf("wow continue\n");
 					continue;
+				}
 
 				memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
 				receiveSize += ReadMsgSize;
@@ -208,10 +213,13 @@ int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* rema
     int stringOffset = 0;
     int idOffset = 0;
     char* token ;
-    UINT8 parsing[256][256];
+    UINT8 trimBuffer[32];
+    char* trimPoint;
+
+    UINT8 parsing[1024][32];
     UINT8 setString[BUFFER_SIZE*10];
     UINT8 parsingCnt = 1;
-    UINT8 ngOffset = 32;
+    int crOffset = 0;
 
 
     for( i = 0; i < len; i++ )
@@ -220,70 +228,106 @@ int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* rema
 	if(  cvalue[i] == '"' && cvalue[i+1] == ':' && cvalue[i+2] == '"' && cvalue[i+3] == ',' && cvalue[i+4] == '3' && cvalue[i+5] == '3'  )
 	{
 
-
-	    if( len+remainSize < BUFFER_SIZE*10 && cvalue[len-1] == 0x0d )
+	    //printf("OK find STX : i offset is %d, total length %d\n", i, len);
+	    for( crOffset = i; crOffset < len; crOffset++ )
 	    {
-
-		token = strtok( cvalue, ",");
-		strcpy( parsing[parsingCnt++], token );
-		//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
-
-		while( token = strtok( NULL, "," ) ) 
+		//if( len+remainSize < BUFFER_SIZE*10 && cvalue[len-1] == 0x0d )
+		//if( len+remainSize < BUFFER_SIZE*10 && cvalue[crOffset] == 0x0d )
+		if( cvalue[crOffset] == 0x0d )
 		{
+
+		    //printf("OK find EXT\n");
+
+		    memset( setBuffer, 0, BUFFER_SIZE*10 );
+		    memset( parsing, 0, 1024*32 );
+		    parsingCnt = 1;
 		    
+		    memset( setString, 0, BUFFER_SIZE*10 );
+		    stringOffset = 0;
+
+		    //printf(" memcpy i %d, crOffset %d\n", i, crOffset);
+		    memcpy( setBuffer, cvalue+i, crOffset-i );
+		    //token = strtok( cvalue+i, ",");
+
+		    token = strtok( setBuffer, ",");
+		    //printf("first token %s\n", token);
 		    strcpy( parsing[parsingCnt++], token );
-		    //printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
-		}
+		    //printf("i is %d [%d] %s\n", i, parsingCnt-1, parsing[parsingCnt-1] ) ;
 
-	
-		// add index value hard coding	2014.11.26
-		printf("Index %d\n", indexCount);
-		sprintf(setString+stringOffset, "%03d:%d;", 100, indexCount++ );
-		stringOffset += strlen( setString );
+		    while( token = strtok( NULL, "," ) ) 
+		    {
+			
+			strcpy( parsing[parsingCnt++], token );
+			//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
+		    }
 
-		for( idOffset = i+10; idOffset < i+78; idOffset++ )
-		{
-		    sprintf(setString+stringOffset, "%03d:%s;", 101-(i+10)+idOffset, parsing[idOffset] );
+	    
+		    // add index value hard coding	2014.11.26
+		    //printf("Index %d\n", indexCount);
+		    sprintf(setString+stringOffset, "%03d:%d;", 100, indexCount++ );
+		    stringOffset += strlen( setString );
 
-		    stringOffset += 5 + strlen(parsing[idOffset]);
+		    //printf("parsingCnt %d\n", parsingCnt );
+		    for( idOffset = 10; idOffset < 78; idOffset++ )
+		    {
+			memset( trimBuffer, 0, 32);
+			memcpy( trimBuffer, parsing+idOffset, 32 );
+			trimPoint = trim(trimBuffer);
+			sprintf(setString+stringOffset, "%03d:%s;", 101-10+idOffset, trimPoint );
 
-		}
+			stringOffset += 5 + strlen(trimPoint);
+
+		    }
 
 
-		writeLog( "/work/smart/comm/log", setString);
-		printf("%s\n", setString);
-	
-		i += len-1;
-		remainSize = i+1;
+		    writeLog( "/work/smart/comm/log", setString);
+		    printf("%s\n", setString);
+	    
+		    selectTag_12ex( setString, strlen(setString) );
 
-		selectTag_12ex( setString, strlen(setString) );
-	    }
-	    else
-	    {
-		i += len-1;
-
-		if( len+remainSize >= BUFFER_SIZE*10 )
-		{
-		    printf("packet Buffer Full %d\n", len+remainSize );
-		    writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] Packet Buffer Full~~");
+		    i = crOffset;
 		    remainSize = i+1;
+		    //printf(" i is %d, total Length %d\n", i, len );
+
+		    crOffset = len;
+
+
 		}
 		else
-		    remainSize = 0;
-	    }
+		{
+
+		    if( crOffset+1 == len )
+		    {
+
+			printf("no CR~~~\n");
+			remainSize = i;
+			i += crOffset;
+		    }
+		}
+
+	    }	//for( crOffset = i; crOffset < len )
 
 	}
 	else
 	{
 
-	    printf("packet clear!\n");
-	    i += len-1;
-	    remainSize = i+1;
+	    if( i+1 == len )
+	    {
+		//printf("packet clear!\n");
+		i = len-1;
+		remainSize = i+1;
+	    }
+	    else
+	    {
+		//printf(" i = %d, cvalue[%d] = %C\n", i, i, cvalue[i]);
+	    }
 	}
 
     }
 
+
     remainSize = len - remainSize;
+    //printf("In~~~ remainSize %d\n", remainSize);
     memcpy( remainder, cvalue+(len-(remainSize)), remainSize );
 
 

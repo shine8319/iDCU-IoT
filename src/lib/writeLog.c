@@ -15,7 +15,7 @@ void writeLog( UINT8 *path, UINT8 *str )
     FILE    *fp_log;
     struct timeval val;
     struct tm *t;
-    char     buff[1024];
+    char     buff[10240];
     char     devName[512];
     int	    pid;
     
@@ -75,7 +75,7 @@ void writeLogV2( UINT8 *path, UINT8 *filename, UINT8 *str )
     FILE    *fp_log;
     struct timeval val;
     struct tm *t;
-    char     buff[1024];
+    char     buff[10240];
     char     devName[512];
     int	    pid;
     
