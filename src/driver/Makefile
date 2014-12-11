@@ -34,6 +34,9 @@ TARGET0 = ./bin
 LIB_TARGET = ./lib
 #PFLAGS += -DDEBUG
 all:
+	$(RASCC)  -c GN1200.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
+	$(RASAR) rc libGN1200.a GN1200.o
+	$(RASRANLIB) libGN1200.a
 	$(RASCC)  -c PLCS_12ex.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
 	$(RASAR) rc libPLCS_12ex.a PLCS_12ex.o
 	$(RASRANLIB) libPLCS_12ex.a

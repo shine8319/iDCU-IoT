@@ -86,7 +86,7 @@ INT32 TCPClient(INT8 *serverIP, UINT16 port )
     INT32 rtrn;
     INT32 flags;
 
-    printf("IP %s PORT %d\n", serverIP, port);
+    //printf("IP %s PORT %d\n", serverIP, port);
     server_sock = socket(PF_INET, SOCK_STREAM, 0);
     if( server_sock < 0 )
     {

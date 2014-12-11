@@ -27,6 +27,7 @@ pthread_t threads[2];
 int pushStart;
 READENV env;
 
+static int init(void);
 void *thread_sender(void *arg);
 void *thread_receive(void *arg);
 Struct_SensingValueReport pac;
@@ -38,6 +39,7 @@ int main( void)
     int 		i,j;
     int 		id = 0;
     int			rtrn;
+    int			reTry = 3;
     char		cntOffset = 9;
     t_data   data;
     t_data   eventData;
@@ -62,45 +64,21 @@ int main( void)
     memset( sendBuffer, 0, 1024 );
 
 
-
-    int status, rc;
-    struct sockaddr_in ip; 
-    ReadEnvConfig("/work/smart/reg/env.reg", &env );
-
-    ip.sin_addr.s_addr = (env.middleware_ip);
-    printf(" bind IP %s, port %d\n", inet_ntoa(ip.sin_addr), env.middleware_port);
-
-    int reTry = 3;
-
-
-    do {
-
-	tcp = TCPClient( inet_ntoa(ip.sin_addr), env.middleware_port);
-	if( tcp == -1 )
+    while( reTry )
+    {
+	rtrn = init();
+	if( rtrn == -1 )
 	{
-	    writeLog("/work/smart/log", "[tagServer] fail TCPClient method " );
-	    printf("connect error\n");
-	    return -1;
-	}
-	else
-	    printf("connect success\n");
-
-
-
-	if( -1 == ETRI_Registration( &tcp, &env ) )
-	{
-	    //printf("fail registration\n");
-	    writeLog( "/work/smart/log", "[tagServer] fail registration" );
-	    //return -1;
-	    sleep(1);
+	    printf("reTry %d\n", reTry);
 	    reTry--;
-	    if( reTry == 0 )
-		return -1;
+	    sleep(10);
 	}
 	else
-	    reTry = 0;
+	    break;
 
-    } while( reTry );
+ 	if( reTry == 0 )
+	    return -1;
+    }
 
     /*
     memcpy( th_data, (void *)&tcp, sizeof(tcp) );
@@ -182,36 +160,11 @@ int main( void)
 		if( rtrn == -1 )
 		{
 		    close(tcp);
-		    sleep(1);
-		    tcp = TCPClient( inet_ntoa(ip.sin_addr), env.middleware_port);
-		    if( tcp == -1 )
-		    {
-			writeLog("/work/smart/log", "[tagServer] error TCPClient method " );
-		    }
-		    /*
-		    else
-		    {
+		    tcp = -1;
+		    printf("close(tcp) %d\n", tcp);
+		    sleep(10);
 
-			// 자동종료
-			rc = pthread_join(threads[0], (void **)&status);
-			if (rc == 0)
-			{
-			    printf("Completed join with thread status= %d\n", status);
-			}
-			else
-			{
-			    printf("ERROR; return code from pthread_join() is %d\n", rc);
-			    //return -1;
-			}
-			memcpy( th_data, (void *)&tcp, sizeof(tcp) );
-			if( pthread_create(&threads[0], NULL, &thread_receive, (void *)th_data) == -1 )
-			{
-			    writeLog("./log", "[tagServer] error pthread_create method" );
-			    //printf("error thread\n");
-			}
-		    }
-		    */
-
+		    init();
 		}
 		else
 		{
@@ -232,6 +185,58 @@ int main( void)
     }
 
 }
+
+static int init(void)
+{
+    struct sockaddr_in ip; 
+    int reTry = 3;
+
+    ReadEnvConfig("/work/smart/reg/env.reg", &env );
+
+    ip.sin_addr.s_addr = (env.middleware_ip);
+    printf(" bind IP %s, port %d\n", inet_ntoa(ip.sin_addr), env.middleware_port);
+
+
+    do {
+
+	if( !(tcp > 0) )
+	{
+	    tcp = TCPClient( inet_ntoa(ip.sin_addr), env.middleware_port);
+	    printf(" tcp status %d\n", tcp );
+	    if( tcp < 0 )
+	    {
+		writeLog("/work/smart/log", "[tagServer] fail TCPClient method " );
+		printf("connect error\n");
+		return -1;
+	    }
+	    else
+		printf("connect success\n");
+
+	}
+
+
+	if( -1 == ETRI_Registration( &tcp, &env ) )
+	{
+	    //printf("fail registration\n");
+	    writeLog( "/work/smart/log", "[tagServer] fail registration" );
+	    //return -1;
+	    sleep(1);
+	    reTry--;
+	    if( reTry == 0 )
+	    {
+		close(tcp);
+		tcp = -1;
+		return -1;
+	    }
+	}
+	else
+	    reTry = 0;
+
+    } while( reTry );
+
+    return 0;
+}
+
 void *thread_sender(void *arg)
 {
 

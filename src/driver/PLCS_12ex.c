@@ -80,9 +80,13 @@ void *PLCS12ex( DEVICEINFO *device) {
 	tcp = TCPClient( xmlinfo.tag[xmlOffset].ip, atoi( xmlinfo.tag[xmlOffset].port ) );
 	printf("Connect %d\n", tcp);
 	if( tcp != -1 )
+	{
 	    Socket_Manager_12ex( &tcp ); 
+	}
 	else
+	{
 	    close(tcp);
+	}
 
 	sleep(2);
 	printf("========================================\n");
@@ -113,6 +117,7 @@ int Socket_Manager_12ex( int *client_sock ) {
 
 	FD_ZERO(&control_msg_readset);
 	printf("Receive Ready!!!\n");
+	writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] start");
 
 	while( 1 ) 
 	{
@@ -177,6 +182,7 @@ int Socket_Manager_12ex( int *client_sock ) {
 			else {
 				sleep(1);
 				printf("receive None\n");
+				writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] receive None");
 				break;
 			}
 			ReadMsgSize = 0;
@@ -185,12 +191,14 @@ int Socket_Manager_12ex( int *client_sock ) {
 		else if( nd == 0 ) 
 		{
 			printf("timeout\n");
+			writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] timeout");
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
 		else if( nd == -1 ) 
 		{
 			printf("error...................\n");
+			writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] network error............");
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
@@ -199,6 +207,7 @@ int Socket_Manager_12ex( int *client_sock ) {
 	}	// end of while
 
 	printf("Disconnection client....\n");
+	writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] Disconnection.....");
 
 	close( *client_sock );
 	return 0;

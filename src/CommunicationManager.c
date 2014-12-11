@@ -30,6 +30,7 @@
 #include "./driver/include/PLCS_12.h"
 #include "./driver/include/PLCS_12ex.h"
 #include "./driver/include/iDCU_IoT.h"
+#include "./driver/include/GN1200.h"
 
 #include "./include/libpointparser.h"
 #include "./include/libDeviceInfoParser.h"
@@ -56,6 +57,10 @@ void createProcess( DEVICEINFO *device, TAGINFO *tag )
     else if (strcmp(device->driver,"iDCU_IoT") == 0) 
     {
 	 iDCU_IoT(device);
+    }
+    else if (strcmp(device->driver,"GN1200") == 0) 
+    {
+	 GN1200(device);
     }
     else
 	printf("no exist~~~~~~\n");

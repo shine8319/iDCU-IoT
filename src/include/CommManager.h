@@ -1,7 +1,7 @@
 //#define USN			"/dev/ttyAMA0"
 #define USN			"/dev/ttyUSB0"
 //#define	BAUDRATE	57600	
-#define	BAUDRATE	115200	
+#define	BAUDRATE    9600
 #define BUFFER_SIZE 1024 
 #define	M2M_COMMAND	0
 #define	USN_RETURN	1

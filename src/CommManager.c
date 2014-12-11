@@ -72,7 +72,25 @@ int main(int argc, char** argv)
 
     printf("[CommManager] start~\n");
 
+    /*
+    unsigned char sendDataBuf[32];
+    int rtrn = 0;
+    sendDataBuf[0] = 'A';
 
+    while(1)
+    {
+	//sleep(1);
+	usleep(500000);
+	rtrn = write(fd, sendDataBuf, 1); 
+	printf("rtrn = %d, Senddata sendDataBuf[0] = %C\n", rtrn, sendDataBuf[0]);
+	rtrn = read(fd, DataBuf, BUFFER_SIZE); 
+	for( i = 0; i< rtrn; i++ )
+	      printf("%02X ", DataBuf[i]);
+	printf("\n");
+
+    }
+
+    */
     while(1)
     { 
 	// receive Bridge

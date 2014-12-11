@@ -25,17 +25,17 @@
 #include "../include/libpointparser.h"
 
 static void *thread_main(void *arg);
+static int Socket_Manager( int *client_sock );
+static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize );
+static int selectTag(unsigned char* buffer, int len, INT32 type );
 
 static int comm_id;
 static NODEINFO xmlinfo;
 static int xmlOffset = 0;
-static UINT8 woPastData;
-static UINT8 cntPastData[4];
 
+void *GN1200(DEVICEINFO *device) {
 
-void *iDCU_IoT(DEVICEINFO *device) {
-
-    int tcpiDCU_IoT;
+    int tcp;
     int i;
     int thr_id;
     int status;
@@ -85,23 +85,23 @@ void *iDCU_IoT(DEVICEINFO *device) {
 
 
 	/***************** connect *********************/
-	tcpiDCU_IoT = TCPClient( xmlinfo.tag[xmlOffset].ip, atoi( xmlinfo.tag[xmlOffset].port ) );
-	printf("Connect %d\n", tcpiDCU_IoT);
-	//if( tcpiDCU_IoT != -1 )
-	if( tcpiDCU_IoT > 0 )
+	tcp= TCPClient( xmlinfo.tag[xmlOffset].ip, atoi( xmlinfo.tag[xmlOffset].port ) );
+	printf("Connect %d\n", tcp);
+	//if( tcp!= -1 )
+	if( tcp> 0 )
 	{
 	    /***************** send thread **********************/
-	    memcpy( th_data, (void *)&tcpiDCU_IoT, sizeof(tcpiDCU_IoT) );
+	    memcpy( th_data, (void *)&tcp, sizeof(tcp) );
 	    if( pthread_create(&p_thread, NULL, &thread_main, (void *)th_data) == -1 )
 	    {
 		//writeLog("/work/iot/log", "[Uart] threads[2] thread_main error" );
 		printf("error thread\n");
 	    }
 
-	    Socket_Manager_iDCU_IoT( &tcpiDCU_IoT ); 
+	    Socket_Manager( &tcp); 
 	}
 	else
-	    close(tcpiDCU_IoT);
+	    close(tcp);
 
 
 	sleep(2);
@@ -122,23 +122,18 @@ static void *thread_main(void *arg)
     int Fd;
     int length;
     int sendType = 0;
-    unsigned char SendBuf[2][12] ={ { 0x01, 0x02, 0x00, 0x00, 0x00, 0x06, 0x01, 0x02, 0x00, 0x10, 0x00, 0x08 },
-	{ 0x01, 0x02, 0x00, 0x00, 0x00, 0x06, 0x01, 0x04, 0x00, 0x10, 0x00, 0x10 } };
+    unsigned char SendBuf[8] ={ 0x01, 0x03, 0x00, 0x00, 0x00, 0x04, 0x44, 0x09 };
 
     memcpy( &Fd, (char *)arg, sizeof(int));
 
     
     while(1)
     {
-	//rtrn = write(Fd, SendBuf, 12); 
-	rtrn = send( Fd, SendBuf[sendType], 12, MSG_NOSIGNAL);
+	rtrn = send( Fd, SendBuf, 8, MSG_NOSIGNAL);
 	//printf("return Send %d\n", rtrn );
 	if( rtrn == -1 )
 	    break;
 	    
-	sendType = !sendType;
-	//printf("sendType = %d\n", sendType);
-	//sleep(1);
 	
 	//usleep(500000);	// 500ms
 	//printf("BaseScanRate %dms\n", atoi(xmlinfo.tag[xmlOffset].basescanrate));
@@ -147,7 +142,7 @@ static void *thread_main(void *arg)
     printf("Exit Thread\n");
 
 }
-int Socket_Manager_iDCU_IoT( int *client_sock ) {
+static int Socket_Manager( int *client_sock ) {
 
 	fd_set control_msg_readset;
 	struct timeval control_msg_tv;
@@ -166,8 +161,6 @@ int Socket_Manager_iDCU_IoT( int *client_sock ) {
 
 	FD_ZERO(&control_msg_readset);
 	printf("Receive Ready!!!\n");
-
-	writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] start " );
 
 	while( 1 ) 
 	{
@@ -200,7 +193,7 @@ int Socket_Manager_iDCU_IoT( int *client_sock ) {
 				memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
 				receiveSize += ReadMsgSize;
 
-				parsingSize = ParsingReceiveValue_iDCU_IoT(receiveBuffer, receiveSize, remainder, parsingSize);
+				parsingSize = ParsingReceiveValue(receiveBuffer, receiveSize, remainder, parsingSize);
 				memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE) );
 				receiveSize = 0;
 				memcpy( receiveBuffer, remainder, parsingSize );
@@ -212,7 +205,6 @@ int Socket_Manager_iDCU_IoT( int *client_sock ) {
 			else {
 				sleep(1);
 				printf("receive None\n");
-				writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] receive None" );
 				break;
 			}
 			ReadMsgSize = 0;
@@ -221,14 +213,12 @@ int Socket_Manager_iDCU_IoT( int *client_sock ) {
 		else if( nd == 0 ) 
 		{
 			printf("timeout\n");
-			writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] timeout" );
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
 		else if( nd == -1 ) 
 		{
 			printf("error...................\n");
-			writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] network error...." );
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
@@ -238,15 +228,13 @@ int Socket_Manager_iDCU_IoT( int *client_sock ) {
 
 	printf("Disconnection client....\n");
 
-	writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] Disconnection " );
-
 	close( *client_sock );
 	return 0;
 
 }
 
 
-int ParsingReceiveValue_iDCU_IoT(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
+static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
 {
 
     int i, tlen;
@@ -262,29 +250,44 @@ int ParsingReceiveValue_iDCU_IoT(unsigned char* cvalue, int len, unsigned char* 
 
     for( i = 0; i < len; i++ )
     {
-	if( cvalue[i] == 0x01 && cvalue[i+1] == 0x02 )
+	if( cvalue[i] == 0x01 && cvalue[i+1] == 0x03 && cvalue[i+2] == 0x08 )
 	{ 
-	    tlen = cvalue[i + 5];
+	    tlen = cvalue[i + 2];
+	    /*
 	    if( tlen != cvalue[i + 5 + 3] + 3 )
 	    {
 		remainSize = 0;
 		return remainSize;
 	    }
-
-	    /*
-	    for( offset = i; offset < tlen + 6; offset++ )
-		printf("%02X ", cvalue[offset]);
-	    printf("\n");
 	    */
 
-	    memcpy( byteBuffer, cvalue+(i+9), tlen-3 );
-	    type = cvalue[i+7];
+	    for( offset = i; offset < tlen + 5; offset++ )
+		printf("%02X ", cvalue[offset]);
+	    printf("\n");
 
-	    selectTag_iDCU_IoT( byteBuffer, tlen-3, type );
+	    memcpy( byteBuffer, cvalue+(i+5), 2 );
 
-	    i = i + tlen + 6;
+	    selectTag( byteBuffer, 2, 0 );
+
+	    i = i + tlen + 5;
 	    remainSize = i;
 	}
+	else
+	{
+
+	    if( i+1 == len )
+	    {
+		//printf("packet clear!\n");
+		i = len-1;
+		remainSize = i+1;
+	    }
+	    else
+	    {
+		// i + +
+	    }
+	}
+
+
 
     }
 
@@ -295,9 +298,10 @@ int ParsingReceiveValue_iDCU_IoT(unsigned char* cvalue, int len, unsigned char* 
     return remainSize;
 }
 
-int selectTag_iDCU_IoT(unsigned char* buffer, int len, INT32 type )
+static int selectTag(unsigned char* buffer, int len, INT32 type )
 {
 
+/*
     t_data data;
     int i;
     int offset = 0;
@@ -331,14 +335,7 @@ int selectTag_iDCU_IoT(unsigned char* buffer, int len, INT32 type )
 	    data.data_buff[offset++] = 0;   // sensing value (null)
 
 	    if( woPastData != (0x02 & buffer[0]) )
-	    {
 		dataChanged = 1;
-		if( (0x02 & buffer[0]) )
-		    writeLog("/work/smart/comm/log/iDCU_IoT", "WO" );
-		else
-		    writeLog("/work/smart/comm/log/iDCU_IoT", "NW" );
-
-	    }
 
 	    woPastData = (0x02 & buffer[0]);
 
@@ -347,12 +344,7 @@ int selectTag_iDCU_IoT(unsigned char* buffer, int len, INT32 type )
 	case 4:
 
 	    data.data_type = 1;
-	    /*
-	    for(i = 4; i < 4+4; i++)
-		data.data_buff[offset++] = buffer[i];
-		*/
-
-	    data.data_buff[offset++] = 1;   // transducer count
+	  	    data.data_buff[offset++] = 1;   // transducer count
 	    data.data_buff[offset++] = 52;   // transducer id 
 	    data.data_buff[offset++] = 0;   // transducer id 
 	    memcpy( data.data_buff+offset, &sensingTime, 4 );	// UTC
@@ -364,19 +356,7 @@ int selectTag_iDCU_IoT(unsigned char* buffer, int len, INT32 type )
 		count |= (0x000000ff & (UINT32)buffer[3]) << 16;
 		count |= (0x000000ff & (UINT32)buffer[2]) << 24;
 
-	    /*
-		count = (0x000000ff & (UINT32)buffer[5]) << 0;
-		count |= (0x000000ff & (UINT32)buffer[4]) << 8;
-		count |= (0x000000ff & (UINT32)buffer[7]) << 16;
-		count |= (0x000000ff & (UINT32)buffer[6]) << 24;
-		*/
-
-	    /*
-		printf("count %ld, %d\n", count, strlen(ltoa(count, data.data_buff+offset, 10)) );
-
-
-		*/
-	    
+	   
 	    sprintf( countString, "%ld", count );
 	    data.data_buff[offset++] = strlen( countString )+1;   // data length 
 	    //printf("len %02X \n", data.data_buff[offset-1]);
@@ -386,31 +366,12 @@ int selectTag_iDCU_IoT(unsigned char* buffer, int len, INT32 type )
 	    data.data_buff[offset++] = 0;   // sensing value (null)
 
 	   
-	    /*
-	    break;
-		//printf("char count %d\n", data.data_buff[offset-1]);
-
-
-	    data.data_buff[offset++] = 5;   // data length 
-
-	    data.data_buff[offset++] = buffer[5];   // sensing value
-	    data.data_buff[offset++] = buffer[4];   // sensing value
-	    data.data_buff[offset++] = buffer[7];   // sensing value
-	    data.data_buff[offset++] = buffer[6];   // sensing value
-
-	    data.data_buff[offset++] = 0;   // sensing value (null)
-	    */
-
-	    
+		    
 	    if( cntPastData[1] != buffer[1] ||
 		 cntPastData[0] != buffer[0] ||
 		 cntPastData[3] != buffer[3] ||
 		 cntPastData[2] != buffer[2]    )
-	    {
 		dataChanged = 1;
-
-		writeLog("/work/smart/comm/log/iDCU_IoT", countString  );
-	    }
 
 	    cntPastData[1] = buffer[1];
 	    cntPastData[0] = buffer[0];
@@ -430,8 +391,6 @@ int selectTag_iDCU_IoT(unsigned char* buffer, int len, INT32 type )
 	    printf("%02X ", data.data_buff[i]);
 	printf("\n");
 
-
-
 	    if ( -1 == msgsnd( comm_id, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
 	{
 	    //perror( "msgsnd() error ");
@@ -443,6 +402,7 @@ int selectTag_iDCU_IoT(unsigned char* buffer, int len, INT32 type )
 	}
     }
 
+*/
     return 0;
 }
 

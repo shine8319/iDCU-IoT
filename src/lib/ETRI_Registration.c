@@ -30,6 +30,7 @@ int ETRI_Registration( int *tcp, READENV *env ) {
 
     sqlite3 *pSQLite3;
     UINT32 rc;
+    int rtrn;
     memcpy( &info.manufacturer, &env->manufacturer, 20 );
     memcpy( &info.producno, &env->producno, 20 );
     info.gatenode = env->gatenode;
@@ -56,8 +57,12 @@ int ETRI_Registration( int *tcp, READENV *env ) {
 	return -1;
     if( -1 == SensorNode_Description_Registration( tcp, &info ) )
 	return -1;
-    if( -1 == Transducer_Description_Registration( tcp, &info, pSQLite3 ) )
+    rtrn  = Transducer_Description_Registration( tcp, &info, pSQLite3 );
+    printf("return value %d\n", rtrn );
+    if( rtrn == -1 )
+    {
 	return -1;
+    }
 
     IoT_sqlite3_close( &pSQLite3 );
 
@@ -134,7 +139,7 @@ int SensorNode_Description_Registration( int *tcp, READENV *info )
 int Transducer_Description_Registration( int *tcp, READENV *info, sqlite3 *pSQLite3 )
 {
     int count;
-    UINT16 rtrn;
+    int rtrn;
 
     SQLite3Data data;
     char *query;
@@ -219,24 +224,24 @@ unsigned short int ntohs(unsigned short int netshort);
 
     sqlite3_free( query );
     SQLITE_SAFE_FREE( query )
-	sqlite3_free_table( data.data );
+    sqlite3_free_table( data.data );
     SQLITE_SAFE_FREE( data.data )
 
-	while( selectCount ) 
-	{
+    while( selectCount ) 
+    {
 
-	    //printf(" transducer count %d, packet length %d, test size %d\n", count, env[i].Transducer.Length, size );
-	    rtrn = sender( tcp, &env[selectCount-1], sendSize[selectCount-1] );
-	    if( rtrn == 0 )
-	    {
-		selectCount--;
-	    }
-	    else
-	    {
-		rtrn = -1;
-		break;
-	    }
+	//printf(" transducer count %d, packet length %d, test size %d\n", count, env[i].Transducer.Length, size );
+	rtrn = sender( tcp, &env[selectCount-1], sendSize[selectCount-1] );
+	if( rtrn == 0 )
+	{
+	    selectCount--;
 	}
+	else
+	{
+	    rtrn = -1;
+	    break;
+	}
+    }
 
     return rtrn;
 }
