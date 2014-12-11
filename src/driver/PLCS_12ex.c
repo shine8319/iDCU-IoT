@@ -25,9 +25,12 @@
 #include "../include/libpointparser.h"
 #include "../include/stringTrim.h"
 
-int plcs_12ex_id;
-int indexCount = 1;
+static int plcs_12ex_id;
+static int indexCount = 1;
 
+static int selectTag_12ex(unsigned char* buffer, int len );
+static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize );
+static int Socket_Manager_12ex( int *client_sock );
 //void *PLCS12ex(void *arg) {
 void *PLCS12ex( DEVICEINFO *device) {
 
@@ -97,7 +100,7 @@ void *PLCS12ex( DEVICEINFO *device) {
     return; 
 } 
 
-int Socket_Manager_12ex( int *client_sock ) {
+static int Socket_Manager_12ex( int *client_sock ) {
 
 	fd_set control_msg_readset;
 	struct timeval control_msg_tv;
@@ -214,7 +217,7 @@ int Socket_Manager_12ex( int *client_sock ) {
 
 }
 
-int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
+static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
 {
 
     unsigned char setBuffer[BUFFER_SIZE*10];
@@ -343,7 +346,7 @@ int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* rema
     return remainSize;
 }
 
-int selectTag_12ex(unsigned char* buffer, int len )
+static int selectTag_12ex(unsigned char* buffer, int len )
 {
 
     t_data data;

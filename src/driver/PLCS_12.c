@@ -25,7 +25,11 @@
 #include "../include/libpointparser.h"
 #include "../include/stringTrim.h"
 
-int plcs_12_id;
+static int plcs_12_id;
+
+static int selectTag_12(unsigned char* buffer, int len );
+static int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize );
+static int Socket_Manager_12( int *client_sock );
 
 void *PLCS12(DEVICEINFO *device) {
 
@@ -92,7 +96,7 @@ void *PLCS12(DEVICEINFO *device) {
     return; 
 } 
 
-int Socket_Manager_12( int *client_sock ) {
+static int Socket_Manager_12( int *client_sock ) {
 
 	fd_set control_msg_readset;
 	struct timeval control_msg_tv;
@@ -206,7 +210,7 @@ int Socket_Manager_12( int *client_sock ) {
 
 }
 
-int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
+static int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
 {
 
      unsigned char setBuffer[BUFFER_SIZE*10];
@@ -278,7 +282,7 @@ int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remain
 		    writeLog( "/work/smart/comm/log", setString);
 		    printf("%s\n", setString);
 	    
-		    selectTag_12ex( setString, strlen(setString) );
+		    selectTag_12( setString, strlen(setString) );
 
 		    i = crOffset;
 		    remainSize = i+1;
@@ -329,7 +333,7 @@ int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remain
     return remainSize;
 }
 
-int selectTag_12(unsigned char* buffer, int len )
+static int selectTag_12(unsigned char* buffer, int len )
 {
 
     t_data data;

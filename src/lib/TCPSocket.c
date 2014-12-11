@@ -306,7 +306,7 @@ int sender( int *tcp, UINT8 *packet, UINT32 size )
     printf("to M/W Send size %d\n", rtrn);
     if( rtrn != -1 )
     {
-	rtrn = receive(tcp, 5);
+	rtrn = receive(tcp, 10);
 	if( rtrn == 0 || rtrn == 2 )
 	{
 	    return 0;
