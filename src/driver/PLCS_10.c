@@ -23,10 +23,15 @@
 #include "../include/writeLog.h"
 #include "../include/TCPSocket.h"
 #include "../include/libpointparser.h"
+#include "../include/stringTrim.h"
 
-int plcs_10_id;
+static int msgQId;
 
-void *PLCS10(void *arg) {
+static int selectTag(unsigned char* buffer, int len );
+static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize );
+static int Socket_Manager( int *client_sock );
+
+void *PLCS10(DEVICEINFO *device) {
 
     int tcp;
     int i;
@@ -46,20 +51,25 @@ void *PLCS10(void *arg) {
     NODEINFO xmlinfo;
     xmlinfo = pointparser("/work/smart/tag_info.xml");
     /***************** MSG Queue **********************/
-    if( -1 == ( plcs_10_id = msgget( (key_t)1, IPC_CREAT | 0666)))
+    if( -1 == ( msgQId = msgget( (key_t)1, IPC_CREAT | 0666)))
     {
-	    writeLog( "/work/smart/comm/log/deviceLog", "[PLCS_10] error msgget() plcs_10_id" );
+	    writeLog( "/work/smart/log", "[PLCS_10] error msgget() msgQId" );
 	    //perror( "msgget() ½ÇÆÐ");
 	    return;
     }
 
     for( i = 0; i < xmlinfo.getPointSize; i++ )
     {
-	if (strcmp(xmlinfo.tag[i].driver,"PLCS10") == 0) 
+	//if (strcmp(xmlinfo.tag[i].driver,"PLCS10") == 0) 
+	if (strcmp(xmlinfo.tag[i].id,device->id ) == 0) 
 	{
+	    printf("ID %s\n", xmlinfo.tag[i].id);
+	    printf("IP %s\n", xmlinfo.tag[i].ip);
+	    printf("PORT %s\n", xmlinfo.tag[i].port);
 	    initFail = 0;
 	    xmlOffset = i;
 	}
+
     }
     
     if( initFail == 1 )
@@ -72,7 +82,8 @@ void *PLCS10(void *arg) {
 	//tcp = TCPClient( "10.1.0.6", "50006");
 	tcp = TCPClient( xmlinfo.tag[xmlOffset].ip, atoi( xmlinfo.tag[xmlOffset].port ) );
 	printf("Connect %d\n", tcp);
-	if( tcp != -1 )
+	//if( tcp != -1 )
+	if( tcp > 0 )
 	    Socket_Manager( &tcp ); 
 	else
 	    close(tcp);
@@ -86,16 +97,16 @@ void *PLCS10(void *arg) {
     return; 
 } 
 
-int Socket_Manager( int *client_sock ) {
+static int Socket_Manager( int *client_sock ) {
 
 	fd_set control_msg_readset;
 	struct timeval control_msg_tv;
-	unsigned char DataBuf[BUFFER_SIZE];
+	unsigned char DataBuf[BUFFER_SIZE*10];
 	int ReadMsgSize;
 
-	unsigned char receiveBuffer[BUFFER_SIZE];
+	unsigned char receiveBuffer[BUFFER_SIZE*10];
 	int receiveSize = 0;
-	unsigned char remainder[BUFFER_SIZE];
+	unsigned char remainder[BUFFER_SIZE*10];
 	int parsingSize = 0;
 
 
@@ -105,6 +116,7 @@ int Socket_Manager( int *client_sock ) {
 
 	FD_ZERO(&control_msg_readset);
 	printf("Receive Ready!!!\n");
+	writeLog( "/work/smart/comm/log/PLCS10", "[PLCS10] start");
 
 	while( 1 ) 
 	{
@@ -123,11 +135,17 @@ int Socket_Manager( int *client_sock ) {
 			ReadMsgSize = recv( *client_sock, &DataBuf, BUFFER_SIZE*10, MSG_DONTWAIT);
 			if( ReadMsgSize > 0 ) 
 			{
+				/*
 				for( i = 0; i < ReadMsgSize; i++ ) {
 					//printf("%-3.2x", DataBuf[i]);
 					printf("%C", DataBuf[i]);
 				}
 				printf("\n");
+
+				*/
+				printf("%s\n", DataBuf);
+				writeLog( "/work/smart/comm/log/PLCS10", DataBuf);
+
 				printf("recv data size : %d\n", ReadMsgSize);
 
 				if( ReadMsgSize >= BUFFER_SIZE*10 )
@@ -135,6 +153,18 @@ int Socket_Manager( int *client_sock ) {
 
 				memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
 				receiveSize += ReadMsgSize;
+
+				if( receiveSize >= BUFFER_SIZE*10 )
+				{
+				    printf("Packet Buffer Full~~ %d\n", receiveSize );
+				    writeLog( "/work/smart/comm/log/PLCS10", "[PLCS10] Packet Buffer Full~~");
+
+				    receiveSize = 0;
+				    memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
+				    memset( remainder, 0 , sizeof(BUFFER_SIZE)*10 );
+				    continue;
+				}
+
 
 				parsingSize = ParsingReceiveValue(receiveBuffer, receiveSize, remainder, parsingSize);
 				printf("reminder size %d \n", parsingSize );
@@ -149,6 +179,7 @@ int Socket_Manager( int *client_sock ) {
 			else {
 				sleep(1);
 				printf("receive None\n");
+				writeLog( "/work/smart/comm/log/PLCS10", "[PLCS10] receive None");
 				break;
 			}
 			ReadMsgSize = 0;
@@ -157,12 +188,14 @@ int Socket_Manager( int *client_sock ) {
 		else if( nd == 0 ) 
 		{
 			printf("timeout\n");
+			writeLog( "/work/smart/comm/log/PLCS10", "[PLCS10] timeout");
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
 		else if( nd == -1 ) 
 		{
 			printf("error...................\n");
+			writeLog( "/work/smart/comm/log/PLCS10", "[PLCS10] network error........");
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
@@ -171,24 +204,29 @@ int Socket_Manager( int *client_sock ) {
 	}	// end of while
 
 	printf("Disconnection client....\n");
+	writeLog( "/work/smart/comm/log/PLCS10", "[PLCS10] Disconnection ");
 
 	close( *client_sock );
 	return 0;
 
 }
 
-int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
+static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
 {
 
-    unsigned char setBuffer[BUFFER_SIZE*10];
+     unsigned char setBuffer[BUFFER_SIZE*10];
     int i;
     int stringOffset = 0;
     int idOffset = 0;
     char* token ;
-    UINT8 parsing[256][256];
+    UINT8 trimBuffer[32];
+    char* trimPoint;
+
+    UINT8 parsing[1024][32];
     UINT8 setString[BUFFER_SIZE*10];
     UINT8 parsingCnt = 1;
-    UINT8 ngOffset = 32;
+    int crOffset = 0;
+
 
     for( i = 0; i < len; i++ )
     {
@@ -196,71 +234,108 @@ int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder
 	if(  cvalue[i] == '"' && cvalue[i+1] == ':' && cvalue[i+2] == '"' && cvalue[i+3] == ',' && cvalue[i+4] == '3' && cvalue[i+5] == '3'  )
 	{
 
-
-	    if( cvalue[len-1] == 0x0d )
+	    //printf("OK find STX : i offset is %d, total length %d\n", i, len);
+	    for( crOffset = i; crOffset < len; crOffset++ )
 	    {
-
-		token = strtok( cvalue, ",");
-		strcpy( parsing[parsingCnt++], token );
-		//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
-
-		while( token = strtok( NULL, "," ) ) 
+		//if( len+remainSize < BUFFER_SIZE*10 && cvalue[len-1] == 0x0d )
+		//if( len+remainSize < BUFFER_SIZE*10 && cvalue[crOffset] == 0x0d )
+		if( cvalue[crOffset] == 0x0d )
 		{
+
+		    //printf("OK find EXT\n");
+
+		    memset( setBuffer, 0, BUFFER_SIZE*10 );
+		    memset( parsing, 0, 1024*32 );
+		    parsingCnt = 1;
 		    
+		    memset( setString, 0, BUFFER_SIZE*10 );
+		    stringOffset = 0;
+
+		    //printf(" memcpy i %d, crOffset %d\n", i, crOffset);
+		    memcpy( setBuffer, cvalue+i, crOffset-i );
+		    //token = strtok( cvalue+i, ",");
+
+		    token = strtok( setBuffer, ",");
+		    //printf("first token %s\n", token);
 		    strcpy( parsing[parsingCnt++], token );
-		    //printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
-		}
+		    //printf("i is %d [%d] %s\n", i, parsingCnt-1, parsing[parsingCnt-1] ) ;
 
-	
-		for( idOffset = i+9; idOffset < i+78; idOffset++ )
-		{
-		    sprintf(setString+stringOffset, "%03d:%s ", 100-(i+9)+idOffset, parsing[idOffset]);
+		    while( token = strtok( NULL, "," ) ) 
+		    {
+			
+			strcpy( parsing[parsingCnt++], token );
+			//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
+		    }
 
-		    stringOffset += 5 + strlen(parsing[idOffset]);
+		   //printf("parsingCnt %d\n", parsingCnt );
+		    //for( idOffset = 9; idOffset < 78; idOffset++ )
+		    for( idOffset = 9; idOffset < 72; idOffset++ )  // 2014.12.16 remove 6 trid
+		    {
+			memset( trimBuffer, 0, 32);
+			memcpy( trimBuffer, parsing+idOffset, 32 );
+			trimPoint = trim(trimBuffer);
+			sprintf(setString+stringOffset, "%03d:%s;", 100-9+idOffset, trimPoint );
 
-		}
+			stringOffset += 5 + strlen(trimPoint);
+
+		    }
 
 
-		writeLog( "/work/smart/comm/log", setString);
-		printf("%s\n", setString);
-	
-		i += len-1;
-		remainSize = i+1;
+		    writeLog( "/work/smart/comm/log", setString);
+		    printf("%s\n", setString);
+	    
+		    selectTag( setString, strlen(setString) );
 
-		selectTag( setString, strlen(setString) );
-	    }
-	    else
-	    {
-		i += len-1;
-
-		if( len+remainSize >= BUFFER_SIZE*10 )
-		{
-		    printf("packet Buffer Full %d\n", len+remainSize );
+		    i = crOffset;
 		    remainSize = i+1;
+		    //printf(" i is %d, total Length %d\n", i, len );
+
+		    crOffset = len;
+
+
 		}
 		else
-		    remainSize = 0;
-	    }
+		{
+
+		    if( crOffset+1 == len )
+		    {
+
+			printf("no CR~~~\n");
+			remainSize = i;
+			i += crOffset;
+		    }
+		}
+
+	    }	//for( crOffset = i; crOffset < len )
 
 	}
 	else
 	{
 
-	    printf("packet clear!\n");
-	    i += len-1;
-	    remainSize = i+1;
+	    if( i+1 == len )
+	    {
+		//printf("packet clear!\n");
+		i = len-1;
+		remainSize = i+1;
+	    }
+	    else
+	    {
+		//printf(" i = %d, cvalue[%d] = %C\n", i, i, cvalue[i]);
+	    }
 	}
 
     }
 
+
     remainSize = len - remainSize;
+    //printf("In~~~ remainSize %d\n", remainSize);
     memcpy( remainder, cvalue+(len-(remainSize)), remainSize );
 
 
     return remainSize;
 }
 
-int selectTag(unsigned char* buffer, int len )
+static int selectTag(unsigned char* buffer, int len )
 {
 
     t_data data;
@@ -280,19 +355,21 @@ int selectTag(unsigned char* buffer, int len )
 
     data.data_type = 1;
 
-    data.data_buff[offset++] = 69;   // transducer count
+    //data.data_buff[offset++] = 69;   // transducer count
+    data.data_buff[offset++] = 63;   // transducer count
 
     printf("selectTag size %d\n", len);
-    token = strtok( buffer, " ");
+    token = strtok( buffer, ";");
     strcpy( parsing[parsingCnt++], token );
     //printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
-    while( token = strtok( NULL, " " ) ) 
+    while( token = strtok( NULL, ";" ) ) 
     {
 	strcpy( parsing[parsingCnt++], token );
 	//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
     }
 
-    for( i = 0; i < 69; i++ )
+    //for( i = 0; i < 69; i++ )
+    for( i = 0; i < 63; i++ )
     {
 	trid = strtok( parsing[i], ":");
 	//printf("[%d] TR:%d", i, atoi(trid)) ;
@@ -311,7 +388,7 @@ int selectTag(unsigned char* buffer, int len )
     data.data_num = offset; 
 
 
-    if ( -1 == msgsnd( plcs_10_id, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
+    if ( -1 == msgsnd( msgQId, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
     {
 	//perror( "msgsnd() error ");
 	//writeLog( "msgsnd() error : Queue full" );

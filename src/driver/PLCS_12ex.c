@@ -28,7 +28,7 @@
 static int plcs_12ex_id;
 static int indexCount = 1;
 
-static int selectTag_12ex(unsigned char* buffer, int len );
+static int selectTag_12ex(unsigned char* buffer, int trCount, int len );
 static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize );
 static int Socket_Manager_12ex( int *client_sock );
 //void *PLCS12ex(void *arg) {
@@ -82,7 +82,8 @@ void *PLCS12ex( DEVICEINFO *device) {
 	//tcp = TCPClient( "10.1.0.6", "50006");
 	tcp = TCPClient( xmlinfo.tag[xmlOffset].ip, atoi( xmlinfo.tag[xmlOffset].port ) );
 	printf("Connect %d\n", tcp);
-	if( tcp != -1 )
+	//if( tcp != -1 )
+	if( tcp > 0 )
 	{
 	    Socket_Manager_12ex( &tcp ); 
 	}
@@ -227,6 +228,7 @@ static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned cha
     char* token ;
     UINT8 trimBuffer[32];
     char* trimPoint;
+    int trCount = 1;
 
     UINT8 parsing[1024][32];
     UINT8 setString[BUFFER_SIZE*10];
@@ -282,20 +284,25 @@ static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned cha
 		    //printf("parsingCnt %d\n", parsingCnt );
 		    for( idOffset = 10; idOffset < 78; idOffset++ )
 		    {
-			memset( trimBuffer, 0, 32);
-			memcpy( trimBuffer, parsing+idOffset, 32 );
-			trimPoint = trim(trimBuffer);
-			sprintf(setString+stringOffset, "%03d:%s;", 101-10+idOffset, trimPoint );
 
-			stringOffset += 5 + strlen(trimPoint);
+			if( idOffset-10 != 52 )
+			{
+			    memset( trimBuffer, 0, 32);
+			    memcpy( trimBuffer, parsing+idOffset, 32 );
+			    trimPoint = trim(trimBuffer);
+			    sprintf(setString+stringOffset, "%03d:%s;", 101-10+idOffset, trimPoint );
 
+			    stringOffset += 5 + strlen(trimPoint);
+
+			    trCount++;
+			}
 		    }
 
 
 		    writeLog( "/work/smart/comm/log", setString);
 		    printf("%s\n", setString);
 	    
-		    selectTag_12ex( setString, strlen(setString) );
+		    selectTag_12ex( setString, trCount, strlen(setString) );
 
 		    i = crOffset;
 		    remainSize = i+1;
@@ -303,6 +310,7 @@ static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned cha
 
 		    crOffset = len;
 
+		    trCount = 1;
 
 		}
 		else
@@ -346,7 +354,7 @@ static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned cha
     return remainSize;
 }
 
-static int selectTag_12ex(unsigned char* buffer, int len )
+static int selectTag_12ex(unsigned char* buffer, int trCount, int len )
 {
 
     t_data data;
@@ -366,9 +374,10 @@ static int selectTag_12ex(unsigned char* buffer, int len )
 
     data.data_type = 1;
 
-    data.data_buff[offset++] = 69;   // transducer count
+    //data.data_buff[offset++] = 69;   // transducer count
+    data.data_buff[offset++] = trCount;   // transducer count
 
-    printf("selectTag size %d\n", len);
+    printf("selectTag size %d, trCount %d\n", len, trCount);
     token = strtok( buffer, ";");
     strcpy( parsing[parsingCnt++], token );
     //printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
@@ -378,7 +387,8 @@ static int selectTag_12ex(unsigned char* buffer, int len )
 	//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
     }
 
-    for( i = 0; i < 69; i++ )
+    //for( i = 0; i < 69; i++ )
+    for( i = 0; i < trCount; i++ )
     {
 	trid = strtok( parsing[i], ":");
 	//printf("[%d] TR:%d", i, atoi(trid)) ;

@@ -24,6 +24,9 @@
 #include "../include/TCPSocket.h"
 #include "../include/libpointparser.h"
 
+#define POLYNORMIAL 0xA001
+
+static UINT16 CRC16(UINT8 *puchMsg, int usDataLen);
 static void *thread_main(void *arg);
 static int Socket_Manager( int *client_sock );
 static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize );
@@ -115,6 +118,21 @@ void *GN1200(DEVICEINFO *device) {
     return 0; 
 } 
 
+static UINT16 CRC16(UINT8 *puchMsg, int usDataLen){
+    int i;
+    UINT16 crc, flag;
+    crc = 0xffff;
+    while(usDataLen--){
+	crc ^= *puchMsg++;
+	for (i=0; i<8; i++){
+	    flag = crc & 0x0001;
+	    crc >>= 1;
+	    if(flag) crc ^= POLYNORMIAL;
+	}
+    }
+    return crc;
+}
+
 static void *thread_main(void *arg)
 {
 
@@ -122,6 +140,9 @@ static void *thread_main(void *arg)
     int Fd;
     int length;
     int sendType = 0;
+
+    UINT16 crc16;
+
     unsigned char SendBuf[8] ={ 0x01, 0x03, 0x00, 0x00, 0x00, 0x04, 0x44, 0x09 };
 
     memcpy( &Fd, (char *)arg, sizeof(int));
@@ -241,6 +262,8 @@ static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* re
     INT32 type;
     int offset;
     UINT8 byteBuffer[64];
+    UINT16 crc16;
+    UINT8 u8Crc16[0];
     /*
     for( offset = 0; offset < len; offset++ )
 	printf("%02X ", cvalue[offset]);
@@ -260,17 +283,32 @@ static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* re
 		return remainSize;
 	    }
 	    */
+	    crc16 = CRC16(cvalue+i, 3+tlen);
+	    u8Crc16[0] = (UINT8)((crc16>>0) & 0x00ff);
+	    u8Crc16[1] = (UINT8)((crc16>>8) & 0x00ff);
+	    if( cvalue[i+3+8+0] == u8Crc16[0] &&
+		cvalue[i+3+8+1] == u8Crc16[1] )
+	    {
+		//printf("crc OK\n");
 
-	    for( offset = i; offset < tlen + 5; offset++ )
-		printf("%02X ", cvalue[offset]);
-	    printf("\n");
+		for( offset = i; offset < tlen + 5; offset++ )
+		    printf("%02X ", cvalue[offset]);
+		printf("\n");
 
-	    memcpy( byteBuffer, cvalue+(i+5), 2 );
+		memcpy( byteBuffer, cvalue+(i+5), 2 );
 
-	    selectTag( byteBuffer, 2, 0 );
+		selectTag( byteBuffer, 2, 0 );
 
-	    i = i + tlen + 5;
-	    remainSize = i;
+		i = i + tlen + 5;
+		remainSize = i;
+
+	    }
+	    else {
+
+		i = len-1;
+		remainSize = i+1;
+	    }
+
 	}
 	else
 	{
@@ -301,12 +339,23 @@ static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* re
 static int selectTag(unsigned char* buffer, int len, INT32 type )
 {
 
-/*
     t_data data;
     int i;
     int offset = 0;
     int cntOffset = 0;
+
+    UINT16 temperature;
+
+    for( i = 0; i < len; i++ ) {
+	printf("%02X ", buffer[i]);
+
+    }
+    printf("\n");
     
+    temperature = (UINT16)((buffer[0]<<8) & 0xff00);
+    temperature |= (UINT16)((buffer[1]<<0) & 0x00ff);
+    printf("temperature %.2f\n", temperature/10.0);
+/*
     memset( &data, 0, sizeof(t_data) );
     time_t sensingTime;
 

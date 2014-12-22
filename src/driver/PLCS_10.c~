@@ -23,15 +23,10 @@
 #include "../include/writeLog.h"
 #include "../include/TCPSocket.h"
 #include "../include/libpointparser.h"
-#include "../include/stringTrim.h"
 
-static int plcs_12_id;
+int plcs_10_id;
 
-static int selectTag_12(unsigned char* buffer, int trCount, int len );
-static int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize );
-static int Socket_Manager_12( int *client_sock );
-
-void *PLCS12(DEVICEINFO *device) {
+void *PLCS10(void *arg) {
 
     int tcp;
     int i;
@@ -51,25 +46,20 @@ void *PLCS12(DEVICEINFO *device) {
     NODEINFO xmlinfo;
     xmlinfo = pointparser("/work/smart/tag_info.xml");
     /***************** MSG Queue **********************/
-    if( -1 == ( plcs_12_id = msgget( (key_t)1, IPC_CREAT | 0666)))
+    if( -1 == ( plcs_10_id = msgget( (key_t)1, IPC_CREAT | 0666)))
     {
-	    writeLog( "/work/smart/log", "[PLCS_12] error msgget() plcs_12_id" );
+	    writeLog( "/work/smart/comm/log/deviceLog", "[PLCS_10] error msgget() plcs_10_id" );
 	    //perror( "msgget() ½ÇÆÐ");
 	    return;
     }
 
     for( i = 0; i < xmlinfo.getPointSize; i++ )
     {
-	//if (strcmp(xmlinfo.tag[i].driver,"PLCS12") == 0) 
-	if (strcmp(xmlinfo.tag[i].id,device->id ) == 0) 
+	if (strcmp(xmlinfo.tag[i].driver,"PLCS10") == 0) 
 	{
-	    printf("ID %s\n", xmlinfo.tag[i].id);
-	    printf("IP %s\n", xmlinfo.tag[i].ip);
-	    printf("PORT %s\n", xmlinfo.tag[i].port);
 	    initFail = 0;
 	    xmlOffset = i;
 	}
-
     }
     
     if( initFail == 1 )
@@ -82,9 +72,8 @@ void *PLCS12(DEVICEINFO *device) {
 	//tcp = TCPClient( "10.1.0.6", "50006");
 	tcp = TCPClient( xmlinfo.tag[xmlOffset].ip, atoi( xmlinfo.tag[xmlOffset].port ) );
 	printf("Connect %d\n", tcp);
-	//if( tcp != -1 )
-	if( tcp > 0 )
-	    Socket_Manager_12( &tcp ); 
+	if( tcp != -1 )
+	    Socket_Manager( &tcp ); 
 	else
 	    close(tcp);
 
@@ -97,16 +86,16 @@ void *PLCS12(DEVICEINFO *device) {
     return; 
 } 
 
-static int Socket_Manager_12( int *client_sock ) {
+int Socket_Manager( int *client_sock ) {
 
 	fd_set control_msg_readset;
 	struct timeval control_msg_tv;
-	unsigned char DataBuf[BUFFER_SIZE*10];
+	unsigned char DataBuf[BUFFER_SIZE];
 	int ReadMsgSize;
 
-	unsigned char receiveBuffer[BUFFER_SIZE*10];
+	unsigned char receiveBuffer[BUFFER_SIZE];
 	int receiveSize = 0;
-	unsigned char remainder[BUFFER_SIZE*10];
+	unsigned char remainder[BUFFER_SIZE];
 	int parsingSize = 0;
 
 
@@ -116,7 +105,6 @@ static int Socket_Manager_12( int *client_sock ) {
 
 	FD_ZERO(&control_msg_readset);
 	printf("Receive Ready!!!\n");
-	writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] start");
 
 	while( 1 ) 
 	{
@@ -135,17 +123,11 @@ static int Socket_Manager_12( int *client_sock ) {
 			ReadMsgSize = recv( *client_sock, &DataBuf, BUFFER_SIZE*10, MSG_DONTWAIT);
 			if( ReadMsgSize > 0 ) 
 			{
-				/*
 				for( i = 0; i < ReadMsgSize; i++ ) {
 					//printf("%-3.2x", DataBuf[i]);
 					printf("%C", DataBuf[i]);
 				}
 				printf("\n");
-
-				*/
-				printf("%s\n", DataBuf);
-				writeLog( "/work/smart/comm/log/PLCS12", DataBuf);
-
 				printf("recv data size : %d\n", ReadMsgSize);
 
 				if( ReadMsgSize >= BUFFER_SIZE*10 )
@@ -154,19 +136,7 @@ static int Socket_Manager_12( int *client_sock ) {
 				memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
 				receiveSize += ReadMsgSize;
 
-				if( receiveSize >= BUFFER_SIZE*10 )
-				{
-				    printf("Packet Buffer Full~~ %d\n", receiveSize );
-				    writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] Packet Buffer Full~~");
-
-				    receiveSize = 0;
-				    memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
-				    memset( remainder, 0 , sizeof(BUFFER_SIZE)*10 );
-				    continue;
-				}
-
-
-				parsingSize = ParsingReceiveValue_12(receiveBuffer, receiveSize, remainder, parsingSize);
+				parsingSize = ParsingReceiveValue(receiveBuffer, receiveSize, remainder, parsingSize);
 				printf("reminder size %d \n", parsingSize );
 				memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
 				receiveSize = 0;
@@ -179,7 +149,6 @@ static int Socket_Manager_12( int *client_sock ) {
 			else {
 				sleep(1);
 				printf("receive None\n");
-				writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] receive None");
 				break;
 			}
 			ReadMsgSize = 0;
@@ -188,14 +157,12 @@ static int Socket_Manager_12( int *client_sock ) {
 		else if( nd == 0 ) 
 		{
 			printf("timeout\n");
-			writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] timeout");
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
 		else if( nd == -1 ) 
 		{
 			printf("error...................\n");
-			writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] network error........");
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
@@ -204,30 +171,24 @@ static int Socket_Manager_12( int *client_sock ) {
 	}	// end of while
 
 	printf("Disconnection client....\n");
-	writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] Disconnection ");
 
 	close( *client_sock );
 	return 0;
 
 }
 
-static int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
+int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
 {
 
-     unsigned char setBuffer[BUFFER_SIZE*10];
+    unsigned char setBuffer[BUFFER_SIZE*10];
     int i;
     int stringOffset = 0;
     int idOffset = 0;
     char* token ;
-    UINT8 trimBuffer[32];
-    char* trimPoint;
-    int trCount = 0;
-
-    UINT8 parsing[1024][32];
+    UINT8 parsing[256][256];
     UINT8 setString[BUFFER_SIZE*10];
     UINT8 parsingCnt = 1;
-    int crOffset = 0;
-
+    UINT8 ngOffset = 32;
 
     for( i = 0; i < len; i++ )
     {
@@ -235,113 +196,71 @@ static int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char*
 	if(  cvalue[i] == '"' && cvalue[i+1] == ':' && cvalue[i+2] == '"' && cvalue[i+3] == ',' && cvalue[i+4] == '3' && cvalue[i+5] == '3'  )
 	{
 
-	    //printf("OK find STX : i offset is %d, total length %d\n", i, len);
-	    for( crOffset = i; crOffset < len; crOffset++ )
+
+	    if( cvalue[len-1] == 0x0d )
 	    {
-		//if( len+remainSize < BUFFER_SIZE*10 && cvalue[len-1] == 0x0d )
-		//if( len+remainSize < BUFFER_SIZE*10 && cvalue[crOffset] == 0x0d )
-		if( cvalue[crOffset] == 0x0d )
+
+		token = strtok( cvalue, ",");
+		strcpy( parsing[parsingCnt++], token );
+		//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
+
+		while( token = strtok( NULL, "," ) ) 
 		{
-
-		    //printf("OK find EXT\n");
-
-		    memset( setBuffer, 0, BUFFER_SIZE*10 );
-		    memset( parsing, 0, 1024*32 );
-		    parsingCnt = 1;
 		    
-		    memset( setString, 0, BUFFER_SIZE*10 );
-		    stringOffset = 0;
-
-		    //printf(" memcpy i %d, crOffset %d\n", i, crOffset);
-		    memcpy( setBuffer, cvalue+i, crOffset-i );
-		    //token = strtok( cvalue+i, ",");
-
-		    token = strtok( setBuffer, ",");
-		    //printf("first token %s\n", token);
 		    strcpy( parsing[parsingCnt++], token );
-		    //printf("i is %d [%d] %s\n", i, parsingCnt-1, parsing[parsingCnt-1] ) ;
+		    //printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
+		}
 
-		    while( token = strtok( NULL, "," ) ) 
-		    {
-			
-			strcpy( parsing[parsingCnt++], token );
-			//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
-		    }
+	
+		for( idOffset = i+9; idOffset < i+78; idOffset++ )
+		{
+		    sprintf(setString+stringOffset, "%03d:%s ", 100-(i+9)+idOffset, parsing[idOffset]);
 
-		   //printf("parsingCnt %d\n", parsingCnt );
-		    for( idOffset = 9; idOffset < 78; idOffset++ )
-		    {
-			if( idOffset-9 != 53 )
-			{
-			    memset( trimBuffer, 0, 32);
-			    memcpy( trimBuffer, parsing+idOffset, 32 );
-			    trimPoint = trim(trimBuffer);
-			    sprintf(setString+stringOffset, "%03d:%s;", 100-9+idOffset, trimPoint );
-			    stringOffset += 5 + strlen(trimPoint);
+		    stringOffset += 5 + strlen(parsing[idOffset]);
 
-			    trCount++;
-			}
-
-		    }
+		}
 
 
-		    writeLog( "/work/smart/comm/log", setString);
-		    printf("%s\n", setString);
-	    
-		    selectTag_12( setString, trCount, strlen(setString) );
+		writeLog( "/work/smart/comm/log", setString);
+		printf("%s\n", setString);
+	
+		i += len-1;
+		remainSize = i+1;
 
-		    i = crOffset;
+		selectTag( setString, strlen(setString) );
+	    }
+	    else
+	    {
+		i += len-1;
+
+		if( len+remainSize >= BUFFER_SIZE*10 )
+		{
+		    printf("packet Buffer Full %d\n", len+remainSize );
 		    remainSize = i+1;
-		    //printf(" i is %d, total Length %d\n", i, len );
-
-		    crOffset = len;
-
-		    trCount = 0;
-
-
 		}
 		else
-		{
-
-		    if( crOffset+1 == len )
-		    {
-
-			printf("no CR~~~\n");
-			remainSize = i;
-			i += crOffset;
-		    }
-		}
-
-	    }	//for( crOffset = i; crOffset < len )
+		    remainSize = 0;
+	    }
 
 	}
 	else
 	{
 
-	    if( i+1 == len )
-	    {
-		//printf("packet clear!\n");
-		i = len-1;
-		remainSize = i+1;
-	    }
-	    else
-	    {
-		//printf(" i = %d, cvalue[%d] = %C\n", i, i, cvalue[i]);
-	    }
+	    printf("packet clear!\n");
+	    i += len-1;
+	    remainSize = i+1;
 	}
 
     }
 
-
     remainSize = len - remainSize;
-    //printf("In~~~ remainSize %d\n", remainSize);
     memcpy( remainder, cvalue+(len-(remainSize)), remainSize );
 
 
     return remainSize;
 }
 
-static int selectTag_12(unsigned char* buffer, int trCount, int len )
+int selectTag(unsigned char* buffer, int len )
 {
 
     t_data data;
@@ -361,21 +280,19 @@ static int selectTag_12(unsigned char* buffer, int trCount, int len )
 
     data.data_type = 1;
 
-    //data.data_buff[offset++] = 69;   // transducer count
-    data.data_buff[offset++] = trCount;   // transducer count
+    data.data_buff[offset++] = 69;   // transducer count
 
-    printf("selectTag size %d, trCount %d\n", len, trCount);
-    token = strtok( buffer, ";");
+    printf("selectTag size %d\n", len);
+    token = strtok( buffer, " ");
     strcpy( parsing[parsingCnt++], token );
     //printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
-    while( token = strtok( NULL, ";" ) ) 
+    while( token = strtok( NULL, " " ) ) 
     {
 	strcpy( parsing[parsingCnt++], token );
 	//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
     }
 
-    //for( i = 0; i < 69; i++ )
-    for( i = 0; i < trCount; i++ )
+    for( i = 0; i < 69; i++ )
     {
 	trid = strtok( parsing[i], ":");
 	//printf("[%d] TR:%d", i, atoi(trid)) ;
@@ -394,11 +311,11 @@ static int selectTag_12(unsigned char* buffer, int trCount, int len )
     data.data_num = offset; 
 
 
-    if ( -1 == msgsnd( plcs_12_id, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
+    if ( -1 == msgsnd( plcs_10_id, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
     {
 	//perror( "msgsnd() error ");
 	//writeLog( "msgsnd() error : Queue full" );
-	writeLog("/work/smart/comm/log/PLCS12", "[PLCS12] msgsnd() error : Queue full" );
+	writeLog("/work/smart/comm/log/PLCS10", "[PLCS10] msgsnd() error : Queue full" );
 	//sleep(1);
 	//return -1;
     }
