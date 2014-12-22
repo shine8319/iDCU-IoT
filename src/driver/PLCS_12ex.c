@@ -27,29 +27,34 @@
 
 static int plcs_12ex_id;
 static int indexCount = 1;
+static int xmlOffset = 0;
+static NODEINFO xmlinfo;
 
 static int selectTag_12ex(unsigned char* buffer, int trCount, int len );
 static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize );
 static int Socket_Manager_12ex( int *client_sock );
+static void *thread_main(void *arg);
+static int createETRIPacketFormat( UINT8 *id, unsigned char parsing[1024][32], UINT16 parsingCnt );
+
 //void *PLCS12ex(void *arg) {
 void *PLCS12ex( DEVICEINFO *device) {
 
     int tcp;
     int i;
-    pthread_t p_thread;
     int thr_id;
     int status;
 
     int rc;
 
     int initFail = 1;
-    int xmlOffset = 0;
 
     void *socket_fd;
     //int socket_fd;
     struct sockaddr_in servaddr; //server addr
 
-    NODEINFO xmlinfo;
+    pthread_t p_thread;
+    char th_data[256];
+
     xmlinfo = pointparser("/work/smart/tag_info.xml");
     /***************** MSG Queue **********************/
     if( -1 == ( plcs_12ex_id = msgget( (key_t)1, IPC_CREAT | 0666)))
@@ -85,6 +90,15 @@ void *PLCS12ex( DEVICEINFO *device) {
 	//if( tcp != -1 )
 	if( tcp > 0 )
 	{
+	    /***************** send thread **********************/
+	    memcpy( th_data, (void *)&tcp, sizeof(tcp) );
+	    if( pthread_create(&p_thread, NULL, &thread_main, (void *)th_data) == -1 )
+	    {
+		printf("error thread\n");
+		writeLog( "/work/smart/log", "[PLCS12ex] error pthread_create" );
+	    }
+
+
 	    Socket_Manager_12ex( &tcp ); 
 	}
 	else
@@ -101,6 +115,29 @@ void *PLCS12ex( DEVICEINFO *device) {
     return; 
 } 
 
+static void *thread_main(void *arg)
+{
+
+    int rtrn;
+    int Fd;
+    int length;
+    unsigned char SendBuf[10] = { 0x22, 0x3a, 0x22, 0x2c, 0x33, 0x35, 0x2c, 0x63, 0x30, 0x0d };
+
+    memcpy( &Fd, (char *)arg, sizeof(int));
+
+
+    while(1)
+    {
+	rtrn = send( Fd, SendBuf, 10, MSG_NOSIGNAL);
+	if( rtrn == -1 )
+	    break;
+
+	usleep(1000*atoi(xmlinfo.tag[xmlOffset].basescanrate));	// 500ms
+    }
+    printf("Exit Thread\n");
+    writeLog( "/work/smart/log", "[PLCS12ex] Exit Thread" );
+
+}
 static int Socket_Manager_12ex( int *client_sock ) {
 
 	fd_set control_msg_readset;
@@ -223,15 +260,9 @@ static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned cha
 
     unsigned char setBuffer[BUFFER_SIZE*10];
     int i;
-    int stringOffset = 0;
-    int idOffset = 0;
     char* token ;
-    UINT8 trimBuffer[32];
-    char* trimPoint;
-    int trCount = 1;
 
     UINT8 parsing[1024][32];
-    UINT8 setString[BUFFER_SIZE*10];
     UINT8 parsingCnt = 1;
     int crOffset = 0;
 
@@ -239,70 +270,32 @@ static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned cha
     for( i = 0; i < len; i++ )
     {
 
-	if(  cvalue[i] == '"' && cvalue[i+1] == ':' && cvalue[i+2] == '"' && cvalue[i+3] == ',' && cvalue[i+4] == '3' && cvalue[i+5] == '3'  )
+	if(  cvalue[i] == '"' && cvalue[i+1] == ':' && cvalue[i+2] == '"' && cvalue[i+3] == ',' && cvalue[i+4] == '3'  )
 	{
 
-	    //printf("OK find STX : i offset is %d, total length %d\n", i, len);
 	    for( crOffset = i; crOffset < len; crOffset++ )
 	    {
-		//if( len+remainSize < BUFFER_SIZE*10 && cvalue[len-1] == 0x0d )
-		//if( len+remainSize < BUFFER_SIZE*10 && cvalue[crOffset] == 0x0d )
 		if( cvalue[crOffset] == 0x0d )
 		{
-
-		    //printf("OK find EXT\n");
 
 		    memset( setBuffer, 0, BUFFER_SIZE*10 );
 		    memset( parsing, 0, 1024*32 );
 		    parsingCnt = 1;
 		    
-		    memset( setString, 0, BUFFER_SIZE*10 );
-		    stringOffset = 0;
+		    //stringOffset = 0;
 
-		    //printf(" memcpy i %d, crOffset %d\n", i, crOffset);
 		    memcpy( setBuffer, cvalue+i, crOffset-i );
-		    //token = strtok( cvalue+i, ",");
 
 		    token = strtok( setBuffer, ",");
-		    //printf("first token %s\n", token);
 		    strcpy( parsing[parsingCnt++], token );
-		    //printf("i is %d [%d] %s\n", i, parsingCnt-1, parsing[parsingCnt-1] ) ;
 
-		    while( token = strtok( NULL, "," ) ) 
-		    {
-			
+		    while( token = strtok( NULL, "," ) ) {
 			strcpy( parsing[parsingCnt++], token );
 			//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
 		    }
 
-	    
-		    // add index value hard coding	2014.11.26
-		    //printf("Index %d\n", indexCount);
-		    sprintf(setString+stringOffset, "%03d:%d;", 100, indexCount++ );
-		    stringOffset += strlen( setString );
+		    createETRIPacketFormat( parsing[2], parsing, parsingCnt );
 
-		    //printf("parsingCnt %d\n", parsingCnt );
-		    for( idOffset = 10; idOffset < 78; idOffset++ )
-		    {
-
-			if( idOffset-10 != 52 )
-			{
-			    memset( trimBuffer, 0, 32);
-			    memcpy( trimBuffer, parsing+idOffset, 32 );
-			    trimPoint = trim(trimBuffer);
-			    sprintf(setString+stringOffset, "%03d:%s;", 101-10+idOffset, trimPoint );
-
-			    stringOffset += 5 + strlen(trimPoint);
-
-			    trCount++;
-			}
-		    }
-
-
-		    writeLog( "/work/smart/comm/log", setString);
-		    printf("%s\n", setString);
-	    
-		    selectTag_12ex( setString, trCount, strlen(setString) );
 
 		    i = crOffset;
 		    remainSize = i+1;
@@ -310,7 +303,7 @@ static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned cha
 
 		    crOffset = len;
 
-		    trCount = 1;
+		    //trCount = 1;
 
 		}
 		else
@@ -354,6 +347,84 @@ static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned cha
     return remainSize;
 }
 
+static int createETRIPacketFormat( UINT8 *id, unsigned char parsing[1024][32], UINT16 parsingCnt )
+{
+
+    int stringOffset = 0;
+    int idOffset = 0;
+    UINT8 setString[BUFFER_SIZE*10];
+
+    UINT8 trimBuffer[32];
+    char* trimPoint;
+    int trCount = 1;
+
+    memset( setString, 0, BUFFER_SIZE*10 );
+
+    if( strcmp(id , "36" ) == 0 )
+    {
+	//printf("36 OK\n");
+	sprintf(setString+stringOffset, "%03d:%d;", 100, indexCount++ );
+	stringOffset += strlen( setString );
+
+	//printf("parsingCnt %d\n", parsingCnt );
+	for( idOffset = 10; idOffset < parsingCnt; idOffset++ )
+	{
+
+	    {
+		memset( trimBuffer, 0, 32);
+		memcpy( trimBuffer, parsing+idOffset, 32 );
+		//printf("%s\n", trimBuffer);
+		trimPoint = trim(trimBuffer);
+		sprintf(setString+stringOffset, "%03d:%s;", 101-10+idOffset, trimPoint );
+
+		stringOffset += 5 + strlen(trimPoint);
+
+		trCount++;
+	    }
+	}
+
+
+	printf("%s\n", setString);
+
+	selectTag_12ex( setString, trCount, strlen(setString) );
+
+    }
+    else if( strcmp(id, "33" ) == 0 )
+    {
+
+	// add index value hard coding	2014.11.26
+	//printf("Index %d\n", indexCount);
+	sprintf(setString+stringOffset, "%03d:%d;", 100, indexCount++ );
+	stringOffset += strlen( setString );
+
+	//printf("parsingCnt %d\n", parsingCnt );
+	for( idOffset = 10; idOffset < 78; idOffset++ )
+	{
+
+	    if( idOffset-10 != 52 )
+	    {
+		memset( trimBuffer, 0, 32);
+		memcpy( trimBuffer, parsing+idOffset, 32 );
+		trimPoint = trim(trimBuffer);
+		sprintf(setString+stringOffset, "%03d:%s;", 101-10+idOffset, trimPoint );
+
+		stringOffset += 5 + strlen(trimPoint);
+
+		trCount++;
+	    }
+	}
+
+
+	writeLog( "/work/smart/comm/log", setString);
+	printf("%s\n", setString);
+
+	selectTag_12ex( setString, trCount, strlen(setString) );
+    }
+
+    return 0;
+
+}
+
 static int selectTag_12ex(unsigned char* buffer, int trCount, int len )
 {
 
@@ -363,7 +434,7 @@ static int selectTag_12ex(unsigned char* buffer, int trCount, int len )
     int cntOffset = 0;
     char* token ;
     char* trid;
-    UINT8 parsing[256][256];
+    UINT8 parsing[1024][32];
     UINT8 parsingCnt = 0;
 
 
