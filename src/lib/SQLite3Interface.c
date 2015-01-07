@@ -154,6 +154,7 @@ int IoT_sqlite3_update( sqlite3 **pSQLite3, char* query )
 {
 	char	*szErrMsg;
 	int rst;
+	int rtrn = 0;
 
 	rst = sqlite3_exec(
 			*pSQLite3,
@@ -169,19 +170,22 @@ int IoT_sqlite3_update( sqlite3 **pSQLite3, char* query )
 		sqlite3_free( szErrMsg );
 		if( szErrMsg != NULL )
 			szErrMsg = NULL;
+
+		rtrn = -1;
 	}
 
 	sqlite3_free( query );		// mem free
 	if( query != NULL )
 		query = NULL;
 
-	return 0;
+	return rtrn;
 }
 
 int IoT_sqlite3_insert( sqlite3 **pSQLite3, char* query )
 {
 	char	*szErrMsg;
 	int rst;
+	int rtrn = 0;
 
 	rst = sqlite3_exec(
 			*pSQLite3,
@@ -197,11 +201,13 @@ int IoT_sqlite3_insert( sqlite3 **pSQLite3, char* query )
 		sqlite3_free( szErrMsg );
 		if( szErrMsg != NULL )
 			szErrMsg = NULL;
+
+		rtrn = -1;
 	}
 
 	sqlite3_free( query );		// mem free
 	if( query != NULL )
 		query = NULL;
 
-	return 0;
+	return rtrn;
 }
