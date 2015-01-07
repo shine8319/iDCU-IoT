@@ -98,7 +98,7 @@ typedef struct {
 	long  data_type;
 	int   data_num;
 	//char  data_buff[BUFF_SIZE];
-	unsigned char  data_buff[1024];
+	unsigned char  data_buff[4096];
 } t_data;
 
 typedef struct READENV {

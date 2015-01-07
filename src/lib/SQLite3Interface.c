@@ -177,3 +177,31 @@ int IoT_sqlite3_update( sqlite3 **pSQLite3, char* query )
 
 	return 0;
 }
+
+int IoT_sqlite3_insert( sqlite3 **pSQLite3, char* query )
+{
+	char	*szErrMsg;
+	int rst;
+
+	rst = sqlite3_exec(
+			*pSQLite3,
+			query,
+			0,
+			0,
+			&szErrMsg);
+
+	if( rst != SQLITE_OK )
+	{
+		printf("insert fail!! : %s\n", szErrMsg);
+		//writeSqliteLog( szErrMsg );
+		sqlite3_free( szErrMsg );
+		if( szErrMsg != NULL )
+			szErrMsg = NULL;
+	}
+
+	sqlite3_free( query );		// mem free
+	if( query != NULL )
+		query = NULL;
+
+	return 0;
+}

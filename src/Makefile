@@ -105,6 +105,16 @@ tagServer:
 	$(RASRANLIB) ../lib/libEtriDereg.a
 	$(RASCC)  -o $(TARGET0)/tagServer.o tagServer.c $(configRW) $(TCPSocket) $(writeLog) $(LIB_ETRIREG) $(LIB_ETRIDEREG) $(LIB_SQLITE3) -lpthread
 
+DataTranslator:
+	$(RASCC) -c ./lib/ETRI_Registration.c ./lib/SQLite3Interface.c $(LIB_SQLITE3)
+	$(RASAR) rc ../lib/libEtriReg.a ETRI_Registration.o SQLite3Interface.o
+	$(RASRANLIB) ../lib/libEtriReg.a
+	$(RASCC) -c ./lib/ETRI_Deregistration.c ./lib/SQLite3Interface.c $(LIB_SQLITE3)
+	$(RASAR) rc ../lib/libEtriDereg.a ETRI_Deregistration.o SQLite3Interface.o
+	$(RASRANLIB) ../lib/libEtriDereg.a
+	$(RASCC)  -o $(TARGET0)/DataTranslator.o DataTranslator.c $(configRW) $(TCPSocket) $(writeLog) $(LIB_ETRIREG) $(LIB_ETRIDEREG) $(LIB_SQLITE3) -lpthread
+
+
 M2MManager:
 	$(RASCC) -lpthread -o $(TARGET0)/M2MManager.o M2MManager.c $(writeLog) $(LIB5) $(LIB6) $(LIB9) $(LIB11) $(LIB_SQLITE3)
 

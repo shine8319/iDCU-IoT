@@ -12,7 +12,7 @@
 
 #include "./include/iDCU.h"
 #include "./include/sqlite3.h"
-//#include "./include/SQLite3Interface.h"
+#include "./include/SQLite3Interface.h"
 #include "./include/writeLog.h"
 #include "./include/TCPSocket.h"
 #include "./include/configRW.h"
@@ -21,7 +21,7 @@
 #include "./include/ETRI_Deregistration.h"
 
 #define BUFFER_SIZE 1024
-
+#define TABLE_PATH  "TB_COMM_LOG"
 int tcp;
 pthread_t threads[2];
 int pushStart;
@@ -58,10 +58,26 @@ int main( void)
     char th_data[256];
     char th2_data[256];
 
+    sqlite3 *pSQLite3;
+    UINT32 rc;
+
     memset( &env, 0, sizeof( READENV ) );
     memset( &data, 0, sizeof(t_data) );
     memset( &eventData, 0, sizeof(t_data) );
     memset( sendBuffer, 0, 1024 );
+
+    rc = IoT_sqlite3_open( "/work/db/comm", &pSQLite3 );
+    printf("rc %ld\n", rc );
+    if( rc != 0 )
+    {
+	writeLog( "/work/smart/log", "[tagServer] fail DB Opne" );
+	return -1;
+    }
+    else
+    {
+	printf("DB OPEN!!\n");
+    }
+
 
 
     while( reTry )
@@ -108,6 +124,9 @@ int main( void)
     unsigned char DataBuf[1024];
     unsigned char sendBuf[1024];
 
+    unsigned char savePac[1024];
+    unsigned char strPac[2048];
+
     writeLog( "/work/smart/log", "[tagServer] Start tagServer.o" );
 
     while( 1 )
@@ -144,6 +163,8 @@ int main( void)
 
 	    if( data.data_type == 1 )
 	    {
+
+
 		pac.Message_Id		= 0x09;
 		pac.Length		= (SENSING_VALUE_REPORT_HEAD_SIZE-4) + data.data_num;
 		pac.Command_Id		= 0xFFFFFFFF;
@@ -152,13 +173,35 @@ int main( void)
 		pac.SensorNode_Id		= env.sensornode; 
 		time(&transferTime);
 		pac.Transfer_Time		= transferTime;
+
 		memcpy( pac.Transducer_Info, data.data_buff, data.data_num );
-		//pac.Transducer_Count	= 2;
+
 		rtrn = send(tcp, &pac, SENSING_VALUE_REPORT_HEAD_SIZE + data.data_num, MSG_NOSIGNAL);
-		//rtrn = send(tcp, &pac, SENSING_VALUE_REPORT_HEAD_SIZE + data.data_num, MSG_DONTWAIT);
+		/*
+		memset( savePac, 0, sizeof( savePac ) );
+		memset( strPac, 0, sizeof( strPac ) );
+
+		memcpy( savePac, &pac, SENSING_VALUE_REPORT_HEAD_SIZE + data.data_num );
+		for( i = 0; i < SENSING_VALUE_REPORT_HEAD_SIZE + data.data_num; i++ )
+		{
+		    sprintf( strPac+(i*2), "%02X ", savePac[i]); 
+		}
+
+		query = sqlite3_mprintf("insert into '%s' ( datetime, value ) \
+									values ( datetime('now','localtime'), '%s' )",
+				TABLE_PATH,
+				strPac 
+				);
+		printf("%s\n", query );
+
+		IoT_sqlite3_insert( &pSQLite3, query );
+		*/
+
 
 		if( rtrn == -1 )
 		{
+
+	
 		    close(tcp);
 		    tcp = -1;
 		    printf("close(tcp) %d\n", tcp);

@@ -48,6 +48,8 @@ void *PLCS12(DEVICEINFO *device) {
     //int socket_fd;
     struct sockaddr_in servaddr; //server addr
 
+
+
     NODEINFO xmlinfo;
     xmlinfo = pointparser("/work/smart/tag_info.xml");
     /***************** MSG Queue **********************/
