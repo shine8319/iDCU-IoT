@@ -97,13 +97,14 @@ RealTimeDataManager:
 	$(RASCC)  -o $(TARGET0)/RealTimeDataManager.o RealTimeDataManager.c $(TCPSocket) $(writeLog) $(LIB4) $(LIB5) $(LIB_SQLITE3) -lpthread
 
 tagServer:
-	$(RASCC) -c ./lib/ETRI_Registration.c ./lib/SQLite3Interface.c $(LIB_SQLITE3)
-	$(RASAR) rc ../lib/libEtriReg.a ETRI_Registration.o SQLite3Interface.o
-	$(RASRANLIB) ../lib/libEtriReg.a
-	$(RASCC) -c ./lib/ETRI_Deregistration.c ./lib/SQLite3Interface.c $(LIB_SQLITE3)
-	$(RASAR) rc ../lib/libEtriDereg.a ETRI_Deregistration.o SQLite3Interface.o
-	$(RASRANLIB) ../lib/libEtriDereg.a
-	$(RASCC)  -o $(TARGET0)/tagServer.o tagServer.c $(configRW) $(TCPSocket) $(writeLog) $(LIB_ETRIREG) $(LIB_ETRIDEREG) $(LIB_SQLITE3) -lpthread
+	$(RASCC)  -o $(TARGET0)/tagServer.o tagServer.c $(configRW) $(TCPSocket) $(writeLog) $(SQLite3Interface)  $(LIB_SQLITE3) -lpthread
+#$(RASCC) -c ./lib/ETRI_Registration.c ./lib/SQLite3Interface.c $(LIB_SQLITE3)
+#$(RASAR) rc ../lib/libEtriReg.a ETRI_Registration.o SQLite3Interface.o
+#$(RASRANLIB) ../lib/libEtriReg.a
+#$(RASCC) -c ./lib/ETRI_Deregistration.c ./lib/SQLite3Interface.c $(LIB_SQLITE3)
+#$(RASAR) rc ../lib/libEtriDereg.a ETRI_Deregistration.o SQLite3Interface.o
+#$(RASRANLIB) ../lib/libEtriDereg.a
+#$(RASCC)  -o $(TARGET0)/tagServer.o tagServer.c $(configRW) $(TCPSocket) $(writeLog) $(LIB_ETRIREG) $(LIB_ETRIDEREG) $(LIB_SQLITE3) -lpthread
 
 DataTranslator:
 	$(RASCC) -c ./lib/ETRI_Registration.c ./lib/SQLite3Interface.c $(LIB_SQLITE3)

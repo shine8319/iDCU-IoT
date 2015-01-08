@@ -17,14 +17,24 @@
 #include "./include/TCPSocket.h"
 #include "./include/configRW.h"
 #include "./include/ETRI.h"
-#include "./include/ETRI_Registration.h"
-#include "./include/ETRI_Deregistration.h"
+//#include "./include/ETRI_Registration.h"
+//#include "./include/ETRI_Deregistration.h"
 
 #define BUFFER_SIZE 1024
 #define TABLE_PATH  "TB_COMM_LOG"
-
+#define EVENT_Q_SIZE 16
 
 static int busy(void *handle, int nTry);
+static void *thread_insert(void *arg);
+
+static sqlite3 *pSQLite3;
+
+static pthread_t threads;
+
+static unsigned char strPac[EVENT_Q_SIZE][BUFFER_SIZE*2];
+static UINT8 eventCount;
+static UINT8 eventIn;
+static UINT8 eventOut;
 
 int main( void)
 {
@@ -41,7 +51,6 @@ int main( void)
     t_data   eventData;
     time_t  transferTime, sensingTime;
 
-    char *query;
     int	getPortOffset = 0;
     //int	dataChanged = 0;
     int	packetErr = 0;
@@ -54,7 +63,6 @@ int main( void)
     char th_data[256];
     char th2_data[256];
 
-    sqlite3 *pSQLite3;
     UINT32 rc;
 
     memset( &env, 0, sizeof( READENV ) );
@@ -82,18 +90,23 @@ int main( void)
 	return -1;
     }
 
-    unsigned char DataBuf[1024];
-    unsigned char sendBuf[1024];
+    //memcpy( th_data, (void *)pSQLite3, sizeof(pSQLite3) );
+    if( pthread_create(&threads, NULL, &thread_insert, (void *)th_data) == -1 )
+    {
+	    writeLog("/work/smart/log", "[tagServer] error pthread_create method" );
+    }
 
     unsigned char savePac[1024];
-    unsigned char strPac[2048];
 
     writeLog( "/work/smart/log", "[tagServer] Start tagServer.o" );
+
+    eventCount = 0;
+    memset( strPac, 0, sizeof( strPac ) );
 
 
     while( 1 )
     {
-	
+
 	memset( &data, 0, sizeof(t_data) );
 	if( -1 == msgrcv( msqid, &data, sizeof( t_data) - sizeof( long), 0, IPC_NOWAIT) )
 	{
@@ -114,40 +127,43 @@ int main( void)
 	    if( data.data_type == 1 )
 	    {
 
-
-		pac.Message_Id		= 0x09;
-		pac.Length		= (SENSING_VALUE_REPORT_HEAD_SIZE-4) + data.data_num;
-		pac.Command_Id		= 0xFFFFFFFF;
-		pac.GateNode_Id		= env.gatenode;
-		pac.PAN_Id			= env.pan;
-		pac.SensorNode_Id		= env.sensornode; 
-		time(&transferTime);
-		pac.Transfer_Time		= transferTime;
-
-		memcpy( pac.Transducer_Info, data.data_buff, data.data_num );
-
-		memset( savePac, 0, sizeof( savePac ) );
-		memset( strPac, 0, sizeof( strPac ) );
-
-		memcpy( savePac, &pac, SENSING_VALUE_REPORT_HEAD_SIZE + data.data_num );
-		for( i = 0; i < SENSING_VALUE_REPORT_HEAD_SIZE + data.data_num; i++ )
+		if( eventCount < EVENT_Q_SIZE )
 		{
-		    sprintf( strPac+(i*2), "%02X ", savePac[i]); 
+
+
+		    pac.Message_Id		= 0x09;
+		    pac.Length		= (SENSING_VALUE_REPORT_HEAD_SIZE-4) + data.data_num;
+		    pac.Command_Id		= 0xFFFFFFFF;
+		    pac.GateNode_Id		= env.gatenode;
+		    pac.PAN_Id			= env.pan;
+		    pac.SensorNode_Id		= env.sensornode; 
+		    time(&transferTime);
+		    pac.Transfer_Time		= transferTime;
+
+		    memcpy( pac.Transducer_Info, data.data_buff, data.data_num );
+
+		    memset( savePac, 0, sizeof( savePac ) );
+
+		    memcpy( savePac, &pac, SENSING_VALUE_REPORT_HEAD_SIZE + data.data_num );
+		    for( i = 0; i < SENSING_VALUE_REPORT_HEAD_SIZE + data.data_num; i++ )
+		    {
+			sprintf( strPac[eventIn]+(i*2), "%02X ", savePac[i]); 
+		    }
+
+		    eventCount++;
+		    if( ++eventIn >= EVENT_Q_SIZE ) eventIn = 0;
+
 		}
+		else
+		{
+		    // var init
+		    eventCount = 0;
+		    eventIn = 0;
+		    eventOut = 0;
+		    memset( strPac, 0, sizeof( strPac ) );
 
-		query = sqlite3_mprintf("insert into '%s' ( datetime, value, tag ) \
-									values ( datetime('now','localtime'), '%s', '0' )",
-				TABLE_PATH,
-				strPac 
-				);
-		printf("%s\n", query );
-
-		sqlite3_busy_handler( pSQLite3, busy, NULL);
-		rtrn = IoT_sqlite3_insert( &pSQLite3, query );
-		if( rtrn == -1 )
-		    writeLog( "/work/smart/log", "[tagServer] fail data insert" );
-
-
+		    writeLog( "/work/smart/log", "[tagServer] full Q" );
+		}
 
 	    }
 
@@ -156,15 +172,54 @@ int main( void)
     }
 
 }
+
+static void *thread_insert(void *arg)
+{
+
+    int rtrn;
+    //sqlite3 *Fd;
+    char *query;
+
+    //memcpy( Fd, arg, sizeof(Fd));
+
+    while(1)
+    {
+
+	if( eventCount != 0)
+	{
+	    query = sqlite3_mprintf("insert into '%s' ( datetime, value, tag ) \
+		    values ( datetime('now','localtime'), '%s', '0' )",
+		    TABLE_PATH,
+		    strPac[eventOut]
+		    );
+	    printf("%s\n", query );
+
+	    sqlite3_busy_handler( pSQLite3, busy, NULL);
+	    rtrn = IoT_sqlite3_insert( &pSQLite3, query );
+	    if( rtrn == 0 )
+	    {
+		// success
+		eventCount--;
+		if( ++eventOut >= EVENT_Q_SIZE ) eventOut = 0;
+	    }
+
+	}
+	else
+	    usleep(500000);	// 500ms
+
+    }
+
+}
+
 static int busy(void *handle, int nTry)
 {
     if( nTry > 9 )
     {
 	printf("%d th - busy handler is called\n", nTry);
     }
-	usleep(10000);	// wait 10ms
+    usleep(10000);	// wait 10ms
 
-	return 10-nTry;
+    return 10-nTry;
 }
 
 
