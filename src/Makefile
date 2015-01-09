@@ -17,6 +17,7 @@ LIB_EXPAT = -L../lib -lexpat
 LIB_SQLITE3 = -L../lib -lsqlite3
 LIB_ETRIREG = -L../lib -lEtriReg
 LIB_ETRIDEREG = -L../lib -lEtriDereg
+LIB_PLCS_9 = -L./driver -lPLCS_9
 LIB_PLCS_10 = -L./driver -lPLCS_10
 LIB_PLCS_12 = -L./driver -lPLCS_12
 LIB_PLCS_12ex = -L./driver -lPLCS_12ex
@@ -129,7 +130,7 @@ PLCS-12:
 	$(RASCC)  -o $(TARGET0)/PLCS-12.o PLCS-12.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
 
 CommunicationManager:
-	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_GN1200) $(LIB_EXPAT) -I./include -lpthread
+	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_9) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_GN1200) $(LIB_EXPAT) -I./include -lpthread
 
 
 iDCU-IoT:
@@ -150,7 +151,7 @@ UDPConnect:
 	$(RASCC) -shared -o $(LIB_TARGET)/libudpconnectso.so.1.0.1 UDPConnect.o 
 
 DBSchedule:
-	$(RASCC) -lpthread -o $(TARGET0)/DBSchedule.o DBSchedule.c $(LIB4) $(LIB5) $(LIB_SQLITE3)
+	$(RASCC) -lpthread -o $(TARGET0)/DBSchedule.o DBSchedule.c $(writeLog) $(SQLite3Interface) $(LIB_SQLITE3)
 
 clean:
 	rm *.o *.*~ -f

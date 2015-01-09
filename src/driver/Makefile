@@ -49,6 +49,9 @@ all:
 	$(RASCC)  -c iDCU_IoT.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
 	$(RASAR) rc libiDCU_IoT.a iDCU_IoT.o
 	$(RASRANLIB) libiDCU_IoT.a
+	$(RASCC)  -c PLCS_9.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
+	$(RASAR) rc libPLCS_9.a PLCS_9.o
+	$(RASRANLIB) libPLCS_9.a
 
 clean:
 	rm *.o *.*~ -f

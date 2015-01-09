@@ -9,6 +9,7 @@
 #include <sys/msg.h>
 #include <time.h>
 #include <sys/reboot.h>
+#include <sched.h>
 
 #include "./include/iDCU.h"
 #include "./include/sqlite3.h"
@@ -96,13 +97,14 @@ int main( void)
 	    writeLog("/work/smart/log", "[tagServer] error pthread_create method" );
     }
 
+    ReadEnvConfig("/work/smart/reg/env.reg", &env );
+
     unsigned char savePac[1024];
 
     writeLog( "/work/smart/log", "[tagServer] Start tagServer.o" );
 
     eventCount = 0;
     memset( strPac, 0, sizeof( strPac ) );
-
 
     while( 1 )
     {
@@ -137,6 +139,12 @@ int main( void)
 		    pac.GateNode_Id		= env.gatenode;
 		    pac.PAN_Id			= env.pan;
 		    pac.SensorNode_Id		= env.sensornode; 
+		    /*
+		    printf(" gata %d, pan %d, node %d\n", pac.GateNode_Id
+			    ,pac.PAN_Id
+			    ,pac.SensorNode_Id );
+			    */
+
 		    time(&transferTime);
 		    pac.Transfer_Time		= transferTime;
 
@@ -147,8 +155,10 @@ int main( void)
 		    memcpy( savePac, &pac, SENSING_VALUE_REPORT_HEAD_SIZE + data.data_num );
 		    for( i = 0; i < SENSING_VALUE_REPORT_HEAD_SIZE + data.data_num; i++ )
 		    {
+			//printf("%02X ", savePac[i]);
 			sprintf( strPac[eventIn]+(i*2), "%02X ", savePac[i]); 
 		    }
+		    //printf("\n");
 
 		    eventCount++;
 		    if( ++eventIn >= EVENT_Q_SIZE ) eventIn = 0;
@@ -180,13 +190,13 @@ static void *thread_insert(void *arg)
     //sqlite3 *Fd;
     char *query;
 
-    //memcpy( Fd, arg, sizeof(Fd));
 
     while(1)
     {
 
 	if( eventCount != 0)
 	{
+	    //printf("eventCount %d\n", eventCount);
 	    query = sqlite3_mprintf("insert into '%s' ( datetime, value, tag ) \
 		    values ( datetime('now','localtime'), '%s', '0' )",
 		    TABLE_PATH,
@@ -202,10 +212,16 @@ static void *thread_insert(void *arg)
 		eventCount--;
 		if( ++eventOut >= EVENT_Q_SIZE ) eventOut = 0;
 	    }
+	    else
+		writeLog( "/work/smart/log", "[tagServer] fail insert" );
+
 
 	}
 	else
+	{
+	    //printf("no Data (eventCount %d)\n", eventCount );
 	    usleep(500000);	// 500ms
+	}
 
     }
 
@@ -215,7 +231,7 @@ static int busy(void *handle, int nTry)
 {
     if( nTry > 9 )
     {
-	printf("%d th - busy handler is called\n", nTry);
+	//printf("%d th - busy handler is called\n", nTry);
     }
     usleep(10000);	// wait 10ms
 
@@ -224,4 +240,53 @@ static int busy(void *handle, int nTry)
 
 
 
+int set_highest_priority (pid_t pid)
+{
+    struct sched_param sp;
+    int policy, max, ret;
+    policy = sched_getscheduler (pid); // pid의 스케줄링 정책을 얻는다.
+    if (policy == -1)
+	return -1;
+
+    max = sched_get_priority_max (policy); // 최대 우선순위를 구한다.
+    if (max == -1)
+	return -1;
+
+    memset (&sp, 0, sizeof (struct sched_param));
+    sp.sched_priority = max;
+    ret = sched_setparam (pid, &sp); // 우선순위를 갱신한다.
+
+    return ret;
+}
+/*
+    //set_highest_priority(0);
+    struct sched_param sp = { .sched_priority = 1 };
+    int ret;
+    ret = sched_setscheduler (0, SCHED_RR, &sp);
+    if (ret == -1) {
+	perror ("sched_setscheduler");
+	//return 1;
+    }
+ 
+    int policy;
+    // 현재 프로세스의 스케줄링 정책 얻기
+    policy = sched_getscheduler (0);
+    switch (policy) {
+	case SCHED_OTHER:
+	    printf ("main Policy is normal\n");
+	    break;
+	case SCHED_RR:
+	    printf ("main Policy is round-robin\n");
+	    break;
+	case SCHED_FIFO:
+	    printf ("main Policy is first-in, first-out\n");
+	    break;
+	case -1:
+	    perror ("main sched_getscheduler");
+	    break;
+	default:
+	    fprintf (stderr, "main Unknown policy!\n");
+    }
+
+    */
 

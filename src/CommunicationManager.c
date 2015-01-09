@@ -26,6 +26,7 @@
 */
 #include "./include/iDCU.h"
 
+#include "./driver/include/PLCS_9.h"
 #include "./driver/include/PLCS_10.h"
 #include "./driver/include/PLCS_12.h"
 #include "./driver/include/PLCS_12ex.h"
@@ -42,7 +43,11 @@ void sig_handler( int signo);
 void createProcess( DEVICEINFO *device, TAGINFO *tag )
 {
 
-    if (strcmp(device->driver,"PLCS10") == 0) 
+    if (strcmp(device->driver,"PLCS9") == 0) 
+    {
+	 PLCS9(device);
+    }
+    else if (strcmp(device->driver,"PLCS10") == 0) 
     {
 	 PLCS10(device);
     }
