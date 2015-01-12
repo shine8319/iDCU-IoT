@@ -352,106 +352,48 @@ static int selectTag(unsigned char* buffer, int len, INT32 type )
     }
     printf("\n");
     
-    temperature = (UINT16)((buffer[0]<<8) & 0xff00);
-    temperature |= (UINT16)((buffer[1]<<0) & 0x00ff);
-    printf("temperature %.2f\n", temperature/10.0);
-/*
     memset( &data, 0, sizeof(t_data) );
-    time_t sensingTime;
 
-    UINT32 count = 0;
-    UINT8 dataChanged = 0;
+    time_t sensingTime;
     char countString[32];
+
     memset( countString, 0, 32 );
 
     time(&sensingTime);
-    switch( type )
+
+    data.data_type = 1;
+
+    data.data_buff[offset++] = 1;   // transducer count
+
+    data.data_buff[offset++] = 61;   // transducer id 
+    data.data_buff[offset++] = 0;   // transducer id 
+    memcpy( data.data_buff+offset, &sensingTime, 4 );	// UTC
+    offset += 4;
+
+    temperature = (UINT16)((buffer[0]<<8) & 0xff00);
+    temperature |= (UINT16)((buffer[1]<<0) & 0x00ff);
+
+    //printf("temperature %.2f\n", temperature/10.0);
+
+    sprintf( countString, "%.2f", temperature/10.0 );
+    data.data_buff[offset++] = strlen( countString )+1;   // data length 
+    //printf("len %02X \n", data.data_buff[offset-1]);
+    
+    sprintf( data.data_buff+offset, "%.2f", temperature/10.0 );
+    offset += strlen( countString );
+    data.data_buff[offset++] = 0;   // sensing value (null)
+   
+    data.data_num = offset; 
+
+    for( i=0; i<data.data_num; i++ )
+	printf("%02X ", data.data_buff[i]);
+    printf("\n");
+
+    if ( -1 == msgsnd( comm_id, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
     {
-	case 2:
-	    data.data_type = 1;
-	    //data.data_buff[offset++] = (0x01 & buffer[0]);
-	    data.data_buff[offset++] = 1;   // transducer count
-	    data.data_buff[offset++] = 51;   // transducer id 
-	    data.data_buff[offset++] = 0;   // transducer id 
-	    memcpy( data.data_buff+offset, &sensingTime, 4 );	// UTC
-	    offset += 4;
-	    data.data_buff[offset++] = 2;   // data length 
-
-	    if( (0x02 & buffer[0]) )
-		data.data_buff[offset++] = 0x31;   // sensing value
-	    else
-		data.data_buff[offset++] = 0x30;   // sensing value
-	    data.data_buff[offset++] = 0;   // sensing value (null)
-
-	    if( woPastData != (0x02 & buffer[0]) )
-		dataChanged = 1;
-
-	    woPastData = (0x02 & buffer[0]);
-
-	    data.data_num = offset; 
-	    break;
-	case 4:
-
-	    data.data_type = 1;
-	  	    data.data_buff[offset++] = 1;   // transducer count
-	    data.data_buff[offset++] = 52;   // transducer id 
-	    data.data_buff[offset++] = 0;   // transducer id 
-	    memcpy( data.data_buff+offset, &sensingTime, 4 );	// UTC
-	    offset += 4;
-
-
-		count = (0x000000ff & (UINT32)buffer[1]) << 0;
-		count |= (0x000000ff & (UINT32)buffer[0]) << 8;
-		count |= (0x000000ff & (UINT32)buffer[3]) << 16;
-		count |= (0x000000ff & (UINT32)buffer[2]) << 24;
-
-	   
-	    sprintf( countString, "%ld", count );
-	    data.data_buff[offset++] = strlen( countString )+1;   // data length 
-	    //printf("len %02X \n", data.data_buff[offset-1]);
-	    
-	    sprintf( data.data_buff+offset, "%ld", count );
-	    offset += strlen( countString );
-	    data.data_buff[offset++] = 0;   // sensing value (null)
-
-	   
-		    
-	    if( cntPastData[1] != buffer[1] ||
-		 cntPastData[0] != buffer[0] ||
-		 cntPastData[3] != buffer[3] ||
-		 cntPastData[2] != buffer[2]    )
-		dataChanged = 1;
-
-	    cntPastData[1] = buffer[1];
-	    cntPastData[0] = buffer[0];
-	    cntPastData[3] = buffer[3];
-	    cntPastData[2] = buffer[2];
-
-	    data.data_num = offset; 
-	    break;
-
-
+	writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] msgsnd() error : Queue full" );
     }
 
-
-    if( dataChanged )
-    {
-	for( i=0; i<data.data_num; i++ )
-	    printf("%02X ", data.data_buff[i]);
-	printf("\n");
-
-	    if ( -1 == msgsnd( comm_id, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
-	{
-	    //perror( "msgsnd() error ");
-	    //writeLog( "msgsnd() error : Queue full" );
-
-	    writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] msgsnd() error : Queue full" );
-	    //sleep(5);
-	    //return -1;
-	}
-    }
-
-*/
     return 0;
 }
 
