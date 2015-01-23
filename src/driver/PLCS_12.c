@@ -55,7 +55,7 @@ void *PLCS12(DEVICEINFO *device) {
     /***************** MSG Queue **********************/
     if( -1 == ( plcs_12_id = msgget( (key_t)1, IPC_CREAT | 0666)))
     {
-	    writeLog( "/work/smart/log", "[PLCS_12] error msgget() plcs_12_id" );
+	    writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] error msgget() plcs_12_id" );
 	    //perror( "msgget() ½ÇÆÐ");
 	    return;
     }
@@ -88,13 +88,17 @@ void *PLCS12(DEVICEINFO *device) {
 	if( tcp > 0 )
 	    Socket_Manager_12( &tcp ); 
 	else
+	{
 	    close(tcp);
+	    writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] fail Connection");
+	}
 
-	sleep(2);
+	sleep(10);
 	printf("========================================\n");
     }
     /*******************************************************/
     printf("End\n");
+    writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] End main");
 
     return; 
 } 
@@ -118,7 +122,7 @@ static int Socket_Manager_12( int *client_sock ) {
 
 	FD_ZERO(&control_msg_readset);
 	printf("Receive Ready!!!\n");
-	writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] start");
+	writeLog( "/work/smart/comm/log/PLCS12", "[Socket_Manager_12] Start");
 
 	while( 1 ) 
 	{
@@ -159,7 +163,7 @@ static int Socket_Manager_12( int *client_sock ) {
 				if( receiveSize >= BUFFER_SIZE*10 )
 				{
 				    printf("Packet Buffer Full~~ %d\n", receiveSize );
-				    writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] Packet Buffer Full~~");
+				    writeLog( "/work/smart/comm/log/PLCS12", "[Socket_Manager_12] Packet Buffer Full~~");
 
 				    receiveSize = 0;
 				    memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
@@ -180,8 +184,8 @@ static int Socket_Manager_12( int *client_sock ) {
 			} 
 			else {
 				sleep(1);
-				printf("receive None\n");
-				writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] receive None");
+				printf("network Disconnection\n");
+				writeLog( "/work/smart/comm/log/PLCS12", "[Socket_Manager_12] Network DisConnection");
 				break;
 			}
 			ReadMsgSize = 0;
@@ -189,15 +193,15 @@ static int Socket_Manager_12( int *client_sock ) {
 		} 
 		else if( nd == 0 ) 
 		{
-			printf("timeout\n");
-			writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] timeout");
+			printf("Timeout\n");
+			writeLog( "/work/smart/comm/log/PLCS12", "[Socket_Manager_12] Timeout");
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
 		else if( nd == -1 ) 
 		{
 			printf("error...................\n");
-			writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] network error........");
+			writeLog( "/work/smart/comm/log/PLCS12", "[Socket_Manager_12] Network Error........");
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
@@ -206,7 +210,6 @@ static int Socket_Manager_12( int *client_sock ) {
 	}	// end of while
 
 	printf("Disconnection client....\n");
-	writeLog( "/work/smart/comm/log/PLCS12", "[PLCS12] Disconnection ");
 
 	close( *client_sock );
 	return 0;
@@ -287,7 +290,7 @@ static int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char*
 		    }
 
 
-		    writeLog( "/work/smart/comm/log", setString);
+		    //writeLog( "/work/smart/comm/log", setString);
 		    printf("%s\n", setString);
 	    
 		    selectTag_12( setString, trCount, strlen(setString) );
@@ -400,7 +403,7 @@ static int selectTag_12(unsigned char* buffer, int trCount, int len )
     {
 	//perror( "msgsnd() error ");
 	//writeLog( "msgsnd() error : Queue full" );
-	writeLog("/work/smart/comm/log/PLCS12", "[PLCS12] msgsnd() error : Queue full" );
+	writeLog("/work/smart/comm/log/PLCS12", "[selectTag_12] msgsnd() error : Queue full" );
 	//sleep(1);
 	//return -1;
     }

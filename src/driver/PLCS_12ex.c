@@ -33,7 +33,6 @@ static NODEINFO xmlinfo;
 static int selectTag_12ex(unsigned char* buffer, int trCount, int len );
 static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize );
 static int Socket_Manager_12ex( int *client_sock );
-static void *thread_main(void *arg);
 static int createETRIPacketFormat( UINT8 *id, unsigned char parsing[1024][32], UINT16 parsingCnt );
 
 //void *PLCS12ex(void *arg) {
@@ -59,8 +58,7 @@ void *PLCS12ex( DEVICEINFO *device) {
     /***************** MSG Queue **********************/
     if( -1 == ( plcs_12ex_id = msgget( (key_t)1, IPC_CREAT | 0666)))
     {
-	    writeLog( "/work/smart/log", "[PLCS_10] error msgget() plcs_12ex_id" );
-	    //perror( "msgget() ½ÇÆÐ");
+	    writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex]  error msgget() plcs_12ex_id" );
 	    return;
     }
 
@@ -90,54 +88,24 @@ void *PLCS12ex( DEVICEINFO *device) {
 	//if( tcp != -1 )
 	if( tcp > 0 )
 	{
-	    /***************** send thread **********************/
-	    memcpy( th_data, (void *)&tcp, sizeof(tcp) );
-	    if( pthread_create(&p_thread, NULL, &thread_main, (void *)th_data) == -1 )
-	    {
-		printf("error thread\n");
-		writeLog( "/work/smart/log", "[PLCS12ex] error pthread_create" );
-	    }
-
-
 	    Socket_Manager_12ex( &tcp ); 
 	}
 	else
 	{
 	    close(tcp);
+	    writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] fail Connection");
 	}
 
-	sleep(2);
+	sleep(10);
 	printf("========================================\n");
     }
     /*******************************************************/
     printf("End\n");
+    writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCSex] fail Connection");
 
     return; 
 } 
 
-static void *thread_main(void *arg)
-{
-
-    int rtrn;
-    int Fd;
-    int length;
-    unsigned char SendBuf[10] = { 0x22, 0x3a, 0x22, 0x2c, 0x33, 0x35, 0x2c, 0x63, 0x30, 0x0d };
-
-    memcpy( &Fd, (char *)arg, sizeof(int));
-
-
-    while(1)
-    {
-	rtrn = send( Fd, SendBuf, 10, MSG_NOSIGNAL);
-	if( rtrn == -1 )
-	    break;
-
-	usleep(1000*atoi(xmlinfo.tag[xmlOffset].basescanrate));	// 500ms
-    }
-    printf("Exit Thread\n");
-    writeLog( "/work/smart/log", "[PLCS12ex] Exit Thread" );
-
-}
 static int Socket_Manager_12ex( int *client_sock ) {
 
 	fd_set control_msg_readset;
@@ -158,7 +126,7 @@ static int Socket_Manager_12ex( int *client_sock ) {
 
 	FD_ZERO(&control_msg_readset);
 	printf("Receive Ready!!!\n");
-	writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] start");
+	writeLog( "/work/smart/comm/log/PLCS12ex", "[Socket_Manager_12ex] Start");
 
 	while( 1 ) 
 	{
@@ -201,7 +169,7 @@ static int Socket_Manager_12ex( int *client_sock ) {
 				if( receiveSize >= BUFFER_SIZE*10 )
 				{
 				    printf("Packet Buffer Full~~ %d\n", receiveSize );
-				    writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] Packet Buffer Full~~");
+				    writeLog( "/work/smart/comm/log/PLCS12ex", "[Socket_Manager_12ex] Packet Buffer Full~~");
 
 				    receiveSize = 0;
 				    memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
@@ -222,8 +190,8 @@ static int Socket_Manager_12ex( int *client_sock ) {
 			} 
 			else {
 				sleep(1);
-				printf("receive None\n");
-				writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] receive None");
+				printf("Network Disconnect\n");
+				writeLog( "/work/smart/comm/log/PLCS12ex", "[Socket_Manager_12ex] Network Disconnect");
 				break;
 			}
 			ReadMsgSize = 0;
@@ -231,15 +199,15 @@ static int Socket_Manager_12ex( int *client_sock ) {
 		} 
 		else if( nd == 0 ) 
 		{
-			printf("timeout\n");
-			writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] timeout");
+			printf("Timeout\n");
+			writeLog( "/work/smart/comm/log/PLCS12ex", "[Socket_Manager_12ex] Timeout");
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
 		else if( nd == -1 ) 
 		{
 			printf("error...................\n");
-			writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] network error............");
+			writeLog( "/work/smart/comm/log/PLCS12ex", "[Socket_Manager_12ex] network error............");
 			//shutdown( *client_sock, SHUT_WR );
 			break;
 		}
@@ -248,7 +216,7 @@ static int Socket_Manager_12ex( int *client_sock ) {
 	}	// end of while
 
 	printf("Disconnection client....\n");
-	writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] Disconnection.....");
+	//writeLog( "/work/smart/comm/log/PLCS12ex", "[PLCS12ex] Disconnection.....");
 
 	close( *client_sock );
 	return 0;
@@ -415,7 +383,7 @@ static int createETRIPacketFormat( UINT8 *id, unsigned char parsing[1024][32], U
 	}
 
 
-	writeLog( "/work/smart/comm/log", setString);
+	//writeLog( "/work/smart/comm/log", setString);
 	printf("%s\n", setString);
 
 	selectTag_12ex( setString, trCount, strlen(setString) );
@@ -482,7 +450,7 @@ static int selectTag_12ex(unsigned char* buffer, int trCount, int len )
     {
 	//perror( "msgsnd() error ");
 	//writeLog( "msgsnd() error : Queue full" );
-	writeLog("/work/smart/comm/log/PLCS12ex", "[PLCS12ex] msgsnd() error : Queue full" );
+	writeLog("/work/smart/comm/log/PLCS12ex", "[selectTag_12ex] msgsnd() error : Queue full" );
 	//sleep(1);
 	//return -1;
     }

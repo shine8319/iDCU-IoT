@@ -19,6 +19,9 @@
 #include "./include/ETRI.h"
 #include "./include/ETRI_Registration.h"
 #include "./include/ETRI_Deregistration.h"
+#include "./include/hexString.h"
+
+#define SQLITE_SAFE_FREE(x)     if(x){ x = NULL; }
 
 #define BUFFER_SIZE 1024
 #define TABLE_PATH  "TB_COMM_LOG"
@@ -57,7 +60,6 @@ int main( void)
     //double msec;
 
     //thread
-    char th_data[256];
     char th2_data[256];
 
     sqlite3 *pSQLite3;
@@ -107,75 +109,29 @@ int main( void)
 
     int selectOffset; 
     SQLite3Data sqlData;
-    uint8_t str_len;
-    const char *pos;
+    //uint8_t str_len;
+    int str_len;
+    //const char *pos;
+    char *pos;
     int	idIndex;
-    unsigned char val[1024];
+    //unsigned char val[10240];
+    unsigned char *val;
     size_t count = 0;
-    int nd;
-    fd_set control_msg_readset;
-    struct timeval control_msg_tv;
+    int sqlRtrn;
 
     writeLog( "/work/smart/log", "[DataTranslator] Start DataTranslator.o" );
     //query = sqlite3_mprintf("select id, value from tb_comm_log where tag != 1 order by id asc limit 1");
     query = sqlite3_mprintf("select id, value from tb_comm_log order by datetime asc limit 1");
 
-    FD_ZERO(&control_msg_readset);
 
     while( 1 )
     {
-	FD_SET(tcp, &control_msg_readset);
-	control_msg_tv.tv_sec = env.timeout;
-	//control_msg_tv.tv_usec = 10000;
-	control_msg_tv.tv_usec = 0;	// timeout check 5 second
-
-	nd = select( tcp+1, &control_msg_readset, NULL, NULL, &control_msg_tv );		
-	if( nd > 0 ) 
-	{
-
-	    ReadMsgSize = recv( tcp, &DataBuf, BUFFER_SIZE, MSG_DONTWAIT);
-	    if( ReadMsgSize > 0 ) 
-	    {
-		for( i = 0; i < ReadMsgSize; i++ ) {
-		    printf("%-3.2x", DataBuf[i]);
-		}
-		printf("\n");
-		printf("[ETRI return] recv data size : %d\n", ReadMsgSize);
-	    } 
-	    else {
-		sleep(1);
-		printf("[DataTranslator] Server Disconnect %d\n", ReadMsgSize);
-		writeLog( "/work/smart/log", "[DataTranslator] Server Disconnect" );
-		close(tcp);
-		tcp = -1;
-		//break;
-	    }
-	    ReadMsgSize = 0;
-
-	} 
-	/*
-	else if( nd == 0 ) 
-	{
-	    printf("[DataTranslator] timeout %ldsec\n", env.timeout );
-	    close(tcp);
-	    tcp = -1;
-	    //break;
-	}
-	*/
-	else if( nd == -1 ) 
-	{
-	    printf("[DataTranslator] error...................\n");
-	    writeLog( "/work/smart/log", "[DataTranslator] connect error............" );
-	    close(tcp);
-	    tcp = -1;
-	    //break;
-	}
-	nd = 0;
 
 	// disconnect check
 	if( tcp == -1 )
 	{
 	    rtrn = init();
+	    printf("disconnect => %d = init();\n",rtrn);
 	    if( rtrn == -1 )
 	    {
 
@@ -196,19 +152,23 @@ int main( void)
 	    printf(" select size = %ld\n", sqlData.size );
 	    idIndex = atoi(sqlData.data[selectOffset++]);	// just one incresment
 
-	    pos = sqlData.data[selectOffset];
+	    //pos = sqlData.data[selectOffset];
 	    str_len = strlen(sqlData.data[selectOffset]);
-
+	    printf(" str_len %d\n", str_len);
+	    val = hexStringToBytes(sqlData.data[selectOffset]);
 	    /* WARNING: no sanitization or error-checking whatsoever */
+	    /*
 	    for(count = 0; count < str_len; count++) {
 		sscanf(pos, "%2hhx", &val[count]);
 		pos += 2 * sizeof(char);
 	    }
 	    printf("0x");
 
+	    */
 	    for(count = 0; count < str_len/2; count++)
 		printf("%02X", val[count]);
 	    printf("\n");
+
 	    
 	    time(&transferTime);
 	    memcpy( val+14, &transferTime, 4 );
@@ -255,10 +215,15 @@ int main( void)
 		printf("%s\n", updateQuery );
 
 		sqlite3_busy_handler( pSQLite3, busy, NULL);
-		IoT_sqlite3_update( &pSQLite3, updateQuery );
+		sqlRtrn = IoT_sqlite3_update( &pSQLite3, updateQuery );
+		printf("delete sqlRtrn = %d\n", sqlRtrn);
 
 
 	    }
+	    free(val);	// malloc in hexStringToBytes();
+	    sqlite3_free_table( sqlData.data );
+	    SQLITE_SAFE_FREE( sqlData.data )
+
 	    usleep(100000);	// 100ms
 
 
@@ -286,6 +251,7 @@ static int busy(void *handle, int nTry)
 
 static int init(void)
 {
+    char th_data[256];
     struct sockaddr_in ip; 
     int reTry = 3;
 
@@ -303,12 +269,14 @@ static int init(void)
 	    printf(" tcp status %d\n", tcp );
 	    if( tcp < 0 )
 	    {
-		writeLog("/work/smart/log", "[tagServer] fail TCPClient method " );
+		writeLog("/work/smart/log", "[DataTranslator] fail TCPClient method " );
 		printf("connect error\n");
 		return -1;
 	    }
 	    else
+	    {
 		printf("connect success\n");
+	    }
 
 	}
 
@@ -328,7 +296,15 @@ static int init(void)
 	    }
 	}
 	else
+	{
 	    reTry = 0;
+	    memcpy( th_data, (void *)&tcp, sizeof(tcp) );
+	    if( pthread_create(&threads[0], NULL, &thread_receive, (void *)th_data) == -1 )
+	    {
+		writeLog("/work/smart/log", "[DataTranslator] error pthread_create method" );
+	    }
+
+	}
 
     } while( reTry );
 
@@ -367,7 +343,6 @@ void *thread_sender(void *arg)
 void *thread_receive(void *arg)
 {
 
-    int Fd;
     int length;
     unsigned char SendBuf[1024];
     fd_set control_msg_readset;
@@ -385,9 +360,9 @@ void *thread_receive(void *arg)
     int nd;
     memset(SendBuf, 0, 1024);
 
-    memcpy( (void *)&Fd, (char *)arg, sizeof(int));
+    //memcpy( (void *)&Fd, (char *)arg, sizeof(int));
 
-    writeLog("/work/smart/log", "[tagServer] Start thread_receive" );
+    writeLog("/work/smart/log", "[DataTranslator] Start thread_receive" );
     printf("thread start polling time %ldsec\n", env.timeout);
 
     FD_ZERO(&control_msg_readset);
@@ -396,17 +371,17 @@ void *thread_receive(void *arg)
     while( 1 ) 
     {
 
-	FD_SET(Fd, &control_msg_readset);
+	FD_SET(tcp, &control_msg_readset);
 	control_msg_tv.tv_sec = env.timeout;
 	//control_msg_tv.tv_usec = 10000;
-	control_msg_tv.tv_usec = 0;	// timeout check 5 second
+	control_msg_tv.tv_usec = 0;	// timeout check 
 
-	nd = select( Fd+1, &control_msg_readset, NULL, NULL, &control_msg_tv );		
+	nd = select( tcp+1, &control_msg_readset, NULL, NULL, &control_msg_tv );		
 	if( nd > 0 ) 
 	{
 
 	    memset( DataBuf, 0, sizeof(DataBuf) );
-	    ReadMsgSize = recv( Fd, &DataBuf, BUFFER_SIZE, MSG_DONTWAIT);
+	    ReadMsgSize = recv( tcp, &DataBuf, BUFFER_SIZE, MSG_DONTWAIT);
 	    if( ReadMsgSize > 0 ) 
 	    {
 		for( i = 0; i < ReadMsgSize; i++ ) {
@@ -418,62 +393,41 @@ void *thread_receive(void *arg)
 		if( ReadMsgSize >= BUFFER_SIZE )
 		    continue;
 
-		if( DataBuf[0] == 0x13 )
-		{
-		    printf("User Defined Message\n");
-
-		    if( -1 == ETRI_Deregistration( &Fd, &env ) )
-		    {
-			printf("fail Deregistration\n");
-			//writeLog( "./log", "fail registration" );
-			//return -1;
-		    }
-
-
-		}
-
-		/*
-		   memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
-		   receiveSize += ReadMsgSize;
-
-		   parsingSize = ParsingReceiveValue(receiveBuffer, receiveSize, remainder, parsingSize);
-		   memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE) );
-		   receiveSize = 0;
-		   memcpy( receiveBuffer, remainder, parsingSize );
-		   receiveSize = parsingSize;
-
-		   memset( remainder, 0 , sizeof(BUFFER_SIZE) );
-		 */
-
 	    } 
 	    else {
 		sleep(1);
-		printf("[tagServer] receive None %d\n", ReadMsgSize);
-		//break;
+		printf("[DataTranslator] Server Disconnect %d\n", ReadMsgSize);
+		writeLog( "/work/smart/log", "[DataTranslator] Server Disconnect" );
+		close(tcp);
+		tcp = -1;
+		break;
 	    }
 	    ReadMsgSize = 0;
 
 	} 
+	/*
 	else if( nd == 0 ) 
 	{
-	    printf("[tagServer] timeout %ldsec\n", env.timeout );
+	    printf("[DataTranslator] timeout %ldsec\n", env.timeout );
 	    //shutdown( *tcp, SHUT_WR );
 	    pushStart = 1;
 	    close(Fd);
 	    break;
 	}
+	*/
 	else if( nd == -1 ) 
 	{
-	    printf("[tagServer] error...................\n");
-	    //shutdown( *tcp, SHUT_WR );
-	    close(Fd);
+	    printf("[DataTranslator] error...................\n");
+	    writeLog( "/work/smart/log", "[DataTranslator] connect error............" );
+	    close(tcp);
+	    tcp = -1;
 	    break;
 	}
 	nd = 0;
 
     }	// end of while
 
-    writeLog("/work/smart/log", "[tagServer] Exit thread_receive" );
+    writeLog("/work/smart/log", "[DataTranslator] Exit thread_receive" );
     printf("thread Exit\n");
 
 }

@@ -54,15 +54,17 @@ void *GN1200(DEVICEINFO *device) {
     pthread_t p_thread;
     char th_data[256];
 
+    UINT8 logBuffer[256];
+
 
     xmlinfo = pointparser("/work/smart/tag_info.xml");
 
     /***************** MSG Queue **********************/
     if( -1 == ( comm_id = msgget( (key_t)1, IPC_CREAT | 0666)))
     {
-	    writeLog( "/work/smart/log", "[iDCU_IoT] error msgget() comm_id" );
-	    //perror( "msgget() ½ÇÆÐ");
-	    return;
+	writeLog( "/work/smart/comm/log/GN1200", "[GN1200] error msgget() comm_id" );
+	//perror( "msgget() ½ÇÆÐ");
+	return;
     }
 
     for( i = 0; i < xmlinfo.getPointSize; i++ )
@@ -78,9 +80,9 @@ void *GN1200(DEVICEINFO *device) {
 	}
 
     }
-    
+
     if( initFail == 1 )
-    return; 
+	return; 
 
 
     while(1)
@@ -88,6 +90,8 @@ void *GN1200(DEVICEINFO *device) {
 
 
 	/***************** connect *********************/
+
+	printf("Try Connect....\n");
 	tcp= TCPClient( xmlinfo.tag[xmlOffset].ip, atoi( xmlinfo.tag[xmlOffset].port ) );
 	printf("Connect %d\n", tcp);
 	//if( tcp!= -1 )
@@ -97,23 +101,51 @@ void *GN1200(DEVICEINFO *device) {
 	    memcpy( th_data, (void *)&tcp, sizeof(tcp) );
 	    if( pthread_create(&p_thread, NULL, &thread_main, (void *)th_data) == -1 )
 	    {
-		//writeLog("/work/iot/log", "[Uart] threads[2] thread_main error" );
+		writeLog( "/work/smart/comm/log/GN1200", "[GN1200] error pthread_create");
 		printf("error thread\n");
 	    }
+	    else
+	    {
+		writeLog( "/work/smart/comm/log/GN1200", "[GN1200] Start Thread");
+		Socket_Manager( &tcp); 
+		printf("pthread_join\n");
 
-	    Socket_Manager( &tcp); 
+		rc = pthread_join( p_thread, (void **)&status);
+		if( rc == 0 )
+		{
+		    printf("Completed join with thread status= %d\n", status);
+
+		    memset( logBuffer, 0, sizeof( logBuffer ) );
+		    sprintf( logBuffer, "[GN1200] Completed join with thread status= %d", status);
+		    writeLog( "/work/smart/comm/log/GN1200", logBuffer );
+		}
+		else
+		{
+		    printf("ERROR; return code from pthread_join() is %d\n", rc);
+		    memset( logBuffer, 0, sizeof( logBuffer ) );
+		    sprintf( logBuffer, "[GN1200] ERROR; return code from pthread_join() is %d", rc);
+		    writeLog( "/work/smart/comm/log/GN1200", logBuffer );
+
+		    //return -1;
+		}
+	    }
+
 	}
 	else
+	{
 	    close(tcp);
+	    writeLog( "/work/smart/comm/log/GN1200", "[GN1200] fail Connection");
+	}
 
 
-	sleep(2);
+	sleep(10);
 	printf("========================================\n");
 
     }
 
 
     printf("End\n");
+    writeLog( "/work/smart/comm/log/GN1200", "[GN1200] End main");
 
     return 0; 
 } 
@@ -147,110 +179,118 @@ static void *thread_main(void *arg)
 
     memcpy( &Fd, (char *)arg, sizeof(int));
 
-    
+
     while(1)
     {
 	rtrn = send( Fd, SendBuf, 8, MSG_NOSIGNAL);
 	//printf("return Send %d\n", rtrn );
 	if( rtrn == -1 )
+	{
+	    printf("[Thread] Error Send\n");
 	    break;
-	    
-	
+	}
+
+
 	//usleep(500000);	// 500ms
 	//printf("BaseScanRate %dms\n", atoi(xmlinfo.tag[xmlOffset].basescanrate));
 	usleep(1000*atoi(xmlinfo.tag[xmlOffset].basescanrate));	// 500ms
     }
     printf("Exit Thread\n");
+    writeLog( "/work/smart/comm/log/GN1200", "[thread_main] Exit Thread");
+
+    pthread_exit((void *) 0);
 
 }
 static int Socket_Manager( int *client_sock ) {
 
-	fd_set control_msg_readset;
-	struct timeval control_msg_tv;
-	unsigned char DataBuf[BUFFER_SIZE];
-	int ReadMsgSize;
+    fd_set control_msg_readset;
+    struct timeval control_msg_tv;
+    unsigned char DataBuf[BUFFER_SIZE];
+    int ReadMsgSize;
 
-	unsigned char receiveBuffer[BUFFER_SIZE];
-	int receiveSize = 0;
-	unsigned char remainder[BUFFER_SIZE];
-	int parsingSize = 0;
+    unsigned char receiveBuffer[BUFFER_SIZE];
+    int receiveSize = 0;
+    unsigned char remainder[BUFFER_SIZE];
+    int parsingSize = 0;
 
 
-	int rtrn;
-	int i;
-	int nd;
+    int rtrn;
+    int i;
+    int nd;
 
-	FD_ZERO(&control_msg_readset);
-	printf("Receive Ready!!!\n");
+    FD_ZERO(&control_msg_readset);
+    printf("Receive Ready!!!\n");
+    writeLog( "/work/smart/comm/log/GN1200", "[Socket_Manager] Start");
 
-	while( 1 ) 
+    while( 1 ) 
+    {
+
+	FD_SET(*client_sock, &control_msg_readset);
+	control_msg_tv.tv_sec = 55;
+	//control_msg_tv.tv_usec = 10000;
+	control_msg_tv.tv_usec = 5000000;	// timeout check 5 second
+
+	// ¸®ÅÏ°ª -1Àº ¿À·ù¹ß»ý, 0Àº Å¸ÀÓ¾Æ¿ô, 0º¸´Ù Å©¸é º¯°æµÈ ÆÄÀÏ µð½ºÅ©¸³ÅÍ¼ö
+	nd = select( *client_sock+1, &control_msg_readset, NULL, NULL, &control_msg_tv );		
+	if( nd > 0 ) 
 	{
 
-		FD_SET(*client_sock, &control_msg_readset);
-		control_msg_tv.tv_sec = 15;
-		//control_msg_tv.tv_usec = 10000;
-		control_msg_tv.tv_usec = 5000000;	// timeout check 5 second
+	    memset( DataBuf, 0, sizeof(DataBuf) );
+	    ReadMsgSize = recv( *client_sock, &DataBuf, BUFFER_SIZE, MSG_DONTWAIT);
+	    if( ReadMsgSize > 0 ) 
+	    {
+		/*
+		   for( i = 0; i < ReadMsgSize; i++ ) {
+		   printf("%-3.2x", DataBuf[i]);
+		   }
+		   printf("\n");
+		   printf("recv data size : %d\n", ReadMsgSize);
+		 */
 
-		// ¸®ÅÏ°ª -1Àº ¿À·ù¹ß»ý, 0Àº Å¸ÀÓ¾Æ¿ô, 0º¸´Ù Å©¸é º¯°æµÈ ÆÄÀÏ µð½ºÅ©¸³ÅÍ¼ö
-		nd = select( *client_sock+1, &control_msg_readset, NULL, NULL, &control_msg_tv );		
-		if( nd > 0 ) 
-		{
+		if( ReadMsgSize >= BUFFER_SIZE )
+		    continue;
 
-			memset( DataBuf, 0, sizeof(DataBuf) );
-			ReadMsgSize = recv( *client_sock, &DataBuf, BUFFER_SIZE, MSG_DONTWAIT);
-			if( ReadMsgSize > 0 ) 
-			{
-			    /*
-				for( i = 0; i < ReadMsgSize; i++ ) {
-					printf("%-3.2x", DataBuf[i]);
-				}
-				printf("\n");
-				printf("recv data size : %d\n", ReadMsgSize);
-				*/
+		memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
+		receiveSize += ReadMsgSize;
 
-				if( ReadMsgSize >= BUFFER_SIZE )
-					continue;
+		parsingSize = ParsingReceiveValue(receiveBuffer, receiveSize, remainder, parsingSize);
+		memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE) );
+		receiveSize = 0;
+		memcpy( receiveBuffer, remainder, parsingSize );
+		receiveSize = parsingSize;
 
-				memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
-				receiveSize += ReadMsgSize;
+		memset( remainder, 0 , sizeof(BUFFER_SIZE) );
 
-				parsingSize = ParsingReceiveValue(receiveBuffer, receiveSize, remainder, parsingSize);
-				memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE) );
-				receiveSize = 0;
-				memcpy( receiveBuffer, remainder, parsingSize );
-				receiveSize = parsingSize;
+	    } 
+	    else {
+		sleep(1);
+		writeLog( "/work/smart/comm/log/GN1200", "[Socket_Manager] Network Disconnect");
+		printf("network Disconnect\n");
+		break;
+	    }
+	    ReadMsgSize = 0;
 
-				memset( remainder, 0 , sizeof(BUFFER_SIZE) );
+	} 
+	else if( nd == 0 ) 
+	{
+	    writeLog( "/work/smart/comm/log/GN1200", "[Socket_Manager] Timeout");
+	    printf("timeout\n");
+	    break;
+	}
+	else if( nd == -1 ) 
+	{
+	    writeLog( "/work/smart/comm/log/GN1200", "[Socket_Manager] Network Error");
+	    printf("error...................\n");
+	    break;
+	}
+	nd = 0;
 
-			} 
-			else {
-				sleep(1);
-				printf("receive None\n");
-				break;
-			}
-			ReadMsgSize = 0;
+    }	// end of while
 
-		} 
-		else if( nd == 0 ) 
-		{
-			printf("timeout\n");
-			//shutdown( *client_sock, SHUT_WR );
-			break;
-		}
-		else if( nd == -1 ) 
-		{
-			printf("error...................\n");
-			//shutdown( *client_sock, SHUT_WR );
-			break;
-		}
-		nd = 0;
+    printf("Disconnection client....\n");
 
-	}	// end of while
-
-	printf("Disconnection client....\n");
-
-	close( *client_sock );
-	return 0;
+    close( *client_sock );
+    return 0;
 
 }
 
@@ -265,10 +305,10 @@ static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* re
     UINT16 crc16;
     UINT8 u8Crc16[0];
     /*
-    for( offset = 0; offset < len; offset++ )
-	printf("%02X ", cvalue[offset]);
-    printf("\n");
-    */
+       for( offset = 0; offset < len; offset++ )
+       printf("%02X ", cvalue[offset]);
+       printf("\n");
+     */
 
 
     for( i = 0; i < len; i++ )
@@ -277,17 +317,17 @@ static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* re
 	{ 
 	    tlen = cvalue[i + 2];
 	    /*
-	    if( tlen != cvalue[i + 5 + 3] + 3 )
-	    {
-		remainSize = 0;
-		return remainSize;
-	    }
-	    */
+	       if( tlen != cvalue[i + 5 + 3] + 3 )
+	       {
+	       remainSize = 0;
+	       return remainSize;
+	       }
+	     */
 	    crc16 = CRC16(cvalue+i, 3+tlen);
 	    u8Crc16[0] = (UINT8)((crc16>>0) & 0x00ff);
 	    u8Crc16[1] = (UINT8)((crc16>>8) & 0x00ff);
 	    if( cvalue[i+3+8+0] == u8Crc16[0] &&
-		cvalue[i+3+8+1] == u8Crc16[1] )
+		    cvalue[i+3+8+1] == u8Crc16[1] )
 	    {
 		//printf("crc OK\n");
 
@@ -316,6 +356,7 @@ static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* re
 	    if( i+1 == len )
 	    {
 		//printf("packet clear!\n");
+		writeLog( "/work/smart/comm/log/GN1200", "[ParsingReceiveValue] packet clear!");
 		i = len-1;
 		remainSize = i+1;
 	    }
@@ -351,7 +392,7 @@ static int selectTag(unsigned char* buffer, int len, INT32 type )
 
     }
     printf("\n");
-    
+
     memset( &data, 0, sizeof(t_data) );
 
     time_t sensingTime;
@@ -373,48 +414,53 @@ static int selectTag(unsigned char* buffer, int len, INT32 type )
     temperature = (UINT16)((buffer[0]<<8) & 0xff00);
     temperature |= (UINT16)((buffer[1]<<0) & 0x00ff);
 
-    //printf("temperature %.2f\n", temperature/10.0);
+    printf("temperature %.2f\n", temperature/10.0);
 
     sprintf( countString, "%.2f", temperature/10.0 );
     data.data_buff[offset++] = strlen( countString )+1;   // data length 
     //printf("len %02X \n", data.data_buff[offset-1]);
-    
+    writeLog("/work/smart/comm/log/GN1200", countString );
+
     sprintf( data.data_buff+offset, "%.2f", temperature/10.0 );
     offset += strlen( countString );
     data.data_buff[offset++] = 0;   // sensing value (null)
-   
+
     data.data_num = offset; 
 
-    for( i=0; i<data.data_num; i++ )
-	printf("%02X ", data.data_buff[i]);
-    printf("\n");
+
+    /*
+       printf("event => ");
+       for( i=0; i<data.data_num; i++ )
+       printf("%02X ", data.data_buff[i]);
+       printf("\n");
+     */
 
     if ( -1 == msgsnd( comm_id, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
     {
-	writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] msgsnd() error : Queue full" );
+	writeLog("/work/smart/comm/log/GN1200", "[selectTag] msgsnd() error : Queue full" );
     }
 
     return 0;
 }
 
 /*
-unsigned char _getCheckSum_iDCU_IoT( int len )
+   unsigned char _getCheckSum_iDCU_IoT( int len )
+   {
+   int intSum = 0;
+   unsigned char sum;
+   int i;
+
+//printf("start sum %d\n", len);
+for( i = 1; i<= len; i++ )
 {
-    int intSum = 0;
-    unsigned char sum;
-    int i;
-
-    //printf("start sum %d\n", len);
-    for( i = 1; i<= len; i++ )
-    {
-	intSum += tlvSendBuffer[i];
-	//sleep(1);
-	//printf("%d ", tlvSendBuffer[i]);
-    }
-
-    sum = (unsigned char)intSum;
-    //printf("sum %d\n", sum);
-    return sum;
+intSum += tlvSendBuffer[i];
+//sleep(1);
+//printf("%d ", tlvSendBuffer[i]);
 }
 
-*/
+sum = (unsigned char)intSum;
+//printf("sum %d\n", sum);
+return sum;
+}
+
+ */

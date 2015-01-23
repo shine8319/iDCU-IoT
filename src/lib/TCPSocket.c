@@ -19,6 +19,8 @@
 #include "../include/iDCU.h"
 #define BUFFER_SIZE 1024
 
+static int connect_nonb(int sockfd, const struct sockaddr *saptr, int salen, int nsec);
+
 INT32 TCPServer(INT32 port) {
 
     INT32 server_sock; 
@@ -100,25 +102,35 @@ INT32 TCPClient(INT8 *serverIP, UINT16 port )
     //servaddr.sin_port = htons(atoi(port));
     servaddr.sin_port = htons((port));
 
-   rtrn = connect(server_sock, (struct sockaddr *)&servaddr, sizeof(servaddr));
-   if( rtrn == -1 )
-   {
-       close( server_sock );
-       return -2;
-   }
+    if(connect_nonb(server_sock, (struct sockaddr *)&servaddr, sizeof(servaddr),10) != 0)
+    {
+	close( server_sock );
+	return -2;
+    }
 
-    /*
-    if(ConnectWait(server_sock, (struct sockaddr *)&servaddr, sizeof(servaddr), 5) < 0) 
-    { 
-	perror("error"); 
-	return -1;
-    } 
-    else 
-    { 
-	printf("Connect Success\n"); 
-    } 
+
+	 /*
+    rtrn = connect(server_sock, (struct sockaddr *)&servaddr, sizeof(servaddr));
+    if( rtrn == -1 )
+    {
+	close( server_sock );
+	return -2;
+    }
     */
 
+    /*
+       if(ConnectWait(server_sock, (struct sockaddr *)&servaddr, sizeof(servaddr), 5) < 0) 
+       { 
+       perror("error"); 
+       return -1;
+       } 
+       else 
+       { 
+       printf("Connect Success\n"); 
+       } 
+     */
+
+    /*
     if((flags = fcntl(server_sock, F_GETFL, 0)) == -1 ) {
 	close( server_sock );
 	//perror("fcntl");
@@ -129,9 +141,60 @@ INT32 TCPClient(INT8 *serverIP, UINT16 port )
 	//perror("fcntl");
 	return -4;
     }
+    */
 
     return server_sock;
 
+}
+
+static int connect_nonb(int sockfd, const struct sockaddr *saptr, int salen, int nsec)
+{
+    int             flags, n, error;
+    socklen_t       len;
+    fd_set          rset, wset;
+    struct timeval  tval;
+
+    flags = fcntl(sockfd, F_GETFL, 0);
+    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+
+    error = 0;
+    if ( (n = connect(sockfd, (struct sockaddr *) saptr, salen)) < 0)
+	if (errno != EINPROGRESS)
+	    return(-1);
+
+    /* Do whatever we want while the connect is taking place. */
+
+    if (n == 0)
+	goto done;  /* connect completed immediately */
+
+    FD_ZERO(&rset);
+    FD_SET(sockfd, &rset);
+    wset = rset;
+    tval.tv_sec = nsec;
+    tval.tv_usec = 0;
+
+    if ( (n = select(sockfd+1, &rset, &wset, NULL,
+		    nsec ? &tval : NULL)) == 0) {
+	close(sockfd);      /* timeout */
+	errno = ETIMEDOUT;
+	return(-1);
+    }
+
+    if (FD_ISSET(sockfd, &rset) || FD_ISSET(sockfd, &wset)) {
+	len = sizeof(error);
+	if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
+	    return(-1);         /* Solaris pending error */
+    } else
+	printf("select error: sockfd not set\n");
+
+done:
+    fcntl(sockfd, F_SETFL, flags);  /* restore file status flags */
+    if (error) {
+	close(sockfd);      /* just in case */
+	errno = error;
+	return(-1);
+    }
+    return(0);
 }
 
 int ConnectWait(int sockfd, struct sockaddr *saddr, int addrsize, int sec) 
@@ -171,16 +234,16 @@ int ConnectWait(int sockfd, struct sockaddr *saddr, int addrsize, int sec)
     } 
     else
 	printf("RES : %d\n", res); 
-    
+
     return 0;
 
     /*
     // 즉시 연결이 성공했을 경우 소켓을 원래 상태로 되돌리고 리턴한다.  
     if (res == 0) 
     { 
-	printf("Connect Success\n"); 
-	fcntl(sockfd, F_SETFL, orgSockStat); 
-	return 1; 
+    printf("Connect Success\n"); 
+    fcntl(sockfd, F_SETFL, orgSockStat); 
+    return 1; 
     } 
 
     FD_ZERO(&rset); 
@@ -192,34 +255,34 @@ int ConnectWait(int sockfd, struct sockaddr *saddr, int addrsize, int sec)
 
     if ( (n = select(sockfd+1, &rset, &wset, NULL, NULL)) == 0) 
     { 
-	// timeout 
-	errno = ETIMEDOUT;     
-	return -1; 
+    // timeout 
+    errno = ETIMEDOUT;     
+    return -1; 
     } 
 
     // 읽거나 쓴 데이터가 있는지 검사한다.  
     if (FD_ISSET(sockfd, &rset) || FD_ISSET(sockfd, &wset) ) 
     { 
-	printf("Read data\n"); 
-	esize = sizeof(int); 
-	if ((n = getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, (socklen_t *)&esize)) < 0) 
-	    return -1; 
+    printf("Read data\n"); 
+    esize = sizeof(int); 
+    if ((n = getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, (socklen_t *)&esize)) < 0) 
+    return -1; 
     } 
     else 
     { 
-	perror("Socket Not Set"); 
-	return -1; 
+    perror("Socket Not Set"); 
+    return -1; 
     } 
 
 
     fcntl(sockfd, F_SETFL, orgSockStat); 
     if(error) 
     { 
-	errno = error; 
-	perror("Socket"); 
-	return -1; 
+    errno = error; 
+    perror("Socket"); 
+    return -1; 
     } 
-    */
+     */
 
     //return 1; 
 }
@@ -283,21 +346,21 @@ int sender( int *tcp, UINT8 *packet, UINT32 size )
     int rtrn;
     int i;
     /*
-    int reTry = 3;
+       int reTry = 3;
 
-    do {
-	rtrn = send(*tcp, packet,  size, MSG_NOSIGNAL);
-	printf("Send rtrn %d\n", rtrn);
-	if( rtrn < 0 )
-	{
-	    sleep(1);
-	    reTry--;
-	}
-	else
-	    reTry = 0;
+       do {
+       rtrn = send(*tcp, packet,  size, MSG_NOSIGNAL);
+       printf("Send rtrn %d\n", rtrn);
+       if( rtrn < 0 )
+       {
+       sleep(1);
+       reTry--;
+       }
+       else
+       reTry = 0;
 
-    } while( reTry );
-    */
+       } while( reTry );
+     */
     rtrn = send(*tcp, packet,  size, MSG_NOSIGNAL);
 
     for( i = 0; i < size; i++ )

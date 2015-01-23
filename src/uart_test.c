@@ -1,16 +1,30 @@
-#include<stdio.h>
-#include<string.h>
 #include<fcntl.h>
 #include<unistd.h>
-#include "./include/uart_init.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <time.h>
+#include <sys/reboot.h>
 
+
+#include "./uart_init.h"
+
+
+void *thread_receive(void *arg);
+pthread_t thread;
+int fd;
 
 int main(int argc, char **argv)
 {
 
 	char *devname;
 	char *temp = "Pass!!! Leading the future challenges....\n";
-	int fd;
 	int rtrn;
 
 	if( argc != 3 )
@@ -21,7 +35,7 @@ int main(int argc, char **argv)
 
 	switch( argc )
 	{
-		case 2:
+		case 3:
 			devname = argv[1];
 			break;
 	}
@@ -36,19 +50,25 @@ int main(int argc, char **argv)
 		printf("%s Open error!!\n", devname );
 	}
 
-	//rtrn = tty_raw(fd, atoi(argv[2]), FLOWCONTROL, DATABIT, PARITYBIT, STOPBIT); 
-	rtrn = tty_raw(fd, 9, FLOWCONTROL, DATABIT, PARITYBIT, STOPBIT); 
+	rtrn = tty_raw(fd, atoi(argv[2]), FLOWCONTROL, DATABIT, PARITYBIT, STOPBIT); 
+	//rtrn = tty_raw(fd, 9, FLOWCONTROL, DATABIT, PARITYBIT, STOPBIT); 
 	if( rtrn != 0 )	{
 		printf("%s Setting error!!\n", devname );
 		close(fd);
 		return -1;
 	}
 
+	if( pthread_create(&thread, NULL, &thread_receive, NULL ) == -1 )
+	{
+		printf("thread error!!\n");
+	}
+
+
 	while(1)
 	{
 		write( fd, temp, strlen( temp ));
 		printf("==> %s\n", temp);
-		sleep(2);
+		sleep(5);
 	}
 	close( fd );
 
@@ -57,7 +77,26 @@ int main(int argc, char **argv)
 }
 
 
+void *thread_receive(void *arg)
+{
 
+    char recv_buff[1024];
+    int rtrn,i;
+
+    while(1)
+    {
+	rtrn = read( fd, recv_buff, 1024);
+	if( rtrn > 0 )
+	{
+	    for( i = 0; i < rtrn; i++ )
+	       printf("%02X ", recv_buff[i]);
+	    printf("\n");    
+	}
+
+    }
+}
+
+ 
 
 
 

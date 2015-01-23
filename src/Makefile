@@ -46,6 +46,7 @@ SQLite3Interface = ./lib/SQLite3Interface.c
 libpointparser = ./lib/libpointparser.c
 libDeivceInfoParser = ./lib/libDeviceInfoParser.c
 stringTrim = ./lib/stringTrim.c
+hexString = ./lib/hexString.c
 TARGET0 = ./bin
 LIB_TARGET = ./lib
 #PFLAGS += -DDEBUG
@@ -59,8 +60,8 @@ all:
 	$(CC) -lpthread -o RealTimeDataManager.o RealTimeDataManager.c $(LIB1) $(LIB2) $(LIB_EXPAT)
 #$(CC) -lpthread -o motelisten *.o
 
-#uart_test:
-#$(CC) -o uart_test.o uart_test.c uart_init.c 
+uart_test:
+	$(RASCC) -o uart_test.o uart_test.c uart_init.c -lpthread
 
 #uart_read:
 #$(CC) -o uart_read.o uart_read.c uart_init.c 
@@ -114,7 +115,7 @@ DataTranslator:
 	$(RASCC) -c ./lib/ETRI_Deregistration.c ./lib/SQLite3Interface.c $(LIB_SQLITE3)
 	$(RASAR) rc ../lib/libEtriDereg.a ETRI_Deregistration.o SQLite3Interface.o
 	$(RASRANLIB) ../lib/libEtriDereg.a
-	$(RASCC)  -o $(TARGET0)/DataTranslator.o DataTranslator.c $(configRW) $(TCPSocket) $(writeLog) $(LIB_ETRIREG) $(LIB_ETRIDEREG) $(LIB_SQLITE3) -lpthread
+	$(RASCC)  -o $(TARGET0)/DataTranslator.o DataTranslator.c $(configRW) $(TCPSocket) $(writeLog) $(hexString) $(LIB_ETRIREG) $(LIB_ETRIDEREG) $(LIB_SQLITE3) -lpthread
 
 
 M2MManager:

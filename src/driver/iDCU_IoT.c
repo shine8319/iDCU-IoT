@@ -55,13 +55,14 @@ void *iDCU_IoT(DEVICEINFO *device) {
     pthread_t p_thread;
     char th_data[256];
 
+    UINT8 logBuffer[256];
 
     xmlinfo = pointparser("/work/smart/tag_info.xml");
 
     /***************** MSG Queue **********************/
     if( -1 == ( comm_id = msgget( (key_t)1, IPC_CREAT | 0666)))
     {
-	writeLog( "/work/smart/log", "[iDCU_IoT] error msgget() comm_id" );
+	writeLog( "/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] error msgget() comm_id" );
 	//perror( "msgget() ½ÇÆÐ");
 	return;
     }
@@ -98,23 +99,51 @@ void *iDCU_IoT(DEVICEINFO *device) {
 	    memcpy( th_data, (void *)&tcpiDCU_IoT, sizeof(tcpiDCU_IoT) );
 	    if( pthread_create(&p_thread, NULL, &thread_main, (void *)th_data) == -1 )
 	    {
-		//writeLog("/work/iot/log", "[Uart] threads[2] thread_main error" );
+		writeLog( "/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] error pthread_create");
 		printf("error thread\n");
 	    }
+	    else
+	    {
 
-	    Socket_Manager_iDCU_IoT( &tcpiDCU_IoT ); 
+		writeLog( "/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] Start Thread");
+		Socket_Manager_iDCU_IoT( &tcpiDCU_IoT ); 
+
+		rc = pthread_join( p_thread, (void **)&status);
+		if( rc == 0 )
+		{
+		    printf("Completed join with thread status= %d\n", status);
+
+		    memset( logBuffer, 0, sizeof( logBuffer ) );
+		    sprintf( logBuffer, "[iDCU_IoT] Completed join with thread status= %d", status);
+		    writeLog( "/work/smart/comm/log/iDCU_IoT", logBuffer );
+		}
+		else
+		{
+		    printf("ERROR; return code from pthread_join() is %d\n", rc);
+		    memset( logBuffer, 0, sizeof( logBuffer ) );
+		    sprintf( logBuffer, "[iDCU_IoT] ERROR; return code from pthread_join() is %d", rc);
+		    writeLog( "/work/smart/comm/log/iDCU_IoT", logBuffer );
+
+		    //return -1;
+		}
+
+	    }
 	}
 	else
+	{
 	    close(tcpiDCU_IoT);
+	    writeLog( "/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] fail Connection");
+	}
 
 
-	sleep(2);
+	sleep(10);
 	printf("========================================\n");
 
     }
 
 
     printf("End\n");
+    writeLog( "/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] End main");
 
     return 0; 
 } 
@@ -149,6 +178,10 @@ static void *thread_main(void *arg)
 	usleep(1000*atoi(xmlinfo.tag[xmlOffset].basescanrate));	// 500ms
     }
     printf("Exit Thread\n");
+    writeLog( "/work/smart/comm/log/iDCU_IoT", "[thread_main] Exit Thread");
+
+    pthread_exit((void *) 0);
+
 
 }
 static int Socket_Manager_iDCU_IoT( int *client_sock ) {
@@ -171,7 +204,7 @@ static int Socket_Manager_iDCU_IoT( int *client_sock ) {
     FD_ZERO(&control_msg_readset);
     printf("Receive Ready!!!\n");
 
-    writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] start " );
+    writeLog("/work/smart/comm/log/iDCU_IoT", "[Socket_Manager_iDCU_IoT] Start " );
 
     while( 1 ) 
     {
@@ -215,8 +248,8 @@ static int Socket_Manager_iDCU_IoT( int *client_sock ) {
 	    } 
 	    else {
 		sleep(1);
-		printf("receive None\n");
-		writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] receive None" );
+		printf("Network Disconnection\n");
+		writeLog("/work/smart/comm/log/iDCU_IoT", "[Socket_Manager_iDCU_IoT] Network Disconnection" );
 		break;
 	    }
 	    ReadMsgSize = 0;
@@ -225,14 +258,14 @@ static int Socket_Manager_iDCU_IoT( int *client_sock ) {
 	else if( nd == 0 ) 
 	{
 	    printf("timeout\n");
-	    writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] timeout" );
+	    writeLog("/work/smart/comm/log/iDCU_IoT", "[Socket_Manager_iDCU_IoT] Timeout" );
 	    //shutdown( *client_sock, SHUT_WR );
 	    break;
 	}
 	else if( nd == -1 ) 
 	{
 	    printf("error...................\n");
-	    writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] network error...." );
+	    writeLog("/work/smart/comm/log/iDCU_IoT", "[Socket_Manager_iDCU_IoT] Network Error...." );
 	    //shutdown( *client_sock, SHUT_WR );
 	    break;
 	}
@@ -242,7 +275,6 @@ static int Socket_Manager_iDCU_IoT( int *client_sock ) {
 
     printf("Disconnection client....\n");
 
-    writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] Disconnection " );
 
     close( *client_sock );
     return 0;
@@ -468,7 +500,7 @@ static int selectTag_iDCU_IoT(unsigned char* buffer, int len, INT32 type )
 	    //perror( "msgsnd() error ");
 	    //writeLog( "msgsnd() error : Queue full" );
 
-	    writeLog("/work/smart/comm/log/iDCU_IoT", "[iDCU_IoT] msgsnd() error : Queue full" );
+	    writeLog("/work/smart/comm/log/iDCU_IoT", "[selectTag_iDCU_IoT] msgsnd() error : Queue full" );
 	    //sleep(5);
 	    //return -1;
 	}

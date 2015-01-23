@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<asm/termbits.h>
-#include "./include/uart_init.h"
+#include "./uart_init.h"
 
 int save_fd = -1;	// tty setting
 struct termios save_tios;	// for tty setting
