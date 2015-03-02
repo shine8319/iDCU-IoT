@@ -160,7 +160,7 @@ int Transducer_Description_Registration( int *tcp, READENV *info, sqlite3 *pSQLi
     if( data.size > 0 )
     {
 	selectCount = atoi(data.data[1]);
-	printf("data.size = %d, selectCount = %d\n", data.size, selectCount );
+	printf("data.size = %d, selectCount = %d\n", (int)data.size, selectCount );
 
     }
 

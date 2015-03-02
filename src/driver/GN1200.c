@@ -182,7 +182,8 @@ static void *thread_main(void *arg)
 
     while(1)
     {
-	rtrn = send( Fd, SendBuf, 8, MSG_NOSIGNAL);
+	//rtrn = send( Fd, SendBuf, 8, MSG_NOSIGNAL);
+	rtrn = send( Fd, SendBuf, 8, MSG_DONTWAIT); //2015.03.02 
 	//printf("return Send %d\n", rtrn );
 	if( rtrn == -1 )
 	{

@@ -81,7 +81,7 @@ int GateNode_Description_Deregistration( int *tcp, READENV *info )
     env.Length		    = 0x0002;
     env.GateNode_Id	    = info->gatenode;
 
-    rtrn = sender( tcp, &env, sizeof( Struct_GateNode ) );
+    rtrn = sender( tcp, (UINT8 *)&env, sizeof( Struct_GateNode ) );
 
     return rtrn;
 }
@@ -96,7 +96,7 @@ int PAN_Description_Deregistration( int *tcp, READENV *info )
     env.GateNode_Id	    = info->gatenode;
     env.PAN_Id	    = info->pan;
     
-    rtrn = sender( tcp, &env, sizeof( Struct_PAN ) );
+    rtrn = sender( tcp, (UINT8 *)&env, sizeof( Struct_PAN ) );
 
     return rtrn;
 }
@@ -112,7 +112,7 @@ int SensorNode_Description_Deregistration( int *tcp, READENV *info )
     env.PAN_Id	    = info->pan;
     env.SensorNode_Id   = info->sensornode;
 
-    rtrn = sender( tcp, &env, sizeof( Struct_SensorNode ) );
+    rtrn = sender( tcp, (UINT8 *)&env, sizeof( Struct_SensorNode ) );
 
     return rtrn;
 }
@@ -163,7 +163,7 @@ int Transducer_Description_Deregistration( int *tcp, READENV *info, sqlite3 *pSQ
     {
 
 	//printf(" transducer count %d, packet length %d, test size %d\n", count, env[i].Transducer.Length, size );
-	rtrn = sender( tcp, &env[count-1], sizeof( Struct_Transducer ) );
+	rtrn = sender( tcp, (UINT8 *)&env[count-1], sizeof( Struct_Transducer ) );
 	if( rtrn == 0 )
 	{
 	    count--;

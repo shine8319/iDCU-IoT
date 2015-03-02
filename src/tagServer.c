@@ -23,7 +23,7 @@
 
 #define BUFFER_SIZE 1024
 #define TABLE_PATH  "TB_COMM_LOG"
-#define EVENT_Q_SIZE 16
+#define EVENT_Q_SIZE 64 
 
 static int busy(void *handle, int nTry);
 static void *thread_insert(void *arg);

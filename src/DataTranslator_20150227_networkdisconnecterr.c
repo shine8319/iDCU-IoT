@@ -25,21 +25,16 @@
 
 #define BUFFER_SIZE 1024
 #define TABLE_PATH  "TB_COMM_LOG"
-
-static void threadCheck();
-static void deleteCommLog(int	idIndex);
-static int disconnectCheck();
-static int init(void);
-static void *thread_receive(void *arg);
-static int busy(void *handle, int nTry);
-
-
-static int tcp = -1;
-static pthread_t threads;
+static int tcp;
+static pthread_t threads[2];
 static int pushStart;
 static READENV env;
-static sqlite3 *pSQLite3;
 
+static int init(void);
+static void *thread_sender(void *arg);
+static void *thread_receive(void *arg);
+static Struct_SensingValueReport pac;
+static int busy(void *handle, int nTry);
 
 int main( void)
 {
@@ -53,6 +48,7 @@ int main( void)
     time_t  transferTime, sensingTime;
 
     char *query;
+    char *updateQuery;
     int	getPortOffset = 0;
     //int	dataChanged = 0;
     int	packetErr = 0;
@@ -64,16 +60,8 @@ int main( void)
     //thread
     char th2_data[256];
 
+    sqlite3 *pSQLite3;
     UINT32 rc;
-
-    int selectOffset; 
-    SQLite3Data sqlData;
-    int str_len;
-    char *pos;
-    int	idIndex;
-    unsigned char *val;
-    size_t count = 0;
-
 
     memset( &env, 0, sizeof( READENV ) );
     memset( &data, 0, sizeof(t_data) );
@@ -92,20 +80,66 @@ int main( void)
 	printf("DB OPEN!!\n");
     }
 
-    writeLog( "/work/smart/log", "[DataTranslator] Start DataTranslator.o" );
 
+
+    while( reTry )
+    {
+	rtrn = init();
+	if( rtrn == -1 )
+	{
+	    printf("reTry %d\n", reTry);
+	    reTry--;
+	    sleep(10);
+	}
+	else
+	    break;
+
+	if( reTry == 0 )
+	    return -1;
+    }
+
+    int ReadMsgSize;
+    unsigned char DataBuf[1024];
+    unsigned char sendBuf[1024];
+
+    unsigned char savePac[1024];
+    unsigned int strPac[2048];
+
+    int selectOffset; 
+    SQLite3Data sqlData;
+    //uint8_t str_len;
+    int str_len;
+    //const char *pos;
+    char *pos;
+    int	idIndex;
+    //unsigned char val[10240];
+    unsigned char *val;
+    size_t count = 0;
+    int sqlRtrn;
+
+    writeLog( "/work/smart/log", "[DataTranslator] Start DataTranslator.o" );
+    //query = sqlite3_mprintf("select id, value from tb_comm_log where tag != 1 order by id asc limit 1");
     query = sqlite3_mprintf("select id, value from tb_comm_log order by datetime asc limit 1");
 
 
     while( 1 )
     {
-	rtrn = disconnectCheck();
-	if( rtrn == -1 )
+
+	// disconnect check
+	if( tcp == -1 )
 	{
-	    return -1;
+	    writeLog( "/work/smart/log", "[DataTranslator] tcp == -1" );
+	    rtrn = init();
+	    printf("disconnect => %d = init();\n",rtrn);
+	    if( rtrn == -1 )
+	    {
+
+		printf("exit~~~~~~~~~~~~~\n");
+		return -1;
+	    }
 	}
 
-	sqlite3_busy_handler( pSQLite3, busy, NULL);
+	//sqlite3_busy_handler( pSQLite3, busy, NULL);
 	sqlData = IoT_sqlite3_select( pSQLite3, query );
 
 	selectOffset = 2;
@@ -117,41 +151,79 @@ int main( void)
 	    printf(" select size = %ld\n", sqlData.size );
 	    idIndex = atoi(sqlData.data[selectOffset++]);	// just one incresment
 
+	    //pos = sqlData.data[selectOffset];
 	    str_len = strlen(sqlData.data[selectOffset]);
 	    printf(" str_len %d\n", str_len);
 	    val = hexStringToBytes(sqlData.data[selectOffset]);
+	    /* WARNING: no sanitization or error-checking whatsoever */
+	    /*
+	    for(count = 0; count < str_len; count++) {
+		sscanf(pos, "%2hhx", &val[count]);
+		pos += 2 * sizeof(char);
+	    }
+	    printf("0x");
 
+	    */
 	    for(count = 0; count < str_len/2; count++)
 		printf("%02X", val[count]);
 	    printf("\n");
 
+	    
 	    time(&transferTime);
 	    memcpy( val+14, &transferTime, 4 );
-
-	    //rtrn = send(tcp, val, count, MSG_NOSIGNAL);
-	    rtrn = send(tcp, val, count, MSG_DONTWAIT);
+	    rtrn = send(tcp, val, count, MSG_NOSIGNAL);
 
 	    if( rtrn == -1 )
 	    {
 
+    
 		writeLog( "/work/smart/log", "[DataTranslator] tcp send fail" );
 		close(tcp);
 		tcp = -1;
-
+		printf("close(tcp) %d\n", tcp);
 		sleep(10);
 
-		//threadCheck();
+		rtrn = init();
+		if( rtrn == -1 )
+		{
+		    writeLog( "/work/smart/log", "[DataTranslator] return -1 exit~~~~~~~~~" );
 
+		    printf("exit~~~~~~~~~~~~~\n");
+		    return -1;
+		}
 	    }
 	    else
 	    {
 		printf("send length = %d\n", rtrn);
-
+		memset( sendBuf, 0, 1024);
+		memcpy( sendBuf, &pac, rtrn );
 		for( i = 0; i < rtrn; i++ )
 		    printf("%02X ", val[i]);
 		printf("\n");
 
-		deleteCommLog(idIndex);
+		/*
+		updateQuery = sqlite3_mprintf("update '%s' set tag = 1 \
+						where id = '%d'",
+				TABLE_PATH,
+				idIndex	
+				);
+				*/
+		updateQuery = sqlite3_mprintf("delete from '%s'	where id = '%d'",
+				TABLE_PATH,
+				idIndex	
+				);
+
+		printf("%s\n", updateQuery );
+
+		//sqlite3_busy_handler( pSQLite3, busy, NULL);
+		sqlRtrn = IoT_sqlite3_update( &pSQLite3, updateQuery );
+		if( sqlRtrn == -1 )
+		{
+		    writeLog( "/work/smart/log", "[DataTranslator] delete update fail" );
+		}
+		printf("delete sqlRtrn = %d\n", sqlRtrn);
+
+
 	    }
 	    free(val);	// malloc in hexStringToBytes();
 	    sqlite3_free_table( sqlData.data );
@@ -171,84 +243,15 @@ int main( void)
 
 }
 
-static void threadCheck()
-{
-    int status;
-    int thread;
-
-    UINT8 logBuffer[256];
-
-    thread = pthread_join( threads, (void **)&status);
-
-    if( thread == 0 )
-    {
-	printf("Completed join with thread status= %d\n", status);
-
-	memset( logBuffer, 0, sizeof( logBuffer ) );
-	sprintf( logBuffer, "[threadCheck] Completed join with thread status= %d", status);
-	writeLog( "/work/smart/log", logBuffer );
-    }
-    else
-    {
-	printf("ERROR; return code from pthread_join() is %d\n", thread);
-	memset( logBuffer, 0, sizeof( logBuffer ) );
-	sprintf( logBuffer, "[threadCheck] ERROR; return code from pthread_join() is %d", thread);
-	writeLog( "/work/smart/log", logBuffer );
-    }
-
-}
-
-static void deleteCommLog(int	idIndex)
-{
-
-    char *updateQuery;
-    int sqlRtrn;
-
-    updateQuery = sqlite3_mprintf("delete from '%s'	where id = '%d'",
-	    TABLE_PATH,
-	    idIndex	
-	    );
-
-    printf("%s\n", updateQuery );
-
-    sqlite3_busy_handler( pSQLite3, busy, NULL);
-    sqlRtrn = IoT_sqlite3_update( &pSQLite3, updateQuery );
-    if( sqlRtrn == -1 )
-    {
-	writeLog( "/work/smart/log", "[DataTranslator] delete update fail" );
-    }
-    printf("delete sqlRtrn = %d\n", sqlRtrn);
-
-
-}
-
-static int disconnectCheck()
-{
-
-    int rtrn = 0;
-
-    // disconnect check
-    if( tcp == -1 )
-    {
-	writeLog( "/work/smart/log", "[DataTranslator] tcp == -1" );
-	rtrn = init();
-	printf("disconnect => %d = init();\n",rtrn);
-
-    }
-
-    return rtrn;
-
-
-}
 static int busy(void *handle, int nTry)
 {
     if( nTry > 9 )
     {
 	printf("%d th - busy handler is called\n", nTry);
     }
-    usleep(10000);	// wait 10ms
+	usleep(10000);	// wait 10ms
 
-    return 10-nTry;
+	return 10-nTry;
 }
 
 static int init(void)
@@ -300,13 +303,11 @@ static int init(void)
 	else
 	{
 	    reTry = 0;
-	    /*
 	    memcpy( th_data, (void *)&tcp, sizeof(tcp) );
-	    if( pthread_create(&threads, NULL, &thread_receive, (void *)th_data) == -1 )
+	    if( pthread_create(&threads[0], NULL, &thread_receive, (void *)th_data) == -1 )
 	    {
 		writeLog("/work/smart/log", "[DataTranslator] error pthread_create method" );
 	    }
-	    */
 
 	}
 
@@ -315,7 +316,34 @@ static int init(void)
     return 0;
 }
 
+static void *thread_sender(void *arg)
+{
 
+    int rtrn;
+    int Fd;
+    int length;
+    unsigned char SendBuf[BUFFER_SIZE];
+    memset(SendBuf, 0, BUFFER_SIZE);
+
+    memcpy( (void *)&Fd, (char *)arg, sizeof(int));
+
+
+    while(1)
+    {
+	rtrn = send(Fd, &pac, sizeof(Struct_SensingValueReport) ,MSG_NOSIGNAL);
+	printf("send length = %d\n", rtrn);
+	if( rtrn == -1 )
+	{
+	    close(Fd);
+	    break;
+	    //tcp = TCPClient( inet_ntoa(ip.sin_addr), env.middleware_port);
+	}
+
+	//usleep(500000);	// 500ms
+	usleep(1000000);	// 
+    }
+
+}
 
 static void *thread_receive(void *arg)
 {
