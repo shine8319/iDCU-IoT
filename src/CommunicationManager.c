@@ -23,7 +23,7 @@
 #include "./include/configRW.h"
 #include "./include/writeLog.h"
 #include "./include/TCPSocket.h"
-*/
+ */
 #include "./include/iDCU.h"
 
 #include "./driver/include/PLCS_9.h"
@@ -37,35 +37,38 @@
 #include "./include/libDeviceInfoParser.h"
 
 
-void sig_handler( int signo);
+static void sig_handler( int signo);
+static void createDriver( DEVICEINFO *device, TAGINFO *tag );
+static void createProcess( pid_t *pid, DEVICEINFO *device, TAGINFO *tag );
 
-	
-void createProcess( DEVICEINFO *device, TAGINFO *tag )
+
+static void createDriver( DEVICEINFO *device, TAGINFO *tag )
 {
 
+    writeLogV2("/work/smart/comm/log/deviceLog", "[Start]", "[%s][%d] Open", device->driver, (int)getpid() );
     if (strcmp(device->driver,"PLCS9") == 0) 
     {
-	 PLCS9(device);
+	PLCS9(device);
     }
     else if (strcmp(device->driver,"PLCS10") == 0) 
     {
-	 PLCS10(device);
+	PLCS10(device);
     }
     else if (strcmp(device->driver,"PLCS12") == 0) 
     {
-	 PLCS12(device);
+	PLCS12(device);
     }
     else if (strcmp(device->driver,"PLCS12ex") == 0) 
     {
-	 PLCS12ex(device);
+	PLCS12ex(device);
     }
     else if (strcmp(device->driver,"iDCU_IoT") == 0) 
     {
-	 iDCU_IoT(device);
+	iDCU_IoT(device);
     }
     else if (strcmp(device->driver,"GN1200") == 0) 
     {
-	 GN1200(device);
+	GN1200(device);
     }
     else
 	printf("no exist~~~~~~\n");
@@ -76,56 +79,84 @@ void createProcess( DEVICEINFO *device, TAGINFO *tag )
 int main(int argc, char **argv) { 
 
     int i;
-    pid_t pid;
     int threadCount = 0;
+    int status;
     NODEINFO xmlinfo;
+    pid_t pidCheck;
     //xmlinfo = pointparser("/work/smart/device_info.xml");
     xmlinfo = deviceInfoParser("/work/smart/device_info.xml");
 
     signal( SIGINT, (void *)sig_handler);
 
+    pid_t pids[xmlinfo.getPointSize];
     printf("xmlinfo.getPointSize %d\n", xmlinfo.getPointSize);
+
     for( i = 0; i < xmlinfo.getPointSize; i++ )
     {
-	pid = fork();
-	if( pid < 0 )
-	{
-	    perror("fork error : ");
-	    writeLog("/work/smart/comm/log/deviceLog", "[CommunicationManager] error fork()" );
-	    printf("error process\n");
-	}
-
-	if( pid == 0 )
-	{
-	    createProcess( &xmlinfo.device[i], &xmlinfo.tag[i] );
-	    exit(0);
-	}
-	else
-	{
-	    printf("pid %d\n", pid );
-	    threadCount++;
-	    printf("proces Count %d\n", threadCount );
-	}
-
+	createProcess( &pids[i], &xmlinfo.device[i], &xmlinfo.tag[i] );
+	usleep(100000);	// 100ms
     }
 
     writeLog("/work/smart/log", "[CommunicationManager] start CommunicationManager.o" );
 
     while(1)
     {
+
+	for( i = 0; i < xmlinfo.getPointSize; i++ )
+	{
+	    pidCheck = waitpid( pids[i], &status, WNOHANG );
+	    if( 0 != pidCheck )
+	    {
+
+		printf("[%s][%d] exit\n", xmlinfo.device[i].driver, pids[i] );
+		writeLogV2("/work/smart/comm/log/deviceLog", "[Error]", "[%s][%d] exit", xmlinfo.device[i].driver, pids[i] );
+
+		createProcess( &pids[i], &xmlinfo.device[i], &xmlinfo.tag[i] );
+	    }
+
+	    pidCheck = 0;
+	    status = 0;
+	    usleep(100000);	// 100ms
+	}
 	sleep(1);
     }	
 
     return 0; 
 } 
 
-void sig_handler( int signo)
+static void createProcess( pid_t *pid, DEVICEINFO *device, TAGINFO *tag )
+{
+
+    *pid = fork();
+    printf("[%s] *pid %d\n", device->driver, *pid);
+
+    if( *pid < 0 )
+    {
+	perror("fork error : ");
+	writeLogV2("/work/smart/comm/log/deviceLog", "[Error]", "[%s] error fork()", device->driver );
+    }
+
+    if( *pid == 0 )
+    {
+	printf("My pid %d\n", (int)getpid() );
+	createDriver( device, tag );
+	exit(0);
+    }
+    else
+    {
+	printf("Parent %d, child %d\n", (int)getpid(), *pid );
+    }
+
+}
+
+static void sig_handler( int signo)
 {
     int i;
     int rc;
     int status;
 
-    printf("ctrl-c\n");
+    printf("[%d] return Code %d\n", (int)getpid(), signo);
+    writeLogV2("/work/smart/comm/log/deviceLog", "[Error]", "[%d] return Code %d", (int)getpid(), signo );
 
     exit(1);
 }

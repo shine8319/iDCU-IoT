@@ -53,9 +53,9 @@ void *PLCS10(DEVICEINFO *device) {
     /***************** MSG Queue **********************/
     if( -1 == ( msgQId = msgget( (key_t)1, IPC_CREAT | 0666)))
     {
-	    writeLog( "/work/smart/comm/log/PLCS10", "[PLCS10] error msgget() msgQId" );
-	    //perror( "msgget() ½ÇÆÐ");
-	    return;
+	writeLog( "/work/smart/comm/log/PLCS10", "[PLCS10] error msgget() msgQId" );
+	//perror( "msgget() ½ÇÆÐ");
+	return;
     }
 
     for( i = 0; i < xmlinfo.getPointSize; i++ )
@@ -71,9 +71,9 @@ void *PLCS10(DEVICEINFO *device) {
 	}
 
     }
-    
+
     if( initFail == 1 )
-    return; 
+	return; 
 
 
     while(1)
@@ -103,121 +103,121 @@ void *PLCS10(DEVICEINFO *device) {
 
 static int Socket_Manager( int *client_sock ) {
 
-	fd_set control_msg_readset;
-	struct timeval control_msg_tv;
-	unsigned char DataBuf[BUFFER_SIZE*10];
-	int ReadMsgSize;
+    fd_set control_msg_readset;
+    struct timeval control_msg_tv;
+    unsigned char DataBuf[BUFFER_SIZE*10];
+    int ReadMsgSize;
 
-	unsigned char receiveBuffer[BUFFER_SIZE*10];
-	int receiveSize = 0;
-	unsigned char remainder[BUFFER_SIZE*10];
-	int parsingSize = 0;
+    unsigned char receiveBuffer[BUFFER_SIZE*10];
+    int receiveSize = 0;
+    unsigned char remainder[BUFFER_SIZE*10];
+    int parsingSize = 0;
 
 
-	int rtrn;
-	int i;
-	int nd;
+    int rtrn;
+    int i;
+    int nd;
 
-	FD_ZERO(&control_msg_readset);
-	printf("Receive Ready!!!\n");
-	writeLog( "/work/smart/comm/log/PLCS10", "[Socket_Manager] Start");
+    FD_ZERO(&control_msg_readset);
+    printf("Receive Ready!!!\n");
+    writeLog( "/work/smart/comm/log/PLCS10", "[Socket_Manager] Start");
 
-	while( 1 ) 
+    while( 1 ) 
+    {
+
+	FD_SET(*client_sock, &control_msg_readset);
+	control_msg_tv.tv_sec = 55;
+	//control_msg_tv.tv_usec = 10000;
+	control_msg_tv.tv_usec = 5000000;	// timeout check 5 second
+
+	// ¸®ÅÏ°ª -1Àº ¿À·ù¹ß»ý, 0Àº Å¸ÀÓ¾Æ¿ô, 0º¸´Ù Å©¸é º¯°æµÈ ÆÄÀÏ µð½ºÅ©¸³ÅÍ¼ö
+	nd = select( *client_sock+1, &control_msg_readset, NULL, NULL, &control_msg_tv );		
+	if( nd > 0 ) 
 	{
 
-		FD_SET(*client_sock, &control_msg_readset);
-		control_msg_tv.tv_sec = 55;
-		//control_msg_tv.tv_usec = 10000;
-		control_msg_tv.tv_usec = 5000000;	// timeout check 5 second
-
-		// ¸®ÅÏ°ª -1Àº ¿À·ù¹ß»ý, 0Àº Å¸ÀÓ¾Æ¿ô, 0º¸´Ù Å©¸é º¯°æµÈ ÆÄÀÏ µð½ºÅ©¸³ÅÍ¼ö
-		nd = select( *client_sock+1, &control_msg_readset, NULL, NULL, &control_msg_tv );		
-		if( nd > 0 ) 
-		{
-
-			memset( DataBuf, 0, sizeof(DataBuf) );
-			ReadMsgSize = recv( *client_sock, &DataBuf, BUFFER_SIZE*10, MSG_DONTWAIT);
-			if( ReadMsgSize > 0 ) 
-			{
-				/*
-				for( i = 0; i < ReadMsgSize; i++ ) {
-					//printf("%-3.2x", DataBuf[i]);
-					printf("%C", DataBuf[i]);
-				}
-				printf("\n");
-
-				*/
-				printf("%s\n", DataBuf);
-				writeLog( "/work/smart/comm/log/PLCS10", DataBuf);
-
-				printf("recv data size : %d\n", ReadMsgSize);
-
-				if( ReadMsgSize >= BUFFER_SIZE*10 )
-					continue;
-
-				memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
-				receiveSize += ReadMsgSize;
-
-				if( receiveSize >= BUFFER_SIZE*10 )
-				{
-				    printf("Packet Buffer Full~~ %d\n", receiveSize );
-				    writeLog( "/work/smart/comm/log/PLCS10", "[Socket_Manager] Packet Buffer Full~~");
-
-				    receiveSize = 0;
-				    memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
-				    memset( remainder, 0 , sizeof(BUFFER_SIZE)*10 );
-				    continue;
-				}
-
-
-				parsingSize = ParsingReceiveValue(receiveBuffer, receiveSize, remainder, parsingSize);
-				printf("reminder size %d \n", parsingSize );
-				memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
-				receiveSize = 0;
-				memcpy( receiveBuffer, remainder, parsingSize );
-				receiveSize = parsingSize;
-
-				memset( remainder, 0 , sizeof(BUFFER_SIZE)*10 );
-
-			} 
-			else {
-				sleep(1);
-				printf("Network Disconnection\n");
-				writeLog( "/work/smart/comm/log/PLCS10", "[Socket_Manager] Network Disconnection");
-				break;
-			}
-			ReadMsgSize = 0;
-
-		} 
-		else if( nd == 0 ) 
-		{
-			printf("timeout\n");
-			writeLog( "/work/smart/comm/log/PLCS10", "[Socket_Manager] Timeout");
-			//shutdown( *client_sock, SHUT_WR );
-			break;
+	    memset( DataBuf, 0, sizeof(DataBuf) );
+	    ReadMsgSize = recv( *client_sock, &DataBuf, BUFFER_SIZE*10, MSG_DONTWAIT);
+	    if( ReadMsgSize > 0 ) 
+	    {
+		/*
+		   for( i = 0; i < ReadMsgSize; i++ ) {
+		//printf("%-3.2x", DataBuf[i]);
+		printf("%C", DataBuf[i]);
 		}
-		else if( nd == -1 ) 
+		printf("\n");
+
+		 */
+		printf("%s\n", DataBuf);
+		writeLog( "/work/smart/comm/log/PLCS10", DataBuf);
+
+		printf("recv data size : %d\n", ReadMsgSize);
+
+		if( ReadMsgSize >= BUFFER_SIZE*10 )
+		    continue;
+
+		memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
+		receiveSize += ReadMsgSize;
+
+		if( receiveSize >= BUFFER_SIZE*10 )
 		{
-			printf("error...................\n");
-			writeLog( "/work/smart/comm/log/PLCS10", "[Socket_Manager] Network Error........");
-			//shutdown( *client_sock, SHUT_WR );
-			break;
+		    printf("Packet Buffer Full~~ %d\n", receiveSize );
+		    writeLog( "/work/smart/comm/log/PLCS10", "[Socket_Manager] Packet Buffer Full~~");
+
+		    receiveSize = 0;
+		    memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
+		    memset( remainder, 0 , sizeof(BUFFER_SIZE)*10 );
+		    continue;
 		}
-		nd = 0;
 
-	}	// end of while
 
-	printf("Disconnection client....\n");
+		parsingSize = ParsingReceiveValue(receiveBuffer, receiveSize, remainder, parsingSize);
+		printf("reminder size %d \n", parsingSize );
+		memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE)*10 );
+		receiveSize = 0;
+		memcpy( receiveBuffer, remainder, parsingSize );
+		receiveSize = parsingSize;
 
-	close( *client_sock );
-	return 0;
+		memset( remainder, 0 , sizeof(BUFFER_SIZE)*10 );
+
+	    } 
+	    else {
+		sleep(1);
+		printf("Network Disconnection\n");
+		writeLog( "/work/smart/comm/log/PLCS10", "[Socket_Manager] Network Disconnection");
+		break;
+	    }
+	    ReadMsgSize = 0;
+
+	} 
+	else if( nd == 0 ) 
+	{
+	    printf("timeout\n");
+	    writeLog( "/work/smart/comm/log/PLCS10", "[Socket_Manager] Timeout");
+	    //shutdown( *client_sock, SHUT_WR );
+	    break;
+	}
+	else if( nd == -1 ) 
+	{
+	    printf("error...................\n");
+	    writeLog( "/work/smart/comm/log/PLCS10", "[Socket_Manager] Network Error........");
+	    //shutdown( *client_sock, SHUT_WR );
+	    break;
+	}
+	nd = 0;
+
+    }	// end of while
+
+    printf("Disconnection client....\n");
+
+    close( *client_sock );
+    return 0;
 
 }
 
 static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
 {
 
-     unsigned char setBuffer[BUFFER_SIZE*10];
+    unsigned char setBuffer[BUFFER_SIZE*10];
     int i;
     int stringOffset = 0;
     int idOffset = 0;
@@ -250,7 +250,7 @@ static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* re
 		    memset( setBuffer, 0, BUFFER_SIZE*10 );
 		    memset( parsing, 0, 1024*32 );
 		    parsingCnt = 1;
-		    
+
 		    memset( setString, 0, BUFFER_SIZE*10 );
 		    stringOffset = 0;
 
@@ -265,12 +265,12 @@ static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* re
 
 		    while( token = strtok( NULL, "," ) ) 
 		    {
-			
+
 			strcpy( parsing[parsingCnt++], token );
 			//printf("[%d] %s\n", parsingCnt-1, parsing[parsingCnt-1] ) ;
 		    }
 
-		   //printf("parsingCnt %d\n", parsingCnt );
+		    //printf("parsingCnt %d\n", parsingCnt );
 		    //for( idOffset = 9; idOffset < 78; idOffset++ )
 		    for( idOffset = 9; idOffset < 72; idOffset++ )  // 2014.12.16 remove 6 trid
 		    {
@@ -286,7 +286,7 @@ static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* re
 
 		    //writeLog( "/work/smart/comm/log", setString);
 		    printf("%s\n", setString);
-	    
+
 		    selectTag( setString, strlen(setString) );
 
 		    i = crOffset;

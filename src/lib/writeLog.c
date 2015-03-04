@@ -1,4 +1,5 @@
 #include <stdio.h> 
+#include <stdarg.h>
 #include <stdlib.h> 
 #include <string.h> 
 #include <unistd.h>
@@ -18,6 +19,7 @@ void writeLog( UINT8 *path, UINT8 *str )
     char     buff[10240];
     char     devName[512];
     int	    pid;
+    int	    reTry = 3;
     
     memset( devName, 0, sizeof( devName ));
     
@@ -31,6 +33,7 @@ void writeLog( UINT8 *path, UINT8 *str )
 	    t->tm_mday );
 
 
+reOpen:
     fp_log = fopen( devName, "a");
     if( !fp_log )
     {
@@ -50,7 +53,15 @@ void writeLog( UINT8 *path, UINT8 *str )
 	}
 	else
 	{
-	    return;
+	    usleep(30000);	// 30ms
+	    reTry--;
+	    if( reTry == 0 )
+		return;
+	    else
+	    {
+		printf("goto reOpen\n");
+		goto reOpen;
+	    }
 	}
     }
 
@@ -70,7 +81,8 @@ void writeLog( UINT8 *path, UINT8 *str )
     fclose( fp_log );
 }
 
-void writeLogV2( UINT8 *path, UINT8 *filename, UINT8 *str )
+
+void writeLogV2( UINT8 *path, UINT8 *filename, const char *str, ...)
 {
     FILE    *fp_log;
     struct timeval val;
@@ -78,11 +90,20 @@ void writeLogV2( UINT8 *path, UINT8 *filename, UINT8 *str )
     char     buff[10240];
     char     devName[512];
     int	    pid;
+    int	    reTry = 3;
+
+    char    argBuf[10240];
+    va_list ap;
     
     memset( devName, 0, sizeof( devName ));
     
     gettimeofday(&val, NULL);
     t = localtime(&val.tv_sec);
+
+
+    va_start(ap, str);
+    vsprintf(argBuf, str, ap);
+    va_end(ap);
 
     sprintf( devName, "%s/%s_%04d-%02d-%02d.log",
 	    path,
@@ -91,7 +112,7 @@ void writeLogV2( UINT8 *path, UINT8 *filename, UINT8 *str )
 	    t->tm_mon + 1,
 	    t->tm_mday );
 
-
+reOpen:
     fp_log = fopen( devName, "a");
     if( !fp_log )
     {
@@ -111,7 +132,15 @@ void writeLogV2( UINT8 *path, UINT8 *filename, UINT8 *str )
 	}
 	else
 	{
-	    return;
+	    usleep(30000);	// 30ms
+	    reTry--;
+	    if( reTry == 0 )
+		return;
+	    else
+	    {
+		printf("goto reOpen\n");
+		goto reOpen;
+	    }
 	}
     }
 
@@ -124,7 +153,8 @@ void writeLogV2( UINT8 *path, UINT8 *filename, UINT8 *str )
 	    t->tm_min,
 	    t->tm_sec,
 	    val.tv_usec/1000,
-	    str);
+	    argBuf);
+	    //str);
 
     fwrite( buff, 1, strlen(buff), fp_log );
 

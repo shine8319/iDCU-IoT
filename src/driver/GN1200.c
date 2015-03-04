@@ -238,6 +238,7 @@ static int Socket_Manager( int *client_sock ) {
 
 	    memset( DataBuf, 0, sizeof(DataBuf) );
 	    ReadMsgSize = recv( *client_sock, &DataBuf, BUFFER_SIZE, MSG_DONTWAIT);
+
 	    if( ReadMsgSize > 0 ) 
 	    {
 		/*
