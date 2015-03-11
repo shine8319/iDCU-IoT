@@ -12,6 +12,8 @@ SRC2 = sfsock.c
 SRC3 = sf.c
 SRC4 = sfsource.c
 
+LIB_LIBEVENT = -L../lib/libevent/lib -levent
+LIB_REDIS= -L../lib -lhiredis
 LIB_EXPAT = -L../lib -lexpat
 #LIB_EXPAT = -L/usr/local/arm/expat/lib -lexpat
 LIB_SQLITE3 = -L../lib -lsqlite3
@@ -115,7 +117,7 @@ DataTranslator:
 	$(RASCC) -c ./lib/ETRI_Deregistration.c ./lib/SQLite3Interface.c $(LIB_SQLITE3)
 	$(RASAR) rc ../lib/libEtriDereg.a ETRI_Deregistration.o SQLite3Interface.o
 	$(RASRANLIB) ../lib/libEtriDereg.a
-	$(RASCC)  -o $(TARGET0)/DataTranslator.o DataTranslator.c $(configRW) $(TCPSocket) $(writeLog) $(hexString) $(LIB_ETRIREG) $(LIB_ETRIDEREG) $(LIB_SQLITE3) -lpthread
+	$(RASCC)  -o $(TARGET0)/DataTranslator.o DataTranslator.c $(configRW) $(TCPSocket) $(writeLog) $(hexString) $(LIB_REDIS) $(LIB_ETRIREG) $(LIB_ETRIDEREG) $(LIB_SQLITE3) -lpthread
 
 
 M2MManager:
@@ -130,8 +132,12 @@ SetupManager:
 PLCS-12:
 	$(RASCC)  -o $(TARGET0)/PLCS-12.o PLCS-12.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
 
+eventHub:
+	$(RASCC)  -o $(TARGET0)/eventHub.o eventHub.c $(libpointparser) $(libDeivceInfoParser) $(configRW) $(writeLog) $(hexString) $(LIB_LIBEVENT) $(LIB_EXPAT) $(LIB_REDIS) -I./include -lpthread
+
+
 CommunicationManager:
-	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_9) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_GN1200) $(LIB_EXPAT) -I./include -lpthread
+	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_9) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_GN1200) $(LIB_EXPAT) $(LIB_REDIS) -I./include -lpthread
 
 
 iDCU-IoT:

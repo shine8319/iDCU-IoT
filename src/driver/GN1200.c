@@ -23,9 +23,13 @@
 #include "../include/writeLog.h"
 #include "../include/TCPSocket.h"
 #include "../include/libpointparser.h"
+#include "../include/hiredis/hiredis.h"
+#include "../include/ETRI.h"
 
 #define POLYNORMIAL 0xA001
 
+static int LPUSH_SensingData(char redisValue[2048], int len );
+static void redisInitialize();
 static UINT16 CRC16(UINT8 *puchMsg, int usDataLen);
 static void *thread_main(void *arg);
 static int Socket_Manager( int *client_sock );
@@ -35,6 +39,11 @@ static int selectTag(unsigned char* buffer, int len, INT32 type );
 static int comm_id;
 static NODEINFO xmlinfo;
 static int xmlOffset = 0;
+static redisContext *c;
+static int tagID;
+static char* ctagID;
+
+
 
 void *GN1200(DEVICEINFO *device) {
 
@@ -60,12 +69,15 @@ void *GN1200(DEVICEINFO *device) {
     xmlinfo = pointparser("/work/smart/tag_info.xml");
 
     /***************** MSG Queue **********************/
+    /*
     if( -1 == ( comm_id = msgget( (key_t)1, IPC_CREAT | 0666)))
     {
 	writeLog( "/work/smart/comm/log/GN1200", "[GN1200] error msgget() comm_id" );
 	//perror( "msgget() ½ÇÆÐ");
 	return;
     }
+    */
+    redisInitialize();
 
     for( i = 0; i < xmlinfo.getPointSize; i++ )
     {
@@ -149,6 +161,32 @@ void *GN1200(DEVICEINFO *device) {
 
     return 0; 
 } 
+static void redisInitialize() {
+
+    const char *hostname = "127.0.0.1";
+    int port = 6379;
+    struct timeval timeout = { 1, 500000 }; // 1.5 seconds
+
+    c = redisConnectWithTimeout(hostname, port, timeout);
+
+    if (c == NULL || c->err) {
+
+	writeLog( "/work/smart/comm/log/GN1200", "[redisInitialize] DB Fail");
+
+	if (c) {
+	    printf("Connection error: %s\n", c->errstr);
+	    redisFree(c);
+	} else {
+	    printf("Connection error: can't allocate redis context\n");
+	}
+	exit(1);
+    }
+    else
+	writeLog( "/work/smart/comm/log/GN1200", "[redisInitialize] DB OK");
+
+
+}
+
 
 static UINT16 CRC16(UINT8 *puchMsg, int usDataLen){
     int i;
@@ -187,7 +225,7 @@ static void *thread_main(void *arg)
 	//printf("return Send %d\n", rtrn );
 	if( rtrn == -1 )
 	{
-	    printf("[Thread] Error Send\n");
+	    printf("[GN1200Thread] Error Send\n");
 	    break;
 	}
 
@@ -429,40 +467,105 @@ static int selectTag(unsigned char* buffer, int len, INT32 type )
 
     data.data_num = offset; 
 
+    char redisValue[2048];
+    memset(redisValue, 0, 2048 );
+    /* Set a key */
+    for( i = 0; i < data.data_num; i++ )
+	sprintf(redisValue+(i*2), "%02X", data.data_buff[i]);
+
+
+    //LPUSH_SensingData(redisValue, strlen(redisValue));
+    LPUSH_SensingData(redisValue, strlen(redisValue)/2);
 
     /*
        printf("event => ");
        for( i=0; i<data.data_num; i++ )
        printf("%02X ", data.data_buff[i]);
        printf("\n");
-     */
 
     if ( -1 == msgsnd( comm_id, &data, sizeof( t_data) - sizeof( long), IPC_NOWAIT))
     {
 	writeLog("/work/smart/comm/log/GN1200", "[selectTag] msgsnd() error : Queue full" );
     }
 
+     */
     return 0;
 }
-
-/*
-   unsigned char _getCheckSum_iDCU_IoT( int len )
-   {
-   int intSum = 0;
-   unsigned char sum;
-   int i;
-
-//printf("start sum %d\n", len);
-for( i = 1; i<= len; i++ )
+static int LPUSH_SensingData(char redisValue[2048], int len )
 {
-intSum += tlvSendBuffer[i];
-//sleep(1);
-//printf("%d ", tlvSendBuffer[i]);
+
+    static redisReply *reply;
+    Struct_SensingValueReport pac;
+    READENV env;
+
+    int status, offset;
+    int i,j;
+    int rtrn;
+
+    time_t  transferTime, sensingTime;
+    unsigned char savePac[1024];
+    char strPac[1024*2];
+
+
+    memset( &env, 0, sizeof( READENV ) );
+
+    ReadEnvConfig("/work/smart/reg/env.reg", &env );
+
+
+    pac.Message_Id		= 0x09;
+    pac.Length		= (SENSING_VALUE_REPORT_HEAD_SIZE-4) + len;
+    pac.Command_Id		= 0xFFFFFFFF;
+    pac.GateNode_Id		= env.gatenode;
+    pac.PAN_Id			= env.pan;
+    pac.SensorNode_Id		= env.sensornode; 
+
+    time(&transferTime);
+    pac.Transfer_Time		= transferTime;
+
+    offset = 0;
+    memset( savePac, 0, sizeof( savePac ) );
+
+    memcpy( savePac+offset, &pac.Message_Id, sizeof( pac.Message_Id ) );
+    offset += sizeof( pac.Message_Id );
+    memcpy( savePac+offset, &pac.Length, sizeof( pac.Length ) );
+    offset += sizeof( pac.Length );
+    memcpy( savePac+offset, &pac.Command_Id, sizeof( pac.Command_Id ) );
+    offset += sizeof( pac.Command_Id );
+    memcpy( savePac+offset, &pac.GateNode_Id, sizeof( pac.GateNode_Id ) );
+    offset += sizeof( pac.GateNode_Id );
+    memcpy( savePac+offset, &pac.PAN_Id, sizeof( pac.PAN_Id ) );
+    offset += sizeof( pac.PAN_Id );
+    memcpy( savePac+offset, &pac.SensorNode_Id, sizeof( pac.SensorNode_Id ) );
+    offset += sizeof( pac.SensorNode_Id );
+    memcpy( savePac+offset, &pac.Transfer_Time, sizeof( pac.Transfer_Time ) );
+    offset += sizeof( pac.Transfer_Time );
+
+    memset( strPac, 0, 1024*2 );
+
+    for( i = 0; i < offset; i++ ) 
+	sprintf(strPac+(i*2), "%02X", savePac[i]);
+
+    sprintf(strPac+strlen( strPac ), "%s", redisValue);
+
+
+
+    reply = redisCommand(c,"lpush tag1 %s",   strPac);
+    printf("type:%d / index:%lld\n", reply->type, reply->integer);
+    printf("len:%d / str:%s\n", reply->len, reply->str);
+    printf("elements:%d\n", reply->elements );
+
+
+    writeLogV2( "/work/smart/comm/log/GN1200", "LPUSH", "%s", strPac);
+
+    if( reply->len > 0 )
+	writeLogV2( "/work/smart/comm/log/GN1200", "LPUSH", "%s", reply->str);
+
+    rtrn = reply->integer;
+
+    freeReplyObject(reply);
+
+
+    return rtrn;
+
 }
 
-sum = (unsigned char)intSum;
-//printf("sum %d\n", sum);
-return sum;
-}
-
- */

@@ -36,6 +36,7 @@
 #include "./include/libpointparser.h"
 #include "./include/libDeviceInfoParser.h"
 
+#include "./include/hiredis/hiredis.h"
 
 static void sig_handler( int signo);
 static void createDriver( DEVICEINFO *device, TAGINFO *tag );
@@ -118,7 +119,7 @@ int main(int argc, char **argv) {
 	    status = 0;
 	    usleep(100000);	// 100ms
 	}
-	sleep(1);
+	sleep(60);
     }	
 
     return 0; 

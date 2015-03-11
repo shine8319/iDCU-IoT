@@ -345,6 +345,8 @@ int sender( int *tcp, UINT8 *packet, UINT32 size )
 {
     int rtrn;
     int i;
+    unsigned char sendBuffer[2048];
+    memset( sendBuffer, 0, 2014 );
     /*
        int reTry = 3;
 
@@ -361,12 +363,19 @@ int sender( int *tcp, UINT8 *packet, UINT32 size )
 
        } while( reTry );
      */
-    rtrn = send(*tcp, packet,  size, MSG_NOSIGNAL);
+    //rtrn = send(*tcp, packet,  size, MSG_NOSIGNAL);
+    rtrn = send(*tcp, packet,  size, MSG_DONTWAIT);
 
     for( i = 0; i < size; i++ )
+    {
+	sprintf(sendBuffer+(i*2), "%02X", packet[i]);
 	printf("%02X ", packet[i] );
+    }
     printf("\n");
     printf("to M/W Send size %d\n", rtrn);
+
+    writeLogV2( "/work/smart/log", "ACK", "%s", sendBuffer);
+
     if( rtrn != -1 )
     {
 	rtrn = receive(tcp, 10);
@@ -396,6 +405,7 @@ int receive( int *tcp, int timeout ) {
     unsigned char remainder[BUFFER_SIZE];
     int parsingSize = 0;
 
+    unsigned char sendBuffer[2048];
 
     int rtrn = 0;
     int i;
@@ -420,15 +430,30 @@ int receive( int *tcp, int timeout ) {
 	    ReadMsgSize = recv( *tcp, &DataBuf, BUFFER_SIZE, MSG_DONTWAIT);
 	    if( ReadMsgSize > 0 ) 
 	    {
+		memset( sendBuffer, 0, 2014 );
 		for( i = 0; i < ReadMsgSize; i++ ) {
+		    sprintf(sendBuffer+(i*2), "%02X", DataBuf[i]);
 		    printf("%-3.2x", DataBuf[i]);
 		}
 		printf("\n");
 		printf("recv data size : %d\n", ReadMsgSize);
 
+		writeLogV2( "/work/smart/log", "ACK", "%s", sendBuffer);
 		//if( ReadMsgSize >= BUFFER_SIZE )
 		//continue;
+		if( DataBuf[0] != 0xFF || 
+		    DataBuf[1] != 0x00 ||
+		    DataBuf[2] != 0x0d ||
+		    DataBuf[3] != 0x00 ||
+		    DataBuf[16] != 0x00 )
+		{
+		    rtrn = -1;
+		    printf("ACK Err~~~~~~\n");
+		}
+		else
+		    printf("ACK OK~~~~~~\n");
 
+		/*
 		memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
 		receiveSize += ReadMsgSize;
 
@@ -439,10 +464,13 @@ int receive( int *tcp, int timeout ) {
 		receiveSize = parsingSize;
 
 		memset( remainder, 0 , sizeof(BUFFER_SIZE) );
+		*/
+
 
 	    } 
 	    else {
 		sleep(1);
+		rtrn = -1;
 		printf("receive None\n");
 		//break;
 	    }

@@ -118,6 +118,17 @@ typedef struct Struct_TR52{
     UINT32   Sensing_Value;
 } __attribute__ ((__packed__)) Struct_TR52;
 
+typedef struct Struct_ACK{
+    UINT16  Message_Id;
+    UINT16  Length;
+    UINT32  Command_Id;
+    UINT16  GateNode_Id;
+    UINT16  PAN_Id;
+    UINT16  SensorNode_Id;
+    UINT16  Transducer_Id;
+    UINT8  Result_Code;
+  } __attribute__ ((__packed__)) Struct_ACK;
+
 
 typedef struct Struct_SensingValueReport {
     UINT16  Message_Id;
