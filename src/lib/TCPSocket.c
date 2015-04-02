@@ -378,7 +378,7 @@ int sender( int *tcp, UINT8 *packet, UINT32 size )
 
     if( rtrn != -1 )
     {
-	rtrn = receive(tcp, 10);
+	rtrn = receive(tcp, 30);
 	if( rtrn == 0 || rtrn == 2 )
 	{
 	    return 0;

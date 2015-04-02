@@ -35,6 +35,7 @@ static void threadCheck();
 static void deleteCommLog(int	idIndex);
 static int disconnectCheck();
 static int init(void);
+static int reConnect(void);
 static void *thread_receive(void *arg);
 static int busy(void *handle, int nTry);
 
@@ -82,6 +83,7 @@ int main( void)
     size_t count = 0;
     int popCount;
     unsigned char ackCount = 0;
+    int ackCheckRtrn = 0;
 
     redisReply *reply;
 
@@ -107,6 +109,12 @@ int main( void)
     writeLog( "/work/smart/log", "[DataTranslator] Start DataTranslator.o" );
 
     query = sqlite3_mprintf("select id, value from tb_comm_log order by datetime asc limit 1");
+
+    rtrn = init();
+    if( rtrn == -1 )
+    {
+	return -1;
+    }
 
 
     while( 1 )
@@ -196,10 +204,17 @@ int main( void)
 		writeLogV2( "/work/smart/log", "ACK", "Send to M/W %s", sendBuffer );
 		ackCount++;
 
-		if( checkAck() == 0 )
+		ackCheckRtrn = checkAck();
+		if( ackCheckRtrn == 0 )
 		{
 		    printf("AckOk\n");
+		    writeLogV2( "/work/smart/log", "ACK", "Receive Ack" );
 		    tagLPOP(popCount);
+		}
+		else if( ackCheckRtrn == -2 )
+		{
+		    printf("Receive Nack\n");
+		    writeLogV2( "/work/smart/log", "ACK", "Receive Nack" );
 		}
 		else
 		{
@@ -341,7 +356,8 @@ static int disconnectCheck()
     if( tcp == -1 )
     {
 	writeLog( "/work/smart/log", "[DataTranslator] tcp == -1" );
-	rtrn = init();
+	rtrn = reConnect();
+	//rtrn = init();
 	//printf("disconnect => %d = init();\n",rtrn);
 
     }
@@ -360,7 +376,51 @@ static int busy(void *handle, int nTry)
 
     return 10-nTry;
 }
+static int reConnect(void)
+{
+    char th_data[256];
+    struct sockaddr_in ip; 
+    int reTry = 3;
 
+    ReadEnvConfig("/work/smart/reg/env.reg", &env );
+
+    ip.sin_addr.s_addr = (env.middleware_ip);
+    printf(" bind IP %s, port %d\n", inet_ntoa(ip.sin_addr), env.middleware_port);
+
+
+    do {
+
+	if( !(tcp > 0) )
+	{
+	    tcp = TCPClient( inet_ntoa(ip.sin_addr), env.middleware_port);
+	    printf(" tcp status %d\n", tcp );
+	    if( tcp < 0 )
+	    {
+		writeLog("/work/smart/log", "[DataTranslator] fail TCPClient method(reConnect) " );
+		printf("connect error\n");
+		sleep(1);
+		reTry--;
+		if( reTry == 0 )
+		{
+		    close(tcp);
+		    tcp = -1;
+		    return -1;
+		}
+
+	    }
+	    else
+	    {
+		printf("connect success\n");
+		reTry = 0;
+	    }
+
+	}
+
+
+    } while( reTry );
+
+    return 0;
+}
 static int init(void)
 {
     char th_data[256];
@@ -381,7 +441,7 @@ static int init(void)
 	    printf(" tcp status %d\n", tcp );
 	    if( tcp < 0 )
 	    {
-		writeLog("/work/smart/log", "[DataTranslator] fail TCPClient method " );
+		writeLog("/work/smart/log", "[DataTranslator] fail TCPClient method(init) " );
 		printf("connect error\n");
 		return -1;
 	    }
@@ -428,12 +488,12 @@ static int init(void)
 static int checkAckData(Struct_ACK pac)
 {
 
-    if( pac.Message_Id != 0xFF ) return -1;
-    if( pac.Length != 13 ) return -1;
-    if( env.gatenode != pac.GateNode_Id ) return -1;
-    if( env.pan != pac.PAN_Id ) return -1;
+    if( pac.Message_Id != 0xFF ) return -2;
+    if( pac.Length != 13 ) return -2;
+    if( env.gatenode != pac.GateNode_Id ) return -2;
+    if( env.pan != pac.PAN_Id ) return -2;
     //if( env.sensornode != pac.SensorNode_Id ) return -1;
-    if( pac.Result_Code != 0 ) return -1;
+    if( pac.Result_Code != 0 ) return -2;
 
     return 0;
 }
@@ -462,7 +522,7 @@ static int checkAck()
     FD_ZERO(&control_msg_readset);
 
 	FD_SET(tcp, &control_msg_readset);
-	control_msg_tv.tv_sec = 10;
+	control_msg_tv.tv_sec = 60;
 	control_msg_tv.tv_usec = 0;	// timeout check 
 
 	nd = select( tcp+1, &control_msg_readset, NULL, NULL, &control_msg_tv );		
@@ -480,8 +540,7 @@ static int checkAck()
 		printf("\n");
 		printf("recv data size : %d\n", ReadMsgSize);
 
-		writeLogV2( "/work/smart/log", "ACK", "Receive Ack %s", receiveBuffer );
-
+		writeLogV2( "/work/smart/log", "ACK", "Receive from M/W %s", receiveBuffer );
 		memcpy( &pac, DataBuf, ReadMsgSize );
 		rtrn = checkAckData(pac);
 
