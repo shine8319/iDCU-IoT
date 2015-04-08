@@ -24,6 +24,64 @@
 #include "../include/SQLite3Interface.h"
 #define BUFFER_SIZE 1024
 
+int ETRI_Registration_Retry( int *tcp, READENV *env ) {
+
+    READENV info;
+
+    sqlite3 *pSQLite3;
+    UINT32 rc;
+    int rtrn;
+    memcpy( &info.manufacturer, &env->manufacturer, 20 );
+    memcpy( &info.producno, &env->producno, 20 );
+    info.gatenode = env->gatenode;
+    info.pan = env->pan;
+    info.sensornode = env->sensornode;
+
+    rc = IoT_sqlite3_open( "/work/smart/db/driver", &pSQLite3 );
+    printf("rc %ld\n", rc );
+    if( rc != 0 )
+    {
+	writeLog( "/work/smart/log", "[ETRI_Registration] fail DB Opne" );
+	return -1;
+    }
+    else
+    {
+	//writeLog( "/work/smart/log", "[ETRI_Registration] DB Open" );
+	printf("DB OPEN!!\n");
+    }
+
+
+    if( -1 == GateNode_Description_Registration( tcp, &info ) )
+    {
+	IoT_sqlite3_close( &pSQLite3 );
+	return -1;
+    }
+    if( -1 == PAN_Description_Registration( tcp, &info  ) )
+    {
+	IoT_sqlite3_close( &pSQLite3 );
+	return -1;
+    }
+    if( -1 == SensorNode_Description_Registration( tcp, &info ) )
+    {
+	IoT_sqlite3_close( &pSQLite3 );
+	return -1;
+    }
+
+    /*
+    rtrn  = Transducer_Description_Registration( tcp, &info, pSQLite3 );
+    printf("return value %d\n", rtrn );
+    if( rtrn == -1 )
+    {
+	return -1;
+    }
+    */
+
+    IoT_sqlite3_close( &pSQLite3 );
+
+    return 0 ;
+}
+
+
 int ETRI_Registration( int *tcp, READENV *env ) {
 
     READENV info;
@@ -52,15 +110,25 @@ int ETRI_Registration( int *tcp, READENV *env ) {
 
 
     if( -1 == GateNode_Description_Registration( tcp, &info ) )
+    {
+	IoT_sqlite3_close( &pSQLite3 );
 	return -1;
+    }
     if( -1 == PAN_Description_Registration( tcp, &info  ) )
+    {
+	IoT_sqlite3_close( &pSQLite3 );
 	return -1;
+    }
     if( -1 == SensorNode_Description_Registration( tcp, &info ) )
+    {
+	IoT_sqlite3_close( &pSQLite3 );
 	return -1;
+    }
     rtrn  = Transducer_Description_Registration( tcp, &info, pSQLite3 );
     printf("return value %d\n", rtrn );
     if( rtrn == -1 )
     {
+	IoT_sqlite3_close( &pSQLite3 );
 	return -1;
     }
 

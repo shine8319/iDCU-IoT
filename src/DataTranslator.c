@@ -398,23 +398,43 @@ static int reConnect(void)
 	    {
 		writeLog("/work/smart/log", "[DataTranslator] fail TCPClient method(reConnect) " );
 		printf("connect error\n");
-		sleep(1);
-		reTry--;
-		if( reTry == 0 )
-		{
-		    close(tcp);
-		    tcp = -1;
-		    return -1;
-		}
+		return -1;
 
 	    }
 	    else
 	    {
 		printf("connect success\n");
-		reTry = 0;
 	    }
 
 	}
+
+	if( -1 == ETRI_Registration_Retry( &tcp, &env ) )
+	{
+	    //printf("fail registration\n");
+	    writeLog( "/work/smart/log", "[DataTranslator] fail registration(reConnect)" );
+	    //return -1;
+	    sleep(1);
+	    reTry--;
+	    if( reTry == 0 )
+	    {
+		close(tcp);
+		tcp = -1;
+		return -1;
+	    }
+	}
+	else
+	{
+	    reTry = 0;
+	    /*
+	       memcpy( th_data, (void *)&tcp, sizeof(tcp) );
+	       if( pthread_create(&threads, NULL, &thread_receive, (void *)th_data) == -1 )
+	       {
+	       writeLog("/work/smart/log", "[DataTranslator] error pthread_create method" );
+	       }
+	     */
+
+	}
+
 
 
     } while( reTry );
@@ -456,7 +476,7 @@ static int init(void)
 	if( -1 == ETRI_Registration( &tcp, &env ) )
 	{
 	    //printf("fail registration\n");
-	    writeLog( "/work/smart/log", "[tagServer] fail registration" );
+	    writeLog( "/work/smart/log", "[DataTranslator] fail registration" );
 	    //return -1;
 	    sleep(1);
 	    reTry--;
@@ -522,7 +542,7 @@ static int checkAck()
     FD_ZERO(&control_msg_readset);
 
 	FD_SET(tcp, &control_msg_readset);
-	control_msg_tv.tv_sec = 60;
+	control_msg_tv.tv_sec = 30;
 	control_msg_tv.tv_usec = 0;	// timeout check 
 
 	nd = select( tcp+1, &control_msg_readset, NULL, NULL, &control_msg_tv );		

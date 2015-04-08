@@ -369,8 +369,8 @@ void *ConnectPorcess() {
 
     struct sockaddr_in servaddr; //server addr
     struct sockaddr_in clientaddr; //client addr
-    unsigned short port = 502;
-    //unsigned short port = 9000;
+    //unsigned short port = 502;
+    unsigned short port = 9000;
     int client_addr_size;
     int bufsize = 100000;
     int rn = sizeof(int);
