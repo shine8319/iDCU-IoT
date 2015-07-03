@@ -18,15 +18,36 @@
 
 #include "./include/iDCU.h"
 #include "./include/sqlite3.h"
+#include "./include/sqliteManager.h"
 #include "./include/M2MManager.h"
 #include "./include/configRW.h"
 #include "./include/writeLog.h"
+#include "./include/networkInfo.h"
 //#include "./include/UDPConnect.h"
 
-#define DBPATH "/work/db/dabom-device"
+#include "./include/debugPrintf.h"
+#include "./include/uart.h"
+
+#include "./include/parser/serialInfoParser.h"
+#include "./include/parser/configInfoParser.h"
+#include "./include/parser/timeSyncInfoParser.h"
+
+#include "./include/hiredis/hiredis.h"
+#include "./include/hiredis/async.h"
+#include "./include/hiredis/adaters/libevent.h"
+
+#include "./include/RedisControl.h"
+
+#define DBPATH "/work/smart/db/comm"
 #define SQLITE_SAFE_FREE(x)	if(x){ x = NULL; }
 #define	BUFF_SIZE 1024
 unsigned char main_quit = 0;
+unsigned char user_quit = 0;
+
+
+static CONFIGINFO configInfo;
+
+
 
 extern int el1000_sqlite3_open( char *path, sqlite3 **pSQLite3 );
 extern int el1000_sqlite3_customize( sqlite3 **pSQLite3 );
@@ -54,6 +75,8 @@ int nodeInfoupdate( unsigned char nodeid, unsigned char setNodeid, unsigned char
 void ReadNetworkConfig(UINT8 *name, struct lan_var *lan);
 void ReadSecurityConfig(UINT8 *name, struct security_var *security);
 int UDPConnect( int port );
+static int getPointInfo( void );
+void *thread_main(void *);
 
 typedef struct _PAC {
     char type;
@@ -63,6 +86,7 @@ typedef struct _PAC {
 } _PAC;
 
 
+static redisContext *c;
 
 int m2mid;
 int eventid;
@@ -84,6 +108,54 @@ sqlite3 *pSQLite3;
 
 int client_sock; 
 
+void quitsignal(int sig) 
+{
+    printf("Press <ctrl+c> to user_quit. \n");
+    user_quit = 1;
+    close(udp);
+    exit(1);
+}
+
+static int getPointInfo( void ) {
+
+    char *query;
+    int i,j;
+    int	rowSize = 8;
+    unsigned int byteOrder = 0;
+
+    SQLite3Data data;
+
+    query = sqlite3_mprintf("select port1, port2, port3, port4, port5, port6, port7, port8 from tb_comm_status");	// edit 20140513
+
+
+    data = _sqlite3_select( pSQLite3, query );
+
+
+    if( data.size > 0 )
+    {
+
+	for( i = 0; i < (data.size-8)/8; i++ )
+	{
+
+	    for( j = 0; j < 8; j++ )
+	    {
+		//pastData.cnt[j] = atoi(data.data[rowSize++]);
+		//node.cnt[j] = pastData.cnt[j];
+		//IO[j].cnt = pastData.cnt[j];
+		device.point[j].port = j;
+		device.point[j].value = atoi(data.data[rowSize++]);
+
+	    }
+
+	}
+    }
+    else
+	return -1;
+
+
+    return 0;
+}
+
 
 
 void writeWlan0SecurityConfig( unsigned char* buffer, int len)
@@ -92,7 +164,7 @@ void writeWlan0SecurityConfig( unsigned char* buffer, int len)
     FILE    *fp_log;
     int i =1;
 
-    fp_log = fopen( "/work/script/network/wlan/security/wpa_supplicant.conf", "w");
+    fp_log = fopen( "/work/smart/script/network/wlan/security/wpa_supplicant.conf", "w");
     //printf("pf_log %d\n", fp_log);
 
     fprintf( fp_log, "network={\n" );
@@ -178,6 +250,8 @@ void ReadSecurityConfig(UINT8 *name, struct security_var *security)
     char* token ;
     UINT8 rtrn;
     char wep_key[16] = "wep_key1";
+    char wep40Cnt = 0;
+    char wep104Cnt = 0;
 
     //sprintf( wep_key, "wep_key%d\n", security->key_flag );
 
@@ -191,7 +265,7 @@ void ReadSecurityConfig(UINT8 *name, struct security_var *security)
 
 	if( token != NULL && token[0] != '#' )
 	{
-	    
+
 	    if( !strcmp( token, "ssid" ) ) 
 	    {
 		token = strtok( NULL, "\t =\n\r" ) ;
@@ -205,6 +279,10 @@ void ReadSecurityConfig(UINT8 *name, struct security_var *security)
 		token = strtok( NULL, "\t =\n\r" ) ;
 
 		security->key_mgmt = check_key_mgmt( token );
+		if( security->key_mgmt == 1 )
+		    security->group = 0;
+		// 1 is wpa-psk
+		// 0 is wep
 
 		printf("security->key_mgmt:%d\n\n", security->key_mgmt ) ;
 
@@ -247,24 +325,26 @@ void ReadSecurityConfig(UINT8 *name, struct security_var *security)
 
 		    if( security->group == 3 )
 		    {
-			strcpy( security->wep104[security->key_flag], token );
-			printf("security->wep104:%s\n\n", security->wep104[security->key_flag] ) ;
+			strcpy( security->wep104[wep104Cnt], token );
+			printf("security->wep104[%d]:%s\n\n", wep104Cnt, security->wep104[wep104Cnt] ) ;
+			wep104Cnt++;
 		    }
 		    else if( security->group == 4 )
 		    {
-			strcpy( security->wep40[security->key_flag], token );
-			printf("security->wep40:%s\n\n", security->wep40[security->key_flag] ) ;
+			strcpy( security->wep40[wep40Cnt], token );
+			printf("88 security->wep40[%d]:%s\n\n",wep40Cnt, security->wep40[wep40Cnt] ) ;
+			wep40Cnt++;
 		    }
 		    else
 		    {
-			printf("security->group:%d\n\n", security->group) ;
+			strcpy( security->psk, token );
+			printf("security->psk:%s\n\n", security->psk ) ;
 
 		    }
 		}
-
-
 	    }
-	
+
+
 	}
     }
 
@@ -292,13 +372,13 @@ void ReadNetworkConfig(UINT8 *name, struct lan_var *lan)
 	token = strtok( line, "\t =\n\r" ) ;
 	if( token != NULL && token[0] != '#' )
 	{
-	    
+
 	    if( !strcmp( token, "address" ) ) 
 	    {
 		token = strtok( NULL, "\t =\n\r" ) ;
 
 		lan->lan_addr = inet_addr( token );
-		 
+
 		printf("inet_addr = %ld\n", lan->lan_addr );
 		printf("value:%s\n\n", token ) ;
 
@@ -308,7 +388,7 @@ void ReadNetworkConfig(UINT8 *name, struct lan_var *lan)
 		token = strtok( NULL, "\t =\n\r" ) ;
 
 		lan->lan_netmask = inet_addr( token );
-		 
+
 		printf("inet_addr = %ld\n", lan->lan_netmask );
 		printf("value:%s\n\n", token ) ;
 
@@ -318,7 +398,7 @@ void ReadNetworkConfig(UINT8 *name, struct lan_var *lan)
 		token = strtok( NULL, "\t =\n\r" ) ;
 
 		lan->lan_gateway = inet_addr( token );
-		 
+
 		printf("inet_addr = %ld\n", lan->lan_gateway );
 		printf("value:%s\n\n", token ) ;
 
@@ -328,7 +408,7 @@ void ReadNetworkConfig(UINT8 *name, struct lan_var *lan)
 		token = strtok( NULL, "\t =\n\r" ) ;
 
 		lan->lan_dns = inet_addr( token );
-		 
+
 		printf("inet_addr = %ld\n", lan->lan_dns );
 		printf("value:%s\n\n", token ) ;
 
@@ -369,14 +449,14 @@ void WriteSecurityScript(UINT8 *name, struct security_var *security)
 	    break;
 
 	    /*
-	    fprintf( config_fp, "key_mgmt WPA-EAP\n" );
-	case 3:
-	    fprintf( config_fp, "key_mgmt IEEE8021X\n" );
-	    break;
-	    */
+	       fprintf( config_fp, "key_mgmt WPA-EAP\n" );
+	       case 3:
+	       fprintf( config_fp, "key_mgmt IEEE8021X\n" );
+	       break;
+	     */
     }
 
-    fprintf( config_fp, "auth_alg=OPEN\n" );
+    //fprintf( config_fp, "auth_alg=OPEN\n" );
 
     if( security->key_mgmt == 1 )
     {
@@ -385,26 +465,22 @@ void WriteSecurityScript(UINT8 *name, struct security_var *security)
 	    case 3:
 		fprintf( config_fp, "group=WEP104\n" );
 
-		token = strtok( security->wep104[0], " " ) ;
-		fprintf( config_fp, "wep_key0=\"%s\"\n", token );
-		/*
-		fprintf( config_fp, "wep_key1 %s\n", security->wep104[1] );
-		fprintf( config_fp, "wep_key2 %s\n", security->wep104[2] );
-		fprintf( config_fp, "wep_key3 %s\n", security->wep104[3] );
-		*/
-		//fprintf( config_fp, "wep_tx_keyidx %d\n", security->key_flag );
+		fprintf( config_fp, "wep_key0=\"%.13s\"\n", security->wep104[0] );
+		fprintf( config_fp, "wep_key1=\"%.13s\"\n", security->wep104[1] );
+		fprintf( config_fp, "wep_key2=\"%.13s\"\n", security->wep104[2] );
+		fprintf( config_fp, "wep_key3=\"%.13s\"\n", security->wep104[3] );
+
+		fprintf( config_fp, "wep_tx_keyidx=%d\n", security->key_flag );
 		break;
 
 	    case 4:
 		fprintf( config_fp, "group=WEP40\n" );
-		token = strtok( security->wep40[0], " " ) ;
-		fprintf( config_fp, "wep_key0=\"%s\"\n", token );
-		/*
-		fprintf( config_fp, "wep_key1 %s\n", security->wep40[1] );
-		fprintf( config_fp, "wep_key2 %s\n", security->wep40[2] );
-		fprintf( config_fp, "wep_key3 %s\n", security->wep40[3] );
-		*/
-		//fprintf( config_fp, "wep_tx_keyidx %d\n", security->key_flag );
+		fprintf( config_fp, "wep_key0=\"%.5s\"\n", security->wep40[0] );
+		fprintf( config_fp, "wep_key1=\"%.5s\"\n", security->wep40[1] );
+		fprintf( config_fp, "wep_key2=\"%.5s\"\n", security->wep40[2] );
+		fprintf( config_fp, "wep_key3=\"%.5s\"\n", security->wep40[3] );
+
+		fprintf( config_fp, "wep_tx_keyidx=%d\n", security->key_flag );
 		break;
 
 	}
@@ -449,15 +525,16 @@ void WriteSecurityConfig(UINT8 *name, struct security_var *security)
 	    break;
 
 	    /*
-	    fprintf( config_fp, "key_mgmt WPA-EAP\n" );
-	case 3:
-	    fprintf( config_fp, "key_mgmt IEEE8021X\n" );
-	    break;
-	    */
+	       fprintf( config_fp, "key_mgmt WPA-EAP\n" );
+	       case 3:
+	       fprintf( config_fp, "key_mgmt IEEE8021X\n" );
+	       break;
+	     */
     }
 
-    fprintf( config_fp, "auth_alg OPEN\n" );
+    //fprintf( config_fp, "auth_alg OPEN\n" );
 
+    //printf("wep_tx_keyidx %d\n", security->key_flag);
     if( security->key_mgmt == 1 )
     {
 	switch( security->group ) 
@@ -465,27 +542,24 @@ void WriteSecurityConfig(UINT8 *name, struct security_var *security)
 	    case 3:
 		fprintf( config_fp, "group WEP104\n" );
 
-		token = strtok( security->wep104[0], " " ) ;
-		fprintf( config_fp, "wep_key0 %s\n", token );
-		/*
-		fprintf( config_fp, "wep_key1 %s\n", security->wep104[1] );
-		fprintf( config_fp, "wep_key2 %s\n", security->wep104[2] );
-		fprintf( config_fp, "wep_key3 %s\n", security->wep104[3] );
-		*/
-		//fprintf( config_fp, "wep_tx_keyidx %d\n", security->key_flag );
+		fprintf( config_fp, "wep_key0 %.13s\n", security->wep104[0] );
+		fprintf( config_fp, "wep_key1 %.13s\n", security->wep104[1] );
+		fprintf( config_fp, "wep_key2 %.13s\n", security->wep104[2] );
+		fprintf( config_fp, "wep_key3 %.13s\n", security->wep104[3] );
+
+		fprintf( config_fp, "wep_tx_keyidx %d\n", security->key_flag );
 		break;
 
 	    case 4:
 		fprintf( config_fp, "group WEP40\n" );
-		token = strtok( security->wep40[0], " " ) ;
-		fprintf( config_fp, "wep_key0 %s\n", token );
-		/*
-		fprintf( config_fp, "wep_key1 %s\n", security->wep40[1] );
-		fprintf( config_fp, "wep_key2 %s\n", security->wep40[2] );
-		fprintf( config_fp, "wep_key3 %s\n", security->wep40[3] );
-		*/
-		//fprintf( config_fp, "wep_tx_keyidx %d\n", security->key_flag );
+		fprintf( config_fp, "wep_key0 %.5s\n", security->wep40[0] );
+		fprintf( config_fp, "wep_key1 %.5s\n", security->wep40[1] );
+		fprintf( config_fp, "wep_key2 %.5s\n", security->wep40[2] );
+		fprintf( config_fp, "wep_key3 %.5s\n", security->wep40[3] );
+
+		fprintf( config_fp, "wep_tx_keyidx %d\n", security->key_flag );
 		break;
+
 
 	}
     }
@@ -551,6 +625,10 @@ int main(int argc, char **argv) {
     //int socket_fd;
     struct sockaddr_in servaddr; //server addr
 
+    (void)signal(SIGINT, quitsignal);
+
+    configInfo = configInfoParser("/work/smart/config/config.xml");
+    c = redisInitialize();
     /******************** DB connect ***********************/
     //char	*szErrMsg;
     // DB Open
@@ -579,6 +657,7 @@ int main(int argc, char **argv) {
 	return -1;
     }
 
+    getPointInfo();
 
     /***************** Server Connect **********************/
     if( -1 == ( m2mid = msgget( (key_t)2222, IPC_CREAT | 0666)))
@@ -595,8 +674,16 @@ int main(int argc, char **argv) {
 	return -1;
     }
 
+    configInfo = configInfoParser("/work/smart/config/config.xml");
+    if( pthread_create(&p_thread, NULL, &thread_main, NULL) == -1 )
+    {
+	writeLog("/work/setup/log", "create thread_main error" );
+	return -1;
+    }
+
+
     //Connect_Manager();
-    udp = UDPConnect( 50005 );
+    udp = UDPConnect( atoi(configInfo.setupport) );
     printf("UDPConnect %d\n", udp);
     Socket_Manager( &udp ); 
 
@@ -604,65 +691,82 @@ int main(int argc, char **argv) {
     el1000_sqlite3_close( &pSQLite3 );
 
     printf("End\n");
+    close(udp);
 
     return 0; 
 } 
 
 int UDPConnect( int port )
 {
-   int   sock;
-   //int   client_addr_size;
-   int   rtrn;
-   int broadcastEnable = 1;
+    int   sock;
+    //int   client_addr_size;
+    int   rtrn;
+    int broadcastEnable = 1;
 
-   struct sockaddr_in   server_addr;
-   //struct sockaddr_in   client_addr;
+    struct sockaddr_in   server_addr;
+    //struct sockaddr_in   client_addr;
 
-   //char   buff_rcv[BUFF_SIZE+5];
-   //char   buff_snd[BUFF_SIZE+5];
-
-
-   //client_addr_size  = sizeof( client_addr);
-   sock  = socket( AF_INET, SOCK_DGRAM, 0);
-
-   if( -1 == sock)
-   {
-      printf( "socket error\n");
-      exit( 1);
-   }
-
-   rtrn = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
-
-   memset( &server_addr, 0, sizeof( server_addr));
-
-   server_addr.sin_family     = AF_INET;
-   server_addr.sin_port       = htons( port );
-   server_addr.sin_addr.s_addr= htonl( INADDR_ANY);
-   //server_addr.sin_addr.s_addr= htonl( INADDR_BROADCAST );
-
-   if( -1 == bind( sock, (struct sockaddr*)&server_addr, sizeof( server_addr) ) )
-   {
-      printf( "bind() error\n");
-      exit( 1);
-   }
-
-   /*
-   while( 1)
-   {
-      memset( buff_rcv, 0, BUFF_SIZE+5 );
-      memset( buff_snd, 0, BUFF_SIZE+5 );
-
-      rtrn = recvfrom( sock, buff_rcv, BUFF_SIZE, 0 , ( struct sockaddr*)&client_addr, &client_addr_size);
-      printf("from %s(%d) receive: %s\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), buff_rcv);
-
-      sprintf( buff_snd, "return Msg : %s", buff_rcv);
-      rtrn = sendto( sock, buff_snd, strlen( buff_snd)+1, 0,( struct sockaddr*)&client_addr, sizeof( client_addr));
-printf("return %d\n", rtrn);
+    //char   buff_rcv[BUFF_SIZE+5];
+    //char   buff_snd[BUFF_SIZE+5];
 
 
-   }
-*/
-   return sock;
+    //client_addr_size  = sizeof( client_addr);
+    sock  = socket( AF_INET, SOCK_DGRAM, 0);
+
+    if( -1 == sock)
+    {
+	printf( "socket error\n");
+	exit( 1);
+    }
+
+    /*
+    // add by hyungoo.kang
+    // solution ( bind error : Address already in use )
+    if( setsockopt( server_sock, SOL_SOCKET, SO_REUSEADDR, (void*)&bufsize, (socklen_t)rn) < 0 ) {
+    perror("Error setsockopt()");
+    return;
+    }
+     */
+
+
+    rtrn = setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
+    if( rtrn == -1 )
+    {
+	printf( "setsockopt error\n");
+	exit( 1);
+    }
+
+
+    memset( &server_addr, 0, sizeof( server_addr));
+
+    server_addr.sin_family     = AF_INET;
+    server_addr.sin_port       = htons( port );
+    server_addr.sin_addr.s_addr= htonl( INADDR_ANY);
+    //server_addr.sin_addr.s_addr= htonl( INADDR_BROADCAST );
+
+    if( -1 == bind( sock, (struct sockaddr*)&server_addr, sizeof( server_addr) ) )
+    {
+	printf( "bind() error\n");
+	exit( 1);
+    }
+
+    /*
+       while( 1)
+       {
+       memset( buff_rcv, 0, BUFF_SIZE+5 );
+       memset( buff_snd, 0, BUFF_SIZE+5 );
+
+       rtrn = recvfrom( sock, buff_rcv, BUFF_SIZE, 0 , ( struct sockaddr*)&client_addr, &client_addr_size);
+       printf("from %s(%d) receive: %s\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), buff_rcv);
+
+       sprintf( buff_snd, "return Msg : %s", buff_rcv);
+       rtrn = sendto( sock, buff_snd, strlen( buff_snd)+1, 0,( struct sockaddr*)&client_addr, sizeof( client_addr));
+       printf("return %d\n", rtrn);
+
+
+       }
+     */
+    return sock;
 }
 int Socket_Manager( int *fd) {
 
@@ -682,17 +786,16 @@ int Socket_Manager( int *fd) {
 
     client_addr_size  = sizeof( client_addr);
 
-    while( 1 ) 
+    while( !user_quit ) 
     {
 
-    //printf("go\n");
-    //sleep(10);
+	//printf("go\n");
+	//sleep(10);
 	//ReadMsgSize = recvfrom( *fd, DataBuf, BUFFER_SIZE, 0 , ( struct sockaddr*)&client_addr, &client_addr_size);
 	ReadMsgSize = recvfrom( udp, DataBuf, BUFFER_SIZE, 0 , ( struct sockaddr*)&client_addr, &client_addr_size);
 	if( ReadMsgSize > 0 ) 
 	{
 
-    printf("full\n");
 	    if( ReadMsgSize >= BUFFER_SIZE )
 		continue;
 
@@ -734,6 +837,7 @@ int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder
     unsigned char setBuffer[BUFFER_SIZE];
     int i;
     int offset;
+    int totalSize = 0;;
 
     for( i = 0; i < len; i++ )
     {
@@ -741,11 +845,17 @@ int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder
 	if( cvalue[i] == 0xFE )
 	{
 
-	    if( len >= i + cvalue[i+1] && ( cvalue[i + (cvalue[i+1]+2)] == 0xFF ) )
-	    {
-		memcpy( setBuffer, cvalue+i, cvalue[i+1]+3 );
+	    totalSize = cvalue[i+1] << 8;
+	    totalSize |= cvalue[i+2] << 0;
 
-		i += (cvalue[i+1]+2);
+	    //if( len >= i + cvalue[i+1] && ( cvalue[i + (cvalue[i+1]+2)] == 0xFF ) )
+	    if( len >= i + totalSize && ( cvalue[i + (totalSize+3)] == 0xFF ) )
+	    {
+		//memcpy( setBuffer, cvalue+i, cvalue[i+1]+3 );
+		memcpy( setBuffer, cvalue+i, totalSize+4 );
+
+		//i += (cvalue[i+1]+2);
+		i += (totalSize+3);
 
 		remainSize = i+1;
 
@@ -878,8 +988,16 @@ int Pack_Manager( unsigned char* buffer, int len )
     int totalLength = 0;
     int vLength = 0;
 
-    type = buffer[2];
-    nodeid = buffer[4];
+    //type = buffer[2];
+    //nodeid = buffer[4];
+    type = buffer[3];
+    nodeid = buffer[5];
+
+    SERIALINFO xmlinfo;
+    TIMESYNCINFO timeSyncInfo;
+
+    redisReply *reply;
+    UINT8 point;
 
     switch( type )
     {
@@ -947,6 +1065,15 @@ int Pack_Manager( unsigned char* buffer, int len )
 	    }
 	    break;
 
+	case SETCNT:
+	    point = buffer[6];
+	    reply = redisCommand(c,"PUBLISH clear %d",   point+34);
+	    printf("type:%d / index:%lld\n", reply->type, reply->integer);
+	    printf("len:%d / str:%s\n", reply->len, reply->str);
+	    printf("elements:%d\n", reply->elements );
+
+	    break;
+
 	case GETLANINFO:
 
 
@@ -962,11 +1089,59 @@ int Pack_Manager( unsigned char* buffer, int len )
 	    sendBuffer[4] = vLength >> 8;
 	    sendBuffer[5] = vLength;
 
-	    ReadNetworkConfig("/work/config/eth0.config", &device.lan);
-	    ReadNetworkConfig("/work/config/wlan0.config", &device.wlan);
-	    ReadSecurityConfig("/work/config/security.config", &device.security);
+	    ReadNetworkConfig("/work/smart/config/eth0.config", &device.lan);
+	    ReadNetworkConfig("/work/smart/config/wlan0.config", &device.wlan);
+	    ReadSecurityConfig("/work/smart/config/security.config", &device.security);
 
-	    ReadNetworkUseConfig("/work/config/networkUse.config", &device.lanEnable, &device.wlanEnable );
+	    ReadNetworkUseConfig("/work/smart/config/networkUse.config", &device.lanEnable, &device.wlanEnable );
+
+	    ReadOptionsConfig("/work/smart/config/options.config", &device.lanAuto, &device.wlanAuto);
+
+	    // serial tab 2015.05.15
+	    xmlinfo = serialInfoParser("/work/smart/config/serial_info.xml");
+	    device.comport.baud = getBaudrate(xmlinfo.comport.baud);
+	    device.comport.parity = getParity(xmlinfo.comport.parity[0]);	// none
+	    device.comport.databit = getDatabit(xmlinfo.comport.databit[0]);
+	    device.comport.stopbit = getStopbit(xmlinfo.comport.stopbit[0]);	// 1 
+	    device.comport.flowcontrol = 0;	// none
+
+	    device.connect.mode = getConnectMode(xmlinfo.connect.mode);
+	    device.connect.ip = inet_addr( xmlinfo.connect.ip );
+	    device.connect.port = atoi( xmlinfo.connect.port );
+	    device.connect.localport = atoi( xmlinfo.connect.localport ); 
+	    device.connect.timeout = atoi( xmlinfo.connect.timeout );
+
+	    unsigned char addr[4] = {0,};
+	    char convertAddr[14];
+
+	    if( device.lanEnable && device.lanAuto )
+	    {
+		memset( convertAddr, 0, 14);
+
+		s_getIpAddress("eth0", addr);
+		printf("ip addr:=%d.%d.%d.%d\n", (int)addr[0], (int)addr[1], (int)addr[2], (int)addr[3]);
+		sprintf( convertAddr, "%d.%d.%d.%d", (int)addr[0], (int)addr[1], (int)addr[2], (int)addr[3]);
+		device.lan.lan_addr = inet_addr( convertAddr );
+		printf("inet_addr = %ld\n", device.lan.lan_addr );
+	    }
+	    if( device.wlanEnable && device.wlanAuto )
+	    {
+		memset( convertAddr, 0, 14);
+
+		s_getIpAddress("wlan0", addr);
+		printf("ip addr:=%d.%d.%d.%d\n", (int)addr[0], (int)addr[1], (int)addr[2], (int)addr[3]);
+		sprintf( convertAddr, "%d.%d.%d.%d", (int)addr[0], (int)addr[1], (int)addr[2], (int)addr[3]);
+		device.wlan.lan_addr = inet_addr( convertAddr );
+		printf("inet_addr = %ld\n", device.wlan.lan_addr );
+	    }
+
+	    // get Digital Count
+	    getPointInfo();
+
+	    // timeSync tab 2015.06.04
+	    timeSyncInfo = timeSyncInfoParser("/work/smart/config/timeSync.xml");
+	    device.timeSync.cycle = getTimeSyncCycle(timeSyncInfo.cycle);
+	    device.timeSync.address = inet_addr( timeSyncInfo.address );
 
 	    memcpy( sendBuffer+6, &device, vLength );
 	    sendBuffer[totalLength+3] = 0xFF;
@@ -983,7 +1158,7 @@ int Pack_Manager( unsigned char* buffer, int len )
 	case SETLANINFO:
 
 	    memset( sendBuffer, 0, sizeof( sendBuffer) );
-	    memcpy( &saveDev, buffer+4, sizeof( DEVINFO ) );
+	    memcpy( &saveDev, buffer+6, sizeof( DEVINFO ) );	// data start offset 6
 
 	    vLength = 2;
 	    totalLength = vLength + 3;	// type 1byte, length 2byte
@@ -998,30 +1173,48 @@ int Pack_Manager( unsigned char* buffer, int len )
 	    sendBuffer[7] = 0x00;
 
 
-	    WriteNetworkUseConfig("/work/config/networkUse.config", &saveDev.lanEnable, &saveDev.wlanEnable );
+	    WriteNetworkUseConfig("/work/smart/config/networkUse.config", &saveDev.lanEnable, &saveDev.wlanEnable );
+	    WriteOptionsConfig("/work/smart/config/options.config", &saveDev.lanAuto, &saveDev.wlanAuto);
 
 	    if(saveDev.lanEnable )
 	    {
-		WriteNetworkConfig("/work/config/eth0.config", &saveDev.lan);
-		rtrn = system("/work/script/network/lan/eth0.sh");
-		printf("system() %d\n", rtrn);
+		WriteNetworkConfig("/work/smart/config/eth0.config", &saveDev.lan);
+		if( !saveDev.lanAuto )
+		{
+		    rtrn = system("/work/smart/script/network/lan/eth0.sh &");
+		    printf("system() %d\n", rtrn);
 
-		if( rtrn != 0 )
-		    sendBuffer[7] = 0x01;
+		    //if( rtrn != 0 )
+		    //sendBuffer[7] = 0x01;
+		}
+		else
+		    rtrn = system("/work/smart/script/network/lan/eth0Static.sh &");
 
 	    }
 
 	    if( saveDev.wlanEnable )
 	    {
-		WriteNetworkConfig("/work/config/wlan0.config", &saveDev.wlan);
-		WriteSecurityConfig("/work/config/security.config", &saveDev.security);
-		WriteSecurityScript("/work/script/network/wlan/security/wpa_supplicant.conf", &saveDev.security);
-		rtrn = system("/work/script/network/wlan/wlan0.sh");
-		printf("system() %d\n", rtrn);
+		WriteNetworkConfig("/work/smart/config/wlan0.config", &saveDev.wlan);
+		WriteSecurityConfig("/work/smart/config/security.config", &saveDev.security);
+		WriteSecurityScript("/work/smart/script/network/wlan/security/wpa_supplicant.conf", &saveDev.security);
 
-		if( rtrn != 0 )
-		    sendBuffer[7] = 0x01;
+		if( !saveDev.wlanAuto )
+		{
+		    rtrn = system("/work/smart/script/network/wlan/wlan0.sh &");
+		    printf("system() %d\n", rtrn);
+
+		    //if( rtrn != 0 )
+		    //sendBuffer[7] = 0x01;
+		}
+		else
+		    rtrn = system("/work/smart/script/network/wlan/wlan0Static.sh &");
+
 	    }
+
+	    WriteSerialConfig( "/work/smart/config/serial_info.xml", &saveDev.comport, &saveDev.connect );
+	    WriteTimeSyncConfig( "/work/smart/config/timeSync.xml", &saveDev.timeSync);
+
+	    rtrn = system("/work/smart/script/restartProgram.sh &");
 
 	    sendBuffer[totalLength+3] = 0xFF;
 
@@ -1577,3 +1770,116 @@ static int busy(void *handle, int nTry)
     return 0;
 
 }
+static void onMessage(redisAsyncContext *c, void *reply, void *privdata) {
+
+    int status, offset;
+    int i,j,pointOffset;
+    redisReply *r = reply;
+    time_t  transferTime, sensingTime;
+    unsigned char savePac[1024];
+    unsigned char pointUpdateBuffer[1024];
+    POINTINFO_VAR   point[8];
+
+    UINT8 parsing[256][256];
+    UINT8 parsingCnt = 0;
+
+    int totalLength = 0;
+    int vLength = 0;
+    int rtrn = 0;
+
+    char* ptr;
+    char* port;
+    char str[1024];
+
+    UINT8 buffer[8];
+
+    if (reply == NULL) return;
+
+    if (r->type == REDIS_REPLY_ARRAY) {
+	for (j = 0; j < r->elements; j++) {
+	    printf("%u) %s\n", j, r->element[j]->str);
+
+	}
+
+	if (strcasecmp(r->element[0]->str,"message") == 0 &&
+		strcasecmp(r->element[1]->str,"callbackClearCommand") == 0) {
+
+	    buffer[0] = 0xFE;
+	    buffer[1] = 0x00;
+	    buffer[2] = 0x04;
+	    buffer[3] = 0x06;
+	    buffer[4] = 0x00;
+	    buffer[5] = 0x01;
+	    buffer[6] = 0x00;
+	    buffer[7] = 0xFF;
+
+	    Pack_Manager( buffer, 8 );
+	    /*
+	    memset( pointUpdateBuffer, 0, sizeof( pointUpdateBuffer) );
+	    memset( point, 0, sizeof( POINTINFO_VAR) * 8);
+
+	    vLength = sizeof( POINTINFO_VAR  ) * 8; // DI PORT is 8
+	    totalLength = vLength + 3;	// type 1byte, length 2byte
+
+	    pointUpdateBuffer[0] = 0xFE;
+	    pointUpdateBuffer[1] = totalLength >> 8;	// total length;
+	    pointUpdateBuffer[2] = totalLength;	// total length;
+	    pointUpdateBuffer[3] = 0x13;
+	    pointUpdateBuffer[4] = vLength >> 8;
+	    pointUpdateBuffer[5] = vLength;
+
+
+
+	    strcpy( str, r->element[2]->str );
+	    printf("%s\n", str);
+
+	    ptr = strtok( str, ";" ) ;
+	    printf("%s\n", ptr);
+	    pointOffset = 0;
+	    point[pointOffset].port = 0;
+	    point[pointOffset].value = atoi(ptr);
+	    pointOffset++;
+
+	    while( ptr = strtok( NULL, ";"))
+	    {
+		printf( "%s\n", ptr); 
+
+		point[pointOffset].port = pointOffset;
+		point[pointOffset].value = atoi(ptr);
+		pointOffset++;
+	    }
+
+	    memcpy( pointUpdateBuffer+6, &point, vLength );
+	    pointUpdateBuffer[totalLength+3] = 0xFF;
+
+	    rtrn = sendto( udp, pointUpdateBuffer, totalLength+4, 0,( struct sockaddr*)&client_addr, sizeof( client_addr));
+	    printf("point value%d\n", rtrn);
+	    */
+
+	}
+
+    }
+}
+
+
+void *thread_main(void *arg)
+{
+
+
+    debugPrintf(configInfo.debug, "start Thread [SUBSCRIBE callbackClearCommand]");
+    struct event_base *base = event_base_new();
+    redisAsyncContext *c = redisAsyncConnect("127.0.0.1", 6379);
+    if (c->err) {
+	// Let *c leak for now... 
+	debugPrintf(configInfo.debug, "Error: %s\n", c->errstr);
+	return;
+    }
+    redisLibeventAttach(c, base);
+    redisAsyncCommand(c, onMessage, NULL, "SUBSCRIBE callbackClearCommand");
+    event_base_dispatch(base);
+
+    debugPrintf(configInfo.debug, "End Thread [SUBSCRIBE callbackClearCommand]");
+    pthread_exit((void *) 0);
+}
+
+

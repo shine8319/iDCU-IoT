@@ -207,7 +207,7 @@ static void *thread_main(void *arg)
 	//rtrn = write(Fd, SendBuf, 12); 
 	//rtrn = send( Fd, SendBuf[sendType], 12, MSG_NOSIGNAL);
 	rtrn = send( Fd, SendBuf[sendType], 12, MSG_DONTWAIT);
-	//printf("return Send %d\n", rtrn );
+	printf("return Send %d\n", rtrn );
 	if( rtrn == -1 )
 	    break;
 

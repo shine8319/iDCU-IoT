@@ -12,6 +12,10 @@ SRC2 = sfsock.c
 SRC3 = sf.c
 SRC4 = sfsource.c
 
+LDFLAGS = -L../lib
+LDLIBS    = -lwiringPi -lwiringPiDev
+
+
 LIB_LIBEVENT = -L../lib/libevent/lib -levent
 LIB_REDIS= -L../lib -lhiredis
 LIB_EXPAT = -L../lib -lexpat
@@ -45,10 +49,20 @@ sqliteManager = ./lib/sqliteManager.c
 TCPSocket = ./lib/TCPSocket.c
 #ETRI_Registration = ./lib/ETRI_Registration.c
 SQLite3Interface = ./lib/SQLite3Interface.c
-libpointparser = ./lib/libpointparser.c
-libDeivceInfoParser = ./lib/libDeviceInfoParser.c
 stringTrim = ./lib/stringTrim.c
 hexString = ./lib/hexString.c
+networkInfo = ./lib/networkInfo.c
+uart = ./lib/uart.c
+debugPrintf = ./lib/debugPrintf.c
+RedisControl = ./lib/RedisControl.c
+
+#parser library
+libpointparser = ./lib/libpointparser.c
+libDeivceInfoParser = ./lib/libDeviceInfoParser.c
+serialInfoParser = ./lib/parser/serialInfoParser.c
+configInfoParser = ./lib/parser/configInfoParser.c
+timeSyncInfoParser = ./lib/parser/timeSyncInfoParser.c
+
 TARGET0 = ./bin
 LIB_TARGET = ./lib
 #PFLAGS += -DDEBUG
@@ -124,10 +138,19 @@ M2MManager:
 	$(RASCC) -lpthread -o $(TARGET0)/M2MManager.o M2MManager.c $(writeLog) $(LIB5) $(LIB6) $(LIB9) $(LIB11) $(LIB_SQLITE3)
 
 IoTManager:
-	$(RASCC) -o $(TARGET0)/IoTManager.o IoTManager.c $(writeLog) $(sqliteManager) $(LIB_SQLITE3) -lpthread
+	$(RASCC) -o $(TARGET0)/IoTManager.o IoTManager.c $(writeLog) $(sqliteManager) $(debugPrintf) $(configInfoParser) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(LIB_SQLITE3) -lpthread
+
+ModbusRTU:
+	$(RASCC) -o $(TARGET0)/ModbusRTU.o ModbusRTU.c $(writeLog) $(sqliteManager) $(debugPrintf) $(configInfoParser) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(LDFLAGS) $(LDLIBS) $(LIB_SQLITE3) $(RedisControl) -lpthread
+
 
 SetupManager:
-	$(RASCC) -lpthread -o $(TARGET0)/SetupManager.o SetupManager.c $(writeLog) $(LIB5) $(LIB6) $(LIB9) $(configRW) $(LIB_SQLITE3) -I./include
+	$(RASCC) -o $(TARGET0)/SetupManager.o SetupManager.c $(uart) $(debugPrintf) $(sqliteManager) $(timeSyncInfoParser) $(configInfoParser) $(serialInfoParser) $(writeLog) $(networkInfo) $(LIB5) $(LIB6) $(LIB9) $(configRW) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(LIB_SQLITE3) $(RedisControl) -I./include -lpthread 
+
+udpRecv:
+	gcc -lpthread -o $(TARGET0)/udpRecv.o udpRecv.c 
+#$(RASCC) -lpthread -o $(TARGET0)/udpRecv.o udpRecv.c 
+
 
 PLCS-12:
 	$(RASCC)  -o $(TARGET0)/PLCS-12.o PLCS-12.c $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(LIB_SQLITE3) $(LIB_EXPAT) -I./include -lpthread
@@ -138,6 +161,11 @@ eventHub:
 
 CommunicationManager:
 	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_9) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_GN1200) $(LIB_EXPAT) $(LIB_REDIS) -I./include -lpthread
+
+SerialToEthernet:
+	$(RASCC)  -o $(TARGET0)/SerialToEthernet.o SerialToEthernet.c $(debugPrintf) $(configInfoParser) $(serialInfoParser) $(uart) $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_9) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_GN1200) $(LIB_EXPAT) $(LIB_REDIS) -I./include -lpthread
+
+
 
 
 iDCU-IoT:
@@ -152,6 +180,9 @@ test_server:
 
 test_client:
 	gcc -D_REENTRANT test_client.c -o $(TARGET0)/test_client.o  -I./include -lpthread
+
+test_getnetinfo:
+	gcc -o $(TARGET0)/test_getnetinfo.o  test_getnetinfo.c
 
 UDPConnect:
 	$(RASCC) -fPIC -c $(LIB_TARGET)/UDPConnect.c

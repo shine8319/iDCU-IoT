@@ -51,14 +51,56 @@ struct wlan_var
     UINT32  lan_dns;
 };
 
+// add serial tab 2015.05.15
+typedef struct COMPORTINFO_VAR  {
+	UINT8 baud;
+	UINT8 parity;
+	UINT8 databit;
+	UINT8 stopbit;
+	UINT8 flowcontrol;
+
+} __attribute__ ((__packed__)) COMPORTINFO_VAR;
+
+typedef struct CONNECTINFO_VAR {
+	UINT8 mode;
+	UINT32 ip;
+	UINT32 port;
+	UINT32 localport;
+	UINT32 timeout;
+} __attribute__ ((__packed__)) CONNECTINFO_VAR;
+
+typedef struct POINTINFO_VAR {
+	UINT8 port;
+	UINT32 value;
+	UINT8 status;
+} __attribute__ ((__packed__)) POINTINFO_VAR;
+
+typedef struct TIMESYNCINFO_VAR {
+	UINT32 address;
+	UINT8 cycle;
+} __attribute__ ((__packed__)) TIMESYNCINFO_VAR;
+
+
 
 typedef struct DEVINFO {
     struct lan_var	lan;
     struct wlan_var	wlan;
-    struct security_var	security;
 
     UINT8   lanEnable;
     UINT8   wlanEnable;
+
+    UINT8   lanAuto;
+    UINT8   wlanAuto;
+
+
+    struct security_var	security;
+
+    COMPORTINFO_VAR comport;
+    CONNECTINFO_VAR connect;
+
+    POINTINFO_VAR point[8];
+
+    TIMESYNCINFO_VAR timeSync;
 
 } __attribute__ ((__packed__)) DEVINFO;
 
@@ -137,6 +179,40 @@ typedef struct NODEINFO {
 	TAGINFO tag[MAX_DEVICE];
 	char getPointSize;
 } NODEINFO;
+
+
+typedef struct COMPORTINFO {
+	char baud[MAX_BUFFER];
+	char parity[MAX_BUFFER];
+	char databit[MAX_BUFFER];
+	char stopbit[MAX_BUFFER];
+	char flowcontrol[MAX_BUFFER];
+
+} COMPORTINFO;
+
+typedef struct CONNECTINFO {
+	char mode[MAX_BUFFER];
+	char ip[MAX_BUFFER];
+	char port[MAX_BUFFER];
+	char localport[MAX_BUFFER];
+	char timeout[MAX_BUFFER];
+} CONNECTINFO;
+
+typedef struct SERIALINFO {
+    COMPORTINFO comport;
+    CONNECTINFO connect;
+} SERIALINFO;
+
+typedef struct CONFIGINFO {
+	char debug[MAX_BUFFER];
+	char setupport[MAX_BUFFER];
+} CONFIGINFO;
+
+typedef struct TIMESYNCINFO {
+	char address[MAX_BUFFER];
+	char cycle[MAX_BUFFER];
+} TIMESYNCINFO;
+
 
 
 /*

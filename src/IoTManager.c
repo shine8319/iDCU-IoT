@@ -17,6 +17,13 @@
 #include <sys/wait.h>
 
 #include "./include/iDCU.h"
+#include "./include/debugPrintf.h"
+#include "./include/parser/configInfoParser.h"
+
+#include "./include/hiredis/hiredis.h"
+#include "./include/hiredis/async.h"
+#include "./include/hiredis/adaters/libevent.h"
+
 #include "./include/writeLog.h"
 #include "./include/getDiffTime.h"
 #include "./include/sqlite3.h"
@@ -26,6 +33,8 @@
 #define SQLITE_SAFE_FREE(x)	if(x){ x = NULL; }
 #define BUFFER_SIZE 2048
 #define	BAUDRATE	115200	
+
+static void onMessage(redisAsyncContext *c, void *reply, void *privdata);
 unsigned char _getCheckSum( int len );
 unsigned char _uartGetCheckSum( unsigned char* buffer, int len );
 void *thread_syncCount(void *arg);
@@ -34,6 +43,9 @@ void *ConnectPorcess();
 void sig_handler( int signo);
 int setCountClear(UINT8 port );
 
+
+static redisContext *c;
+static CONFIGINFO configInfo;
 
 pthread_t threads[5];
 int m2mid;
@@ -52,6 +64,8 @@ sqlite3 *pSQLite3;
 int server_sock; 
 int client_sock; 
 int fd; // Serial Port File Descriptor
+
+
 
 int main(int argc, char **argv) { 
 
@@ -83,12 +97,30 @@ int main(int argc, char **argv) {
     memset( &io, 0, sizeof( UINT8 )*8 );
 
     signal( SIGINT, (void *)sig_handler);
+
+    /*
+    configInfo = configInfoParser("/work/smart/config/config.xml");
+
+    struct event_base *base = event_base_new();
+    redisAsyncContext *c = redisAsyncConnect("127.0.0.1", 6379);
+    if (c->err) {
+	// Let *c leak for now... 
+	debugPrintf(configInfo.debug, "Error: %s\n", c->errstr);
+	return 1;
+    }
+    */
+    //redisLibeventAttach(c, base);
+    //redisAsyncCommand(c, onMessage, NULL, "SUBSCRIBE clear");
+    //event_base_dispatch(base);
+
+
     fd = OpenSerial();
     if( fd == -1 )
     {
 	writeLog("/work/iot/log", "Uart Open Fail." );
 	return -1;
     }
+
 
     /******************** DB connect ***********************/
     // DB Open
@@ -143,6 +175,7 @@ int main(int argc, char **argv) {
     }
 
     memcpy( th_data, (void *)&fd, sizeof(fd) );
+    // send thread
     if( pthread_create(&threads[2], NULL, &thread_main, (void *)th_data) == -1 )
     {
 	writeLog("/work/iot/log", "[Uart] threads[2] thread_main error" );
@@ -172,7 +205,7 @@ int main(int argc, char **argv) {
 	       for( i = 0; i< ReadMsgSize; i++ )
 	       printf("%02X ", DataBuf[i]);
 	       printf(" ETX\n");
-	       */
+	     */
 
 	    memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
 	    receiveSize += ReadMsgSize;
@@ -207,6 +240,29 @@ int main(int argc, char **argv) {
     writeLog( "/work/iot/log", "[IoTManager] END" );
     return 0; 
 } 
+static void onMessage(redisAsyncContext *c, void *reply, void *privdata) {
+
+    int status, offset;
+    int i,j;
+    redisReply *r = reply;
+    time_t  transferTime, sensingTime;
+    unsigned char savePac[1024];
+
+
+    if (reply == NULL) return;
+
+    if (r->type == REDIS_REPLY_ARRAY) {
+	   for (j = 0; j < r->elements; j++) {
+	   printf("%u) %s\n", j, r->element[j]->str);
+
+	   }
+
+	if (strcasecmp(r->element[0]->str,"message") == 0 &&
+		strcasecmp(r->element[1]->str,"clear") == 0) {
+
+	}
+    }
+}
 
 void sig_handler( int signo)
 {
@@ -316,7 +372,7 @@ int SocketPorcess( void ) {
 		   }
 		   printf("\n");
 		   printf("recv data size : %d\n", ReadMsgSize);
-		   */
+		 */
 
 		if( ReadMsgSize >= BUFFER_SIZE )
 		    continue;
@@ -369,8 +425,8 @@ void *ConnectPorcess() {
 
     struct sockaddr_in servaddr; //server addr
     struct sockaddr_in clientaddr; //client addr
-    //unsigned short port = 502;
-    unsigned short port = 9000;
+    unsigned short port = 502;
+    //unsigned short port = 9000;
     int client_addr_size;
     int bufsize = 100000;
     int rn = sizeof(int);
@@ -728,11 +784,11 @@ int getIOStatus( ) {
 
     int rtrn = write(client_sock, SendBuffer, SendBuffer[5]+6 );
     /*
-    for( i = 0; i < rtrn; i++ ) {
-	printf("%-3.2x", SendBuffer[i]);
-    }
-    printf("\n");
-    */
+       for( i = 0; i < rtrn; i++ ) {
+       printf("%-3.2x", SendBuffer[i]);
+       }
+       printf("\n");
+     */
 
     return 0;
 }
@@ -789,11 +845,11 @@ int getCommStatus( ) {
 
 	int rtrn = write(client_sock, tlvSendBuffer, sizeof( StatusSendData)+9);
 	/*
-	for( i = 0; i < rtrn; i++ ) {
-	    printf("%-3.2x", tlvSendBuffer[i]);
-	}
-	printf("\n");
-	*/
+	   for( i = 0; i < rtrn; i++ ) {
+	   printf("%-3.2x", tlvSendBuffer[i]);
+	   }
+	   printf("\n");
+	 */
 
 	memset( statusSend, 0, sizeof( StatusSendData)*8); 
 	memset( tlvSendBuffer, 0, 2048 ); 
@@ -962,7 +1018,7 @@ int uartParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remai
 		   for( offset = i; offset < i+(cvalue[i+1] + 3); offset++ )
 		   printf("%02X ", cvalue[offset]);
 		   printf("\n\n");
-		   */
+		 */
 
 
 		i += (cvalue[i+1] + 2);
