@@ -496,7 +496,7 @@ static int startSerialToEthernet()
 static void init()
 {
     configInfo = configInfoParser("/work/smart/config/config.xml");
-    xmlinfo = serialInfoParser("/work/config/serial_info.xml");
+    xmlinfo = serialInfoParser("/work/smart/config/serial_info.xml");
 }
 
 static int modeConnect()
