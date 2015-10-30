@@ -1,0 +1,9 @@
+network={
+	ssid="ACS6"
+	key_mgmt=WPA-PSK
+	auth_alg=OPEN
+	psk="acs!p@ssw0rd"
+	wep_key0="acs1234567890"
+	#proto=RSN
+	#pairwise=CCMP
+}

@@ -5,15 +5,10 @@
 enum {
 	REBOOTNODE		= 0x01,
 	TIMESYNC		= 0x02,
+	CHANGENODEINFO	= 0x12,
 	GETDATA			= 0x03,
 	DELETENODE		= 0x04,
 	GETNODELIST 	= 0x05,
-
-	GETLANINFO		= 0x06,
-	SETLANINFO		= 0x0B,
-	CHANGENODEINFO	= 0x12,
-	GETCNT		= 0x13,
-	SETCNT		= 0x14,
 };
 
 /*
@@ -81,7 +76,7 @@ typedef struct AustemStatusSendData{
 	unsigned char nodeid;
 	unsigned char channelSize;
 	//unsigned int channel[6];
-	unsigned char channel[8][4];
+	unsigned char channel[6][4];
 	AustemSendTimeOrigin time;
 } __attribute__ ((__packed__)) AustemStatusSendData;
 /*

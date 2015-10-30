@@ -55,52 +55,52 @@ static void parser(void *data, const char *s, int len)
 	    if (strcmp(current_el,"BAUD") == 0) 
 	    {
 		sprintf(taginfo.comport.baud, "%s",buf);
-		printf("%s\n", taginfo.comport.baud);
+		//printf("%s\n", taginfo.comport.baud);
 	    }
 	    else if (strcmp(current_el,"PARITY") == 0) 
 	    {
 		sprintf(taginfo.comport.parity, "%s",buf);
-		printf("%s\n", taginfo.comport.parity);
+		//printf("%s\n", taginfo.comport.parity);
 	    }
 	    else if (strcmp(current_el,"DATABIT") == 0) 
 	    {
 		sprintf(taginfo.comport.databit, "%s",buf);
-		printf("%s\n", taginfo.comport.databit);
+		//printf("%s\n", taginfo.comport.databit);
 	    }
 	    else if (strcmp(current_el,"STOPBIT") == 0) 
 	    {
 		sprintf(taginfo.comport.stopbit, "%s",buf);
-		printf("%s\n", taginfo.comport.stopbit);
+		//printf("%s\n", taginfo.comport.stopbit);
 	    }
 	    else if (strcmp(current_el,"FLOWCONTROL") == 0) 
 	    {
 		sprintf(taginfo.comport.flowcontrol, "%s",buf);
-		printf("%s\n", taginfo.comport.flowcontrol);
+		//printf("%s\n", taginfo.comport.flowcontrol);
 	    }
 	    else if (strcmp(current_el,"MODE") == 0) 
 	    {
 		sprintf(taginfo.connect.mode, "%s",buf);
-		printf("%s\n", taginfo.connect.mode);
+		//printf("%s\n", taginfo.connect.mode);
 	    }
 	    else if (strcmp(current_el,"IP") == 0) 
 	    {
 		sprintf(taginfo.connect.ip, "%s",buf);
-		printf("%s\n", taginfo.connect.ip);
+		//printf("%s\n", taginfo.connect.ip);
 	    }
 	    else if (strcmp(current_el,"PORT") == 0) 
 	    {
 		sprintf(taginfo.connect.port, "%s",buf);
-		printf("%s\n", taginfo.connect.port);
+		//printf("%s\n", taginfo.connect.port);
 	    }
 	    else if (strcmp(current_el,"LOCALPORT") == 0) 
 	    {
 		sprintf(taginfo.connect.localport, "%s",buf);
-		printf("%s\n", taginfo.connect.localport);
+		//printf("%s\n", taginfo.connect.localport);
 	    }
 	    else if (strcmp(current_el,"TIMEOUT") == 0) 
 	    {
 		sprintf(taginfo.connect.timeout, "%s",buf);
-		printf("%s\n", taginfo.connect.timeout);
+		//printf("%s\n", taginfo.connect.timeout);
 	    }
 
 	}
@@ -188,7 +188,7 @@ SERIALINFO serialInfoParser(const char *path) {
 	if (done) 
 	    break; 
     } 
-    printf("\n\nTag is : %dea\n", user_num); 
+    //printf("\n\nTag is : %dea\n", user_num); 
     //taginfo.getPointSize = user_num;
 
     XML_ParserFree(p);

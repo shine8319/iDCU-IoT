@@ -1,0 +1,9 @@
+#!/bin/bash
+
+rm -rf /work/config/config.xml
+rm -rf /work/script/run/smartCheck.sh
+rm -rf /work/script/restartProgram.sh
+rm -rf /work/script/network/start.sh
+rm -rf /work/smart
+rm -rf /usr/lib/libwiringPi*
+rm -rf /usr/local/lib/libwiringPi*

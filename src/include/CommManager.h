@@ -1,7 +1,7 @@
 //#define USN			"/dev/ttyAMA0"
 #define USN			"/dev/ttyUSB0"
 //#define	BAUDRATE	57600	
-#define	BAUDRATE    9600
+#define	BAUDRATE    115200 
 #define BUFFER_SIZE 1024 
 #define	M2M_COMMAND	0
 #define	USN_RETURN	1
@@ -41,8 +41,8 @@ typedef struct {
 		
 
 
-int OpenSerial(void);
-int closeSerial(int fd);
+int OpenCOM(void);
+int closeCOM(int fd);
 int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize );
 int selectTag(unsigned char* buffer, int len );
 

@@ -17,11 +17,10 @@
 #include <sys/wait.h>
 
 #include "./include/iDCU.h"
-#include "./include/writeLog.h"
-#include "./include/getDiffTime.h"
 #include "./include/sqlite3.h"
 #include "./include/M2MManager.h"
 
+#define LOGPATH "/work/log/M2MManager"
 #define DBPATH "/work/db/dabom-device"
 #define SQLITE_SAFE_FREE(x)	if(x){ x = NULL; }
 
@@ -72,6 +71,7 @@ int wifi = 0;
 int server_sock; 
 int client_sock; 
 
+
 int main(int argc, char **argv) { 
 
 	int i;
@@ -97,12 +97,13 @@ int main(int argc, char **argv) {
 	rc = el1000_sqlite3_open( DBPATH, &pSQLite3 );
 	if( rc != 0 )
 	{
-		writeLog( "/work/m2m/log", "error DB Open" );
+		//writeLog( "error DB Open" );
+		writeLogV2(LOGPATH, "[M2MManager]", "error DB Open\n");
 		return -1;
 	}
 	else
 	{
-		writeLog( "/work/m2m/log", "DB Open" );
+		writeLogV2(LOGPATH, "[M2MManager]", "%s OPEN!!\n", DBPATH);
 		printf("%s OPEN!!\n", DBPATH);
 	}
 
@@ -115,7 +116,8 @@ int main(int argc, char **argv) {
 	rc = el1000_sqlite3_customize( &pSQLite3 );
 	if( rc != 0 )
 	{
-		writeLog( "/work/m2m/log", "error DB Customize" );
+		//writeLog( "error DB Customize" );
+		writeLogV2(LOGPATH, "[M2MManager]", "error DB Customize\n");
 		return -1;
 	}
 
@@ -142,14 +144,16 @@ int main(int argc, char **argv) {
 	/***************** Server Connect **********************/
 	if( -1 == ( m2mid = msgget( (key_t)2222, IPC_CREAT | 0666)))
 	{
-		writeLog( "/work/m2m/log", "error msgget() m2mid" );
+		//writeLog( "error msgget() m2mid" );
+		writeLogV2(LOGPATH, "[M2MManager]", "error msgget() m2mid\n");
 		//perror( "msgget() 실패");
 		return -1;
 	}
 
 	if( -1 == ( eventid = msgget( (key_t)3333, IPC_CREAT | 0666)))
 	{
-		writeLog( "/work/m2m/log", "error msgget() eventid" );
+		//writeLog( "error msgget() eventid" );
+		writeLogV2(LOGPATH, "[M2MManager]", "error msgget() eventid\n");
 		//perror( "msgget() 실패");
 		return -1;
 	}
@@ -289,7 +293,7 @@ int Connect_Manager() {
 
 	struct sockaddr_in servaddr; //server addr
 	struct sockaddr_in clientaddr; //client addr
-	unsigned short port = 1470;
+	unsigned short port = 1471;
 	int client_addr_size;
 	int bufsize = 100000;
 	int rn = sizeof(int);
@@ -458,7 +462,8 @@ int AustemTimeSync( QUERYTIME time )
 		if( _2pid == 0 )
 		{
 			printf("in 2child\n");
-			execl("/sbin/hwclock", "/sbin/hwclock", "-w", NULL);
+			//execl("/sbin/hwclock", "/sbin/hwclock", "-w", NULL);
+			execl("/work/smart/hwclock", "/work/smart/hwclock", "-w", NULL);
 			exit(0);
 		}
 		else
@@ -491,14 +496,15 @@ int Pack_Manager( unsigned char* buffer, int len )
 	time_t	tm_nd;
 	int	tm_year, tm_month;
 	int	tm_day, tm_hour, tm_min, tm_sec;
-	int d_diff;
+	double d_diff;
 	struct tm t;
 	char syncError;
 
 	time_t 	curTime;
 	struct tm *ct;
 
-	TMSTRUCT tmget;
+
+
 
 
 	type = buffer[2];
@@ -570,8 +576,6 @@ int Pack_Manager( unsigned char* buffer, int len )
 				  );
 				  */
 
-
-
 			callTime.year = buffer[4];
 			callTime.month = buffer[5];
 			callTime.day = buffer[6];
@@ -579,20 +583,55 @@ int Pack_Manager( unsigned char* buffer, int len )
 			callTime.minute = buffer[8];
 			callTime.sec = buffer[9];
 
-
 			t.tm_year = 2000 + buffer[4] - 1900;
 			t.tm_mon = buffer[5] -1;
 			t.tm_mday = buffer[6];
 			t.tm_hour = buffer[7];
 			t.tm_min = buffer[8];
 			t.tm_sec = buffer[9];
+			//printf("Year %d\n", t.tm_year);
 
-		        d_diff = getDiffTime( t);
+			tm_st = mktime( &t );
+			time( &tm_nd );
 
+			d_diff = difftime( tm_nd, tm_st );
+			//printf(" d_diff = %d\n", d_diff );
+			//tm_year   = d_diff / ( ( 60 *60 * 24) * 365 );
+
+			/*
+			tm_day   = d_diff / ( 60 *60 * 24);
+			d_diff   = d_diff - ( tm_day *60 *60 *24);
+			printf(" d_diff = %d\n", d_diff );
+
+			tm_hour  = d_diff / ( 60 *60);
+			d_diff   = d_diff - ( tm_hour *60 *60);
+			printf(" d_diff = %d\n", d_diff );
+
+			tm_min   = d_diff / 60;
+			d_diff   = d_diff - ( tm_min *60);
+			printf(" d_diff = %d\n", d_diff );
+
+			tm_sec   = d_diff;
+
+			printf( "%d year %d일 %d시 %d분 %d초 지났음\n", 
+					tm_year,
+					tm_day, tm_hour, tm_min, tm_sec);
+					*/
+			curTime = time(NULL);
+			ct = localtime(&curTime);
+			//printf("%d > %d ( diff %d )\n", (2000+buffer[4]), (ct->tm_year + 1900), d_diff );
+	
+	
+			//if( (2000+buffer[4]) > (ct->tm_year + 1900) || d_diff < 0 )
 			if( buffer[4] == 99 || d_diff < 0 )
+			{
 				getNodeStatusData( callTime );
+			}
 			else
+			{
+			    //printf("getNodeData\n");
 				getNodeData( callTime );
+			}
 			
 			break;
 
@@ -867,7 +906,7 @@ int getNodeStatusData( QUERYTIME time ) {
 
 
 			// add 2014.05.13
-			//printf("recv time %s\n", data.past_result[rowSize]); 
+			printf("recv time %s\n", data.past_result[rowSize]); 
 			yearConvert[0] = data.past_result[rowSize][2];
 			yearConvert[1] = data.past_result[rowSize][3];
 			austemStatusSend[i].time.year = atoi(yearConvert);
@@ -1029,7 +1068,7 @@ int getNodeData( QUERYTIME time ) {
 
 	if( data.size > 0 )
 	{
-		printf("OK data~~\n");
+		//printf("OK data~~\n");
 		rowCnt = (data.size-4)/4;
 
 		for( i = 0; i < (data.size-4)/4; i++ )
@@ -1098,7 +1137,7 @@ int getNodeData( QUERYTIME time ) {
 	}
 	else
 	{
-		printf("no data\n");
+		//printf("no data\n");
 		vLength = 6;	// add 20130820 time 6 byte
 		totalLength = vLength + 4;
 
@@ -1116,7 +1155,7 @@ int getNodeData( QUERYTIME time ) {
 
 	//int rtrn = write(wifi, tlvSendBuffer, totalLength+4);
 	int rtrn = write(client_sock, tlvSendBuffer, totalLength+4);
-	printf("Send rtrn = %d\n", rtrn);
+	//printf("Send rtrn = %d\n", rtrn);
 
 	//printf("Clear!\n");
 	memset( austemSend, 0, sizeof( AustemSendData )*2048 ); 

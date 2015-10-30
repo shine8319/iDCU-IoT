@@ -19,13 +19,6 @@
 
 #include "./include/iDCU.h"
 
-#include "./driver/include/PLCS_9.h"
-#include "./driver/include/PLCS_10.h"
-#include "./driver/include/PLCS_12.h"
-#include "./driver/include/PLCS_12ex.h"
-#include "./driver/include/iDCU_IoT.h"
-#include "./driver/include/GN1200.h"
-
 #include "./include/parser/serialInfoParser.h"
 #include "./include/parser/configInfoParser.h"
 
@@ -37,7 +30,9 @@
 #include "./include/hiredis/hiredis.h"
 
 #define BUFFER_SIZE 4096 
-
+#define LOGPATH "/work/log/SerialToEthernet"
+#define CONFIGINFOPATH "/work/config/config.xml"
+#define SERIALINFOPATH "/work/config/serial_info.xml"
 static SERIALINFO xmlinfo;
 static CONFIGINFO configInfo;
 static int xmlOffset = 0;
@@ -47,46 +42,11 @@ static int tcp;
 
 static void init();
 static void sig_handler( int signo);
-static void createDriver( DEVICEINFO *device, TAGINFO *tag );
-static void createProcess( pid_t *pid, DEVICEINFO *device, TAGINFO *tag );
 
 static int startSerialToEthernetClient();
 static int startSerialToEthernet();
 static int modeConnect();
 static void *thread_main(void *arg);
-
-static void createDriver( DEVICEINFO *device, TAGINFO *tag )
-{
-
-    writeLogV2("/work/smart/comm/log/deviceLog", "[Start]", "[%s][%d] Open", device->driver, (int)getpid() );
-    if (strcmp(device->driver,"PLCS9") == 0) 
-    {
-	PLCS9(device);
-    }
-    else if (strcmp(device->driver,"PLCS10") == 0) 
-    {
-	PLCS10(device);
-    }
-    else if (strcmp(device->driver,"PLCS12") == 0) 
-    {
-	PLCS12(device);
-    }
-    else if (strcmp(device->driver,"PLCS12ex") == 0) 
-    {
-	PLCS12ex(device);
-    }
-    else if (strcmp(device->driver,"iDCU_IoT") == 0) 
-    {
-	iDCU_IoT(device);
-    }
-    else if (strcmp(device->driver,"GN1200") == 0) 
-    {
-	GN1200(device);
-    }
-    else
-	printf("no exist~~~~~~\n");
-
-}
 
 
 int main(int argc, char **argv) { 
@@ -114,8 +74,9 @@ int main(int argc, char **argv) {
      */
     init();
 
+    //fd = OpenSerial(xmlinfo.comport.baud, xmlinfo.comport.parity[0], xmlinfo.comport.databit[0], xmlinfo.comport.stopbit[0]);
     fd = OpenSerial(xmlinfo.comport.baud, xmlinfo.comport.parity[0], xmlinfo.comport.databit[0], xmlinfo.comport.stopbit[0]);
-    debugPrintf(configInfo.debug, "OpenSerial %d\n", fd);
+    debugPrintf(configInfo.debug, "[SerialToEthernet] OpenSerial %d\n", fd);
     //rc = tty_raw(fd, xmlinfo.comport.baud, xmlinfo.comport.flowcontrol[0], xmlinfo.comport.databit[0], xmlinfo.comport.parity[0], xmlinfo.comport.stopbit[0]);
     //printf("tty_raw %d\n", rc);
 
@@ -127,7 +88,8 @@ int main(int argc, char **argv) {
     UINT8 logBuffer[256];
 
     memset( th_data, 0, sizeof( th_data ) );
-    debugPrintf(configInfo.debug, "%s mode....\n", xmlinfo.connect.mode);
+    debugPrintf(configInfo.debug, "[SerialToEthernet] %s mode....\n", xmlinfo.connect.mode);
+    writeLogV2(LOGPATH, "[SerialToEthernet]", "Start\n");
  
     while(1)
     {
@@ -135,6 +97,8 @@ int main(int argc, char **argv) {
 	tcp = modeConnect();
 
 	if( tcp> 0 ) {
+	    writeLogV2(LOGPATH, "[SerialToEthernet]", "Connect\n");
+
 	    memcpy( th_data, (void *)&fd, sizeof(fd) );
 	    if( pthread_create(&p_thread, NULL, &thread_main, (void *)th_data) == -1 )
 	    //if( pthread_create(&p_thread, NULL, &thread_main, NULL ) == -1 )
@@ -179,6 +143,7 @@ int main(int argc, char **argv) {
 	    close(tcp);
 	    tcp = -1;
 	    //writeLog( "/work/smart/comm/log/GN1200", "[GN1200] fail Connection");
+	    writeLogV2(LOGPATH, "[SerialToEthernet]", "Disconnect\n");
 	}
         usleep(100000);	// 100ms
 	sleep(2);
@@ -208,6 +173,8 @@ int main(int argc, char **argv) {
 } 
 static void *thread_main(void *arg)
 {
+
+    writeLogV2(LOGPATH, "[thread_main]", "start Serial Data Check Thread\n");
 
     int rtrn;
 
@@ -279,6 +246,7 @@ static void *thread_main(void *arg)
     tcp = -1;
 
     debugPrintf(configInfo.debug, "Exit Thread\n");
+    writeLogV2(LOGPATH, "[thread_main]", "Exit Serial Data Check Thread\n");
     //writeLog( "/work/smart/comm/log/GN1200", "[thread_main] Exit Thread");
     pthread_exit((void *) 0);
 }
@@ -495,8 +463,8 @@ static int startSerialToEthernet()
 
 static void init()
 {
-    configInfo = configInfoParser("/work/smart/config/config.xml");
-    xmlinfo = serialInfoParser("/work/smart/config/serial_info.xml");
+    configInfo = configInfoParser(CONFIGINFOPATH);
+    xmlinfo = serialInfoParser(SERIALINFOPATH);
 }
 
 static int modeConnect()
@@ -528,31 +496,6 @@ static int modeConnect()
 
 }
 
-static void createProcess( pid_t *pid, DEVICEINFO *device, TAGINFO *tag )
-{
-
-    *pid = fork();
-    printf("[%s] *pid %d\n", device->driver, *pid);
-
-    if( *pid < 0 )
-    {
-	perror("fork error : ");
-	writeLogV2("/work/smart/comm/log/deviceLog", "[Error]", "[%s] error fork()", device->driver );
-    }
-
-    if( *pid == 0 )
-    {
-	printf("My pid %d\n", (int)getpid() );
-	createDriver( device, tag );
-	exit(0);
-    }
-    else
-    {
-	printf("Parent %d, child %d\n", (int)getpid(), *pid );
-    }
-
-}
-
 static void sig_handler( int signo)
 {
     int i;
@@ -560,7 +503,7 @@ static void sig_handler( int signo)
     int status;
 
     printf("[%d] return Code %d\n", (int)getpid(), signo);
-    writeLogV2("/work/smart/comm/log/deviceLog", "[Error]", "[%d] return Code %d", (int)getpid(), signo );
+    writeLogV2(LOGPATH, "[Error]", "[%d] return Code %d", (int)getpid(), signo );
 
     exit(1);
 }

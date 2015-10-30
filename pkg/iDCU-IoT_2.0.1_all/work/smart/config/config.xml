@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<SINK ver="1.0"> 
+
+   <COFIGURATION> 
+        <DEBUG>1</DEBUG> 
+        <SETUPPORT>50005</SETUPPORT> 
+   </COFIGURATION> 
+
+
+</SINK>
+ 

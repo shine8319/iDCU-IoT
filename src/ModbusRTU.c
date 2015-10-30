@@ -33,13 +33,21 @@
 
 #include "./include/RedisControl.h"
 
-#define DBPATH "/work/smart/db/comm"
+#define CONFIGINFOPATH "/work/config/config.xml"
+#define LOGPATH "/work/log/ModbusRTU"
+#define DBPATH "/work/db/comm"
 #define SQLITE_SAFE_FREE(x)	if(x){ x = NULL; }
 #define BUFFER_SIZE 2048
 #define	BAUDRATE	115200	
 #define DI_PORT		8
 #define LED_PORT	2
 #define BUTTON_PORT	3
+
+enum {
+    BLUE = 0,
+    WHITE = 1
+};
+
 typedef struct 
 {
     UINT8 cnt_inc_size;
@@ -57,9 +65,8 @@ IOCheckStruct		IO[DI_PORT];
 
 unsigned char _getCheckSum( int len );
 unsigned char _uartGetCheckSum( unsigned char* buffer, int len );
-void *thread_syncCount(void *arg);
 void *thread_main(void *);
-void *ConnectPorcess();
+void *ConnectProcess();
 void sig_handler( int signo);
 int setCountClear(unsigned char* buffer, int len, UINT8 port, UINT8 value );
 int setRedisEventCountClear( INT32 port );
@@ -69,8 +76,6 @@ int setDO(UINT8* buffer, int len, UINT8 port, UINT8 value );
 static void onMessage(redisAsyncContext *c, void *reply, void *privdata);
 
 pthread_t threads[5];
-int m2mid;
-int eventid;
 
 StatusSendData statusSend[8];
 StatusSendData countSend;
@@ -126,6 +131,8 @@ int main(int argc, char **argv) {
 
     char th_data[256];
 
+    int dataToggle = 0;
+
     memset( &pastData, 0, sizeof( MGData ) );
     memset( &io, 0, sizeof( UINT8 )*8 );
 
@@ -152,26 +159,17 @@ int main(int argc, char **argv) {
 	pinMode (buttonPin[i], INPUT) ;
 
 
-    /*
-       fd = OpenSerial();
-       if( fd == -1 )
-       {
-       writeLog("/work/iot/log", "Uart Open Fail." );
-       return -1;
-       }
-
-     */
     // DB Open
     rc = _sqlite3_open( DBPATH, &pSQLite3 );
     if( rc != 0 )
     {
-	writeLog( "/work/iot/log", "error DB Open" );
+	writeLogV2(LOGPATH, "[ModBusRTU]", "error DB Open\n");
 	return -1;
     }
     else
     {
-	writeLog( "/work/iot/log", "DB Open" );
-	printf("%s OPEN!!\n", DBPATH);
+	writeLogV2(LOGPATH, "[ModBusRTU]", "DB Open\n");
+	//printf("%s OPEN!!\n", DBPATH);
     }
 
 
@@ -182,48 +180,48 @@ int main(int argc, char **argv) {
     rc = _sqlite3_customize( &pSQLite3 );
     if( rc != 0 )
     {
-	writeLog( "/work/iot/log", "error DB Customize" );
+	writeLogV2(LOGPATH, "[ModBusRTU]", "error DB Customize\n");
 	return -1;
     }
     rc = _sqlite3_nolock( &pSQLite3 );
     if( rc != 0 )
     {
-	writeLog( "/work/iot/log", "error set nolock" );
+	writeLogV2(LOGPATH, "[ModBusRTU]", "error set nolock\n");
 	return -1;
     }
+
+
+    configInfo = configInfoParser(CONFIGINFOPATH);
 
     rc = init();
     if( rc == -1 )
     {
-	writeLog( "/work/iot/log", "error init()" );
+	writeLogV2(LOGPATH, "[ModBusRTU]", "error init()\n");
 	return -1;
     }
+
+    for( i = 0; i < 8; i++)
+    {
+	IO[i].cnt_inc_size = check_interval( atoi(configInfo.port[i].interval) );
+	//printf(" %d ", IO[i].cnt_inc_size);
+    }
+    //printf("\n");
+
 
     /***************** Server Connect **********************/
-    if( -1 == ( m2mid = msgget( (key_t)2222, IPC_CREAT | 0666)))
-    {
-	writeLog( "/work/iot/log", "error msgget() m2mid" );
-	return -1;
-    }
-
-    if( -1 == ( eventid = msgget( (key_t)3333, IPC_CREAT | 0666)))
-    {
-	writeLog( "/work/iot/log", "error msgget() eventid" );
-	return -1;
-    }
-
     if( pthread_create(&threads[2], NULL, &thread_main, NULL) == -1 )
     {
-	writeLog("/work/iot/log", "[Uart] threads[2] thread_main error" );
+	writeLogV2(LOGPATH, "[ModBusRTU]", "thread_main create error\n");
 	printf("error thread\n");
     }
 
-    if( pthread_create(&threads[1], NULL, &ConnectPorcess, NULL ) == -1 )
+    if( pthread_create(&threads[1], NULL, &ConnectProcess, NULL ) == -1 )
     {
-	writeLog("/work/iot/log", "[TCP/IP] thread Create error" );
+	writeLogV2(LOGPATH, "[ModBusRTU]", "ConnectProcess create error\n");
     }
     usleep(1000);
 
+    writeLogV2(LOGPATH, "[ModBusRTU]", "Start\n");
     while(1)
     { 
 	delay (10) ;
@@ -246,8 +244,16 @@ int main(int argc, char **argv) {
 	    }
 	    printf("\n");
 
-	    digitalWrite(ledPin[0], !digitalRead (buttonPin[0]));
-	    digitalWrite(ledPin[1], !digitalRead (buttonPin[1]));
+	    digitalWrite(ledPin[WHITE], dataToggle);
+	    printf("dataToggle %d\n", dataToggle);
+	    if( dataToggle == 0 )
+		dataToggle = 1;
+	    else
+		dataToggle = 0;
+
+
+	    //digitalWrite(ledPin[0], !digitalRead (buttonPin[0])); //blue
+	    //digitalWrite(ledPin[1], !digitalRead (buttonPin[1]));
 
 	}
 
@@ -259,7 +265,7 @@ int main(int argc, char **argv) {
     /*******************************************************/
     _sqlite3_close( &pSQLite3 );
 
-    writeLog( "/work/iot/log", "[IoTManager] END" );
+    writeLogV2(LOGPATH, "[ModBusRTU]", "End\n");
     return 0; 
 } 
 static void onMessage(redisAsyncContext *c, void *reply, void *privdata) {
@@ -372,7 +378,7 @@ int init( void ) {
     return 0;
 }
 
-int SocketPorcess( void ) {
+int SocketProcess( void ) {
 
     fd_set control_msg_readset;
     struct timeval control_msg_tv;
@@ -462,7 +468,7 @@ int SocketPorcess( void ) {
 }
 
 
-void *ConnectPorcess() {
+void *ConnectProcess() {
 
     struct sockaddr_in servaddr; //server addr
     struct sockaddr_in clientaddr; //client addr
@@ -474,7 +480,8 @@ void *ConnectPorcess() {
     int flags;
     pid_t pid;
 
-    printf("Start Socket Server!!\n");
+    printf("[ModbusRTU] Start!!\n");
+    writeLogV2(LOGPATH, "[ConnectProcess]", "Start\n");
 
     while( 1 ) {
 
@@ -485,6 +492,7 @@ void *ConnectPorcess() {
 	// solution ( bind error : Address already in use )
 	if( setsockopt( server_sock, SOL_SOCKET, SO_REUSEADDR, (void*)&bufsize, (socklen_t)rn) < 0 ) {
 	    perror("Error setsockopt()");
+	    writeLogV2(LOGPATH, "[ConnectProcess]", "Error setsockopt()\n");
 	    return;
 	}
 
@@ -495,6 +503,7 @@ void *ConnectPorcess() {
 
 	if (bind(server_sock, (struct sockaddr*)&servaddr, sizeof(servaddr)) < 0) {
 	    printf("server socket bind error\n");
+	    writeLogV2(LOGPATH, "[ConnectProcess]", "server socket bind error\n");
 	    return;
 	}
 
@@ -515,14 +524,18 @@ void *ConnectPorcess() {
 
 	close( server_sock );
 
-	printf("New Connection, Client IP : %s (%d)\n",	inet_ntoa(clientaddr.sin_addr), client_sock);
-	SocketPorcess();
-	printf("TCP : Client No Signal. Connection Try Again....\n");
+        writeLogV2(LOGPATH, "[ConnectProcess]", "New Connection, Client IP : %s (%d)\n",	inet_ntoa(clientaddr.sin_addr), client_sock );
+	printf("[ModbusRTU] New Connection, Client IP : %s (%d)\n",	inet_ntoa(clientaddr.sin_addr), client_sock);
+	SocketProcess();
+	printf("[ModbusRTU] TCP : Client No Signal. Connection Try Again....\n");
+        writeLogV2(LOGPATH, "[ConnectProcess]", "TCP : Client No Signal. Connection Try Again....\n");
 
     }
 
     close( client_sock );
 
+    writeLogV2(LOGPATH, "[ConnectProcess]", "End\n");
+    pthread_exit((void *) 0);
 }
 
 int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )
@@ -568,114 +581,7 @@ int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder
     return remainSize;
 }
 
-int AustemTimeSync( TimeOrigin time )
-{
 
-    char settime[15]; 
-    int pid;
-    int status;
-    int state;
-    pid_t child;
-
-    int _2pid;
-    int _2state;
-    pid_t _2child;
-    int rtrn;
-
-
-    sprintf(settime, "%02d%02d%02d%02d20%02d.%02d", 
-	    time.month,
-	    time.day,
-	    time.hour,
-	    time.min,
-	    time.year,
-	    time.sec );
-
-    if( time.year < 12 || time.year > 99 
-	    || time.month < 1 || time.month > 12 
-	    || time.day < 1 || time.day > 31 
-	    || time.hour > 24 
-	    || time.min> 59
-	    || time.sec > 59 )
-    {
-	printf(" Out of Set time \n ");
-	return -1;
-    }
-
-    printf("request set time = %s\n", settime);
-    pid = fork();
-    if( pid < 0 )
-    {
-	perror("fork error : ");
-	rtrn = -1;
-    }
-    if( pid == 0 )
-    {
-	printf("in child\n");
-	execl("/bin/date", "/bin/date", settime, NULL);
-	//execl("/sbin/hwclock -w", "/bin/date", settime, NULL);
-	exit(0);
-    }
-    else
-    {
-	do {
-	    child = waitpid(-1, &state, WNOHANG);
-	} while(child == 0);
-	printf("Parent : wait(%d)\n", pid);
-	printf("Child process id = %d, return value = %d \n", child, WEXITSTATUS(state));
-	rtrn = 0;
-    }
-
-    _2pid = fork();
-    if( _2pid < 0 )
-    {
-	perror("fork error : ");
-	rtrn = -1;
-    }
-    if( _2pid == 0 )
-    {
-	printf("in 2child\n");
-	execl("/sbin/hwclock", "/sbin/hwclock", "-w", NULL);
-	exit(0);
-    }
-    else
-    {
-	do {
-	    _2child = waitpid(-1, &_2state, WNOHANG);
-	} while(_2child == 0);
-	printf("Parent : wait(%d)\n", _2pid);
-	printf("Child process id = %d, return value = %d \n", _2child, WEXITSTATUS(_2state));
-	rtrn = 0;
-    }
-
-
-
-    return rtrn;
-
-}
-
-int CreateSync( UINT8 type ) 
-{
-    char th_data[256];
-    memcpy( th_data, (void *)&fd, sizeof(fd) );
-
-    switch( type )
-    {
-	case 1:
-	    if( pthread_create(&threads[0], NULL, &thread_syncCount, (void *)th_data) == -1 )
-	    {
-		writeLog("/work/iot/log", "[Uart] threads[0] syncCount error" );
-	    }
-	    break;
-
-	case 0:
-
-	    break;
-
-    }
-
-    return 0;
-}
 int vGetDIStatus(void)
 {
     UINT8 i;
@@ -762,7 +668,7 @@ int receiveEvent( unsigned char* buffer, int len )
     switch( buffer[2] )
     {
 	case 1:
-	    CreateSync( buffer[4] );
+	    //CreateSync( buffer[4] );
 	    break;
 	default:
 	    for( i = 0; i < 8; i++ )
@@ -1140,95 +1046,15 @@ unsigned char _getCheckSum( int len )
     return sum;
 }
 
-int OpenSerial(void)
-{
-    int fd; // File descriptor
-    struct termios newtio;
-
-    int rtrn;
-
-    fd = open( "/dev/ttyAMA0", O_RDWR | O_NOCTTY);
-
-
-    if(fd < 0)
-    {
-	printf("Bridge Open Fail.\n");
-	return -1;
-    }
-    memset(&newtio, 0, sizeof(newtio));
-    newtio.c_iflag = IGNPAR; // Parity error 문자 바이트 무시
-    newtio.c_oflag = 0; // 2
-    newtio.c_cflag = CS8|CLOCAL|CREAD; // 8N1, Local Connection, 문자(char형)수신 가능
-
-    switch(BAUDRATE) // Baud Rate
-    {
-	case 115200 : newtio.c_cflag |= B115200;
-		      break;
-	case 57600 : newtio.c_cflag |= B57600;
-		     break;
-	case 38400 : newtio.c_cflag |= B38400;
-		     break;
-	case 19200 : newtio.c_cflag |= B19200;
-		     break;
-	case 9600: newtio.c_cflag |= B9600;
-		   break;
-	default : newtio.c_cflag |= B57600;
-		  break;
-    }
-    newtio.c_lflag = 0;	    // Non-Canonical 입력 처리
-    newtio.c_cc[VTIME] = 1;// 0.1초 이상 수신이 없으면 timeout. read()함수는 0을 리턴
-    newtio.c_cc[VMIN] = 0;
-
-    tcflush(fd, TCIFLUSH); // Serial Buffer initialized
-    tcsetattr(fd, TCSANOW, &newtio); // Modem line initialized & Port setting 종료
-
-    return fd;
-}
-
-int CloseSerial(int fd)
-{
-    close(fd);
-}
-void *thread_syncCount(void *arg)
-{
-
-    int i;
-    int rtrn;
-    int uartFd;
-    int length;
-    unsigned char SendBuf[BUFFER_SIZE];
-    memset(SendBuf, 0, BUFFER_SIZE);
-
-    memcpy( (void *)&uartFd, (char *)arg, sizeof(int));
-
-    length = sizeof( MGData );
-
-    SendBuf[0] = 0xFE;
-    SendBuf[1] = length + 3;
-    SendBuf[2] = 0x32;
-    SendBuf[3] = length;
-
-    memcpy( SendBuf+4, &pastData, sizeof( MGData ) );
-    SendBuf[length+3] = 0xFF;
-
-    for( i = 0; i < length+4; i++ )
-    {
-	printf("%02X ", SendBuf[i]);
-    }
-    printf("\n");
-    //usleep(200);
-    rtrn = write(uartFd, SendBuf, length+4); 
-    printf(" send %d~~~~~~~~~~~~~~\n", rtrn);
-
-
-    pthread_exit( (void *) 0);
-}
 
 void *thread_main(void *arg)
 {
+
+    writeLogV2(LOGPATH, "[thread_main]", "start Thread [SUBSCRIBE clear]\n");
+
     CONFIGINFO configInfo;
 
-    configInfo = configInfoParser("/work/smart/config/config.xml");
+    configInfo = configInfoParser(CONFIGINFOPATH);
 
 
     debugPrintf(configInfo.debug, "start Thread [SUBSCRIBE clear]");
@@ -1244,6 +1070,8 @@ void *thread_main(void *arg)
     event_base_dispatch(base);
 
     debugPrintf(configInfo.debug, "End Thread [SUBSCRIBE clear]");
+
+    writeLogV2(LOGPATH, "[thread_main]", "End Thread [SUBSCRIBE clear]\n");
     pthread_exit((void *) 0);
 }
 
@@ -1282,7 +1110,6 @@ int uartParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remai
 		if( sum != setBuffer[(i+1)-2] )
 		{
 		    //printf("================================\n");
-		    //writeLog( "CheckSum Error" );
 		}
 		else
 		{

@@ -55,13 +55,60 @@ static void parser(void *data, const char *s, int len)
 	    if (strcmp(current_el,"DEBUG") == 0) 
 	    {
 		sprintf(xmlinfo.debug, "%s",buf);
-		printf("%s\n", xmlinfo.debug);
+		//printf("%s\n", xmlinfo.debug);
 	    }
 	    else if (strcmp(current_el,"SETUPPORT") == 0) 
 	    {
 		sprintf(xmlinfo.setupport, "%s",buf);
-		printf("%s\n", xmlinfo.setupport);
+		//printf("%s\n", xmlinfo.setupport);
 	    }
+	    else if (strcmp(current_el,"PORT1INTERVAL") == 0) 
+	    {
+		sprintf(xmlinfo.port[0].interval, "%s",buf);
+		//printf("%s\n", xmlinfo.port[0].interval);
+	    }
+	    else if (strcmp(current_el,"PORT2INTERVAL") == 0) 
+	    {
+		sprintf(xmlinfo.port[1].interval, "%s",buf);
+		//printf("%s\n", xmlinfo.port[1].interval);
+	    }
+	    else if (strcmp(current_el,"PORT3INTERVAL") == 0) 
+	    {
+		sprintf(xmlinfo.port[2].interval, "%s",buf);
+		//printf("%s\n", xmlinfo.port[2].interval);
+	    }
+	    else if (strcmp(current_el,"PORT4INTERVAL") == 0) 
+	    {
+		sprintf(xmlinfo.port[3].interval, "%s",buf);
+		//printf("%s\n", xmlinfo.port[3].interval);
+	    }
+	    else if (strcmp(current_el,"PORT5INTERVAL") == 0) 
+	    {
+		sprintf(xmlinfo.port[4].interval, "%s",buf);
+		//printf("%s\n", xmlinfo.port[4].interval);
+	    }
+	    else if (strcmp(current_el,"PORT6INTERVAL") == 0) 
+	    {
+		sprintf(xmlinfo.port[5].interval, "%s",buf);
+		//printf("%s\n", xmlinfo.port[5].interval);
+	    }
+	    else if (strcmp(current_el,"PORT7INTERVAL") == 0) 
+	    {
+		sprintf(xmlinfo.port[6].interval, "%s",buf);
+		//printf("%s\n", xmlinfo.port[6].interval);
+	    }
+	    else if (strcmp(current_el,"PORT8INTERVAL") == 0) 
+	    {
+		sprintf(xmlinfo.port[7].interval, "%s",buf);
+		//printf("%s\n", xmlinfo.port[7].interval);
+	    }
+
+
+
+
+
+
+
 	}
 
     } 
@@ -147,7 +194,7 @@ CONFIGINFO configInfoParser(const char *path) {
 	if (done) 
 	    break; 
     } 
-    printf("\n\nTag is : %dea\n", user_num); 
+    //printf("\n\nTag is : %dea\n", user_num); 
     //taginfo.getPointSize = user_num;
 
     XML_ParserFree(p);

@@ -8,37 +8,80 @@
 #include <time.h>
 
 
-#include "./include/iDCU.h"
+#define LOGPATH "/work/log/DBSchedule"
 #include "./include/sqlite3.h"
-#include "./include/SQLite3Interface.h"
-#include "./include/writeLog.h"
+#include "./include/RealTimeDataManager.h"
 
+extern int el1000_sqlite3_open( char *path, sqlite3 **pSQLite3 );
+extern int el1000_sqlite3_customize( sqlite3 **pSQLite3 );
+extern int el1000_sqlite3_close( sqlite3 **pSQLite3 );
+extern int el1000_sqlite3_transaction( sqlite3 **pSQLite3, char status );
+extern Return_Selectdata el1000_sqlite3_select( sqlite3 *pSQLite3, char *query );
+//extern int InsertAustemNodeData( sqlite3 **pSQLite3, t_getNode	node );
+//extern int UpdateAustemNodeData( sqlite3 **pSQLite3, t_getNode	node );
 static int busy(void *handle, int nTry);
+
 
 int main( void)
 {
-	int i;
-	int rtrn;
+	int      msqid;
+	int 		i,j;
+	int 		id = 0;
+	int			rtrn;
+	char		cntOffset = 9;
 
 	// sqlite
 	int rc;
 	sqlite3 *pSQLite3;
+	//NODELIST nodelist;
+	unsigned char nodelist[256];
 	char *query;
 	char *delQuery;
-	SQLite3Data sqlData;
+	Return_Selectdata selectLastData;
+	int	getPortOffset = 0;
+	int	dataChanged = 0;
+
+	clock_t start,end;
+	double msec;
+
+	memset( nodelist, 0, 256 ); 
+
+	if ( -1 == ( msqid = msgget( (key_t)1111, IPC_CREAT | 0666)))
+	{
+		//writeLog( "error msgget() msqid" );
+		writeLogV2(LOGPATH, "[DBSchedule]", "error msgget() msqid\n");
+		//perror( "msgget() ½ÇÆÐ");
+		exit( 1);
+	}
 
 	/************** DB connect.. ***********************/
-	rc = IoT_sqlite3_open( "/work/db/comm", &pSQLite3 );
-	printf("rc %d\n", rc );
+	// DB Open
+	rc = el1000_sqlite3_open( DBPATH, &pSQLite3 );
+	//rc = el1000_sqlite3_open( argv[1], &pSQLite3 );
 	if( rc != 0 )
 	{
-	    writeLog( "/work/smart/log", "[DBSchedule] fail DB Opne" );
-	    return -1;
+		//writeLog( "error DB Open" );
+		writeLogV2(LOGPATH, "[DBSchedule]", "error DB Open\n");
+		return -1;
 	}
 	else
 	{
-	    printf("DB OPEN!!\n");
+		printf("%s OPEN!!\n", DBPATH);
+		writeLogV2(LOGPATH, "[DBSchedule]", "%s OPEN!!\n", DBPATH);
+		//printf("%s OPEN!!\n", argv[1]);
 	}
+
+	// DB Customize
+	rc = el1000_sqlite3_customize( &pSQLite3 );
+	if( rc != 0 )
+	{
+		//writeLog( "error DB Customize" );
+		writeLogV2(LOGPATH, "[DBSchedule]", "error DB Customize\n");
+		return -1;
+	}
+
+	sqlite3_busy_handler( pSQLite3, busy, NULL);
+	sqlite3_busy_timeout( pSQLite3, 3000);
 
 
 	/**********************************************/
@@ -47,36 +90,36 @@ int main( void)
 	{
 
 		query = sqlite3_mprintf("select strftime('%%Y-%%m-%%d %%H:%%M:%%f', 'now', '-7 days')"	);
+		selectLastData = el1000_sqlite3_select( pSQLite3, query );
+		//printf("select size = %d\n", selectLastData.size );
 
-		sqlite3_busy_handler( pSQLite3, busy, NULL);
-		sqlData = IoT_sqlite3_select( pSQLite3, query );
-
-		if( sqlData.size > 0 )
+		if( selectLastData.size > 0 )
 		{
-			for( i = 1; i < sqlData.size; i++ )
+			for( i = 1; i < selectLastData.size; i++ )
 			{
-				printf("%s\n", sqlData.data[i] );
+				//printf("%s\n", selectLastData.past_result[i] );
 
 				delQuery = sqlite3_mprintf("delete from tb_comm_log where datetime < '%s'",
-				sqlData.data[i]);
+					selectLastData.past_result[i]);
 			}
-
-			sqlite3_busy_handler( pSQLite3, busy, NULL);
-			IoT_sqlite3_update( &pSQLite3, delQuery );   // delete 
+			el1000_sqlite3_delete( pSQLite3, delQuery );
 		}
 
-		sleep(60);
+		sqlite3_free( query );
+		sqlite3_free( delQuery );
+		SQLITE_SAFE_FREE( query )
+		SQLITE_SAFE_FREE( delQuery )
+		sqlite3_free_table( selectLastData.past_result );
+		SQLITE_SAFE_FREE( selectLastData.past_result )
+
+		//sleep(60);
+		sleep(180);
 	}
 }
 
 static int busy(void *handle, int nTry)
 {
-    if( nTry > 19 )
-    {
-	printf("%d th - busy handler is called\n", nTry);
-    }
-    usleep(10000);	// wait 10ms
+	printf("[%d] busy handler is called\n", nTry);
+	return 0;
 
-    return 20-nTry;
 }
-

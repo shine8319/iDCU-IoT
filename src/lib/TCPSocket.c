@@ -109,14 +109,14 @@ INT32 TCPClient(INT8 *serverIP, UINT16 port )
     }
 
 
-	 /*
-    rtrn = connect(server_sock, (struct sockaddr *)&servaddr, sizeof(servaddr));
-    if( rtrn == -1 )
-    {
-	close( server_sock );
-	return -2;
-    }
-    */
+    /*
+       rtrn = connect(server_sock, (struct sockaddr *)&servaddr, sizeof(servaddr));
+       if( rtrn == -1 )
+       {
+       close( server_sock );
+       return -2;
+       }
+     */
 
     /*
        if(ConnectWait(server_sock, (struct sockaddr *)&servaddr, sizeof(servaddr), 5) < 0) 
@@ -131,19 +131,19 @@ INT32 TCPClient(INT8 *serverIP, UINT16 port )
      */
 
     /*
-    if((flags = fcntl(server_sock, F_GETFL, 0)) == -1 ) {
-	close( server_sock );
-	//perror("fcntl");
-	return -3;
-    }
-    if(fcntl(server_sock, F_GETFL, flags | O_NONBLOCK) == -1) {
-	close( server_sock );
-	//perror("fcntl");
-	return -4;
-    }
-    */
+       if((flags = fcntl(server_sock, F_GETFL, 0)) == -1 ) {
+       close( server_sock );
+//perror("fcntl");
+return -3;
+}
+if(fcntl(server_sock, F_GETFL, flags | O_NONBLOCK) == -1) {
+close( server_sock );
+//perror("fcntl");
+return -4;
+}
+     */
 
-    return server_sock;
+return server_sock;
 
 }
 
@@ -442,10 +442,10 @@ int receive( int *tcp, int timeout ) {
 		//if( ReadMsgSize >= BUFFER_SIZE )
 		//continue;
 		if( DataBuf[0] != 0xFF || 
-		    DataBuf[1] != 0x00 ||
-		    DataBuf[2] != 0x0d ||
-		    DataBuf[3] != 0x00 ||
-		    DataBuf[16] != 0x00 )
+			DataBuf[1] != 0x00 ||
+			DataBuf[2] != 0x0d ||
+			DataBuf[3] != 0x00 ||
+			DataBuf[16] != 0x00 )
 		{
 		    rtrn = -1;
 		    printf("ACK Err~~~~~~\n");
@@ -454,17 +454,17 @@ int receive( int *tcp, int timeout ) {
 		    printf("ACK OK~~~~~~\n");
 
 		/*
-		memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
-		receiveSize += ReadMsgSize;
+		   memcpy( receiveBuffer+receiveSize, DataBuf, ReadMsgSize );
+		   receiveSize += ReadMsgSize;
 
-		parsingSize = TCPParsingReceiveValue(receiveBuffer, receiveSize, remainder, parsingSize);
-		memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE) );
-		receiveSize = 0;
-		memcpy( receiveBuffer, remainder, parsingSize );
-		receiveSize = parsingSize;
+		   parsingSize = TCPParsingReceiveValue(receiveBuffer, receiveSize, remainder, parsingSize);
+		   memset( receiveBuffer, 0 , sizeof(BUFFER_SIZE) );
+		   receiveSize = 0;
+		   memcpy( receiveBuffer, remainder, parsingSize );
+		   receiveSize = parsingSize;
 
-		memset( remainder, 0 , sizeof(BUFFER_SIZE) );
-		*/
+		   memset( remainder, 0 , sizeof(BUFFER_SIZE) );
+		 */
 
 
 	    } 

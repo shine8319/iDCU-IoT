@@ -4,8 +4,10 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-ACK_TIMEOUT	serialsource.c	/^	ACK_TIMEOUT = 100000, \/* in us *\/$/;"	e	enum:__anon36	file:
-ACK_TIMEOUT	sfsock.c	/^  ACK_TIMEOUT = 100000, \/* in us *\/$/;"	e	enum:__anon33	file:
+APP1_NAME	DeviceStatusCheck.c	60;"	d	file:
+APP2_NAME	DeviceStatusCheck.c	61;"	d	file:
+APP3_NAME	DeviceStatusCheck.c	62;"	d	file:
+APP_PATH	DeviceStatusCheck.c	59;"	d	file:
 AVRMOTE	include/platform.h	4;"	d
 Altitude	include/ETRI.h	/^    INT32		Altitude;$/;"	m	struct:Struct_SensorNode_Registration
 Altitude	include/ETRI.h	/^    INT32	    Altitude;$/;"	m	struct:Struct_GateNode_Registration
@@ -15,119 +17,79 @@ AustemSendTime	include/M2MManager.h	/^} __attribute__ ((__packed__)) AustemSendT
 AustemSendTimeOrigin	include/M2MManager.h	/^} __attribute__ ((__packed__)) AustemSendTimeOrigin;$/;"	t	typeref:struct:__anon20
 AustemStatusSendData	include/M2MManager.h	/^typedef struct AustemStatusSendData{$/;"	s
 AustemStatusSendData	include/M2MManager.h	/^} __attribute__ ((__packed__)) AustemStatusSendData;$/;"	t	typeref:struct:AustemStatusSendData
-AustemTimeSync	ETRI_simulator.c	/^int AustemTimeSync( QUERYTIME time )$/;"	f
-AustemTimeSync	IoTManager.c	/^int AustemTimeSync( TimeOrigin time )$/;"	f
-AustemTimeSync	M2MManager.c	/^int AustemTimeSync( QUERYTIME time )$/;"	f
-AustemTimeSync	ModbusRTU.c	/^int AustemTimeSync( TimeOrigin time )$/;"	f
-AustemTimeSync	PLCS-12.c	/^int AustemTimeSync( QUERYTIME time )$/;"	f
-AustemTimeSync	SetupManager.c	/^int AustemTimeSync( QUERYTIME time )$/;"	f
-AustemTimeSync	test/M2MManager.c	/^int AustemTimeSync( QUERYTIME time )$/;"	f
-AustemTimeSync	test/M2MManager2.c	/^int AustemTimeSync( QUERYTIME time )$/;"	f
-BAUDRATE	IoTManager.c	35;"	d	file:
-BAUDRATE	ModbusRTU.c	39;"	d	file:
+BAUDRATE	DeviceStatusCheck.c	36;"	d	file:
+BAUDRATE	ModbusRTU.c	41;"	d	file:
 BAUDRATE	include/CommManager.h	4;"	d
-BAUDRATE	uart_init.h	4;"	d
-BAUDRATE	usnTowifi.c	14;"	d	file:
-BAUDRATE	wifiTousn.c	12;"	d	file:
-BUFFER_SIZE	DataTranslator.c	27;"	d	file:
-BUFFER_SIZE	DataTranslator_20150227_networkdisconnecterr.c	26;"	d	file:
-BUFFER_SIZE	IoTManager.c	34;"	d	file:
-BUFFER_SIZE	ModbusRTU.c	38;"	d	file:
-BUFFER_SIZE	SerialToEthernet.c	39;"	d	file:
-BUFFER_SIZE	eventHub.c	30;"	d	file:
+BLUE	DeviceStatusCheck.c	/^    BLUE = 0,$/;"	e	enum:__anon1	file:
+BLUE	ModbusRTU.c	/^    BLUE = 0,$/;"	e	enum:__anon29	file:
+BUFFER_SIZE	DeviceStatusCheck.c	35;"	d	file:
+BUFFER_SIZE	ModbusRTU.c	40;"	d	file:
+BUFFER_SIZE	SerialToEthernet.c	32;"	d	file:
 BUFFER_SIZE	include/CommManager.h	5;"	d
 BUFFER_SIZE	include/M2MManager.h	1;"	d
 BUFFER_SIZE	lib/ETRI_Registration.c	25;"	d	file:
 BUFFER_SIZE	lib/RedisControl.c	25;"	d	file:
 BUFFER_SIZE	lib/TCPSocket.c	20;"	d	file:
-BUFFER_SIZE	tagServer.c	24;"	d	file:
-BUFFER_SIZE	usnTowifi.c	15;"	d	file:
-BUFFER_SIZE	wifiTousn.c	13;"	d	file:
 BUFFSIZE	lib/libDeviceInfoParser.c	11;"	d	file:
 BUFFSIZE	lib/libpointparser.c	12;"	d	file:
 BUFFSIZE	lib/parser/configInfoParser.c	11;"	d	file:
 BUFFSIZE	lib/parser/serialInfoParser.c	11;"	d	file:
-BUFF_SIZE	ETRI_simulator.c	28;"	d	file:
-BUFF_SIZE	PLCS-12.c	29;"	d	file:
-BUFF_SIZE	SetupManager.c	42;"	d	file:
+BUFFSIZE	lib/parser/timeSyncInfoParser.c	11;"	d	file:
+BUFF_SIZE	SetupManager.c	55;"	d	file:
 BUFF_SIZE	include/RealTimeDataManager.h	4;"	d
-BUFF_SIZE	main_receiver.c	10;"	d	file:
-BUFF_SIZE	main_sender.c	8;"	d	file:
-BUFF_SIZE	msgrcv.c	8;"	d	file:
-BUFF_SIZE	msgsnd.c	9;"	d	file:
-BUFF_SIZE	udpRecv.c	9;"	d	file:
-BUFSIZE	serialsource.c	/^	BUFSIZE = 128,$/;"	e	enum:__anon36	file:
-BUFSIZE	sfsock.c	/^  BUFSIZE = 128,$/;"	e	enum:__anon33	file:
-BUFSIZE	test_client.c	11;"	d	file:
+BUFF_SIZE	lib/UpgradeFirmware.c	6;"	d	file:
+BUFF_SIZE	test/exereturn.c	3;"	d	file:
+BUTTON_PORT	DeviceStatusCheck.c	39;"	d	file:
+BUTTON_PORT	ModbusRTU.c	44;"	d	file:
 Buff	lib/libpointparser.c	/^char Buff[BUFFSIZE]; $/;"	v
 Buff	lib/parser/configInfoParser.c	/^static char Buff[BUFFSIZE]; $/;"	v	file:
 Buff	lib/parser/serialInfoParser.c	/^static char Buff[BUFFSIZE]; $/;"	v	file:
+Buff	lib/parser/timeSyncInfoParser.c	/^static char Buff[BUFFSIZE]; $/;"	v	file:
 CC	Makefile	/^CC=\/usr\/local\/arm\/4.2.2-eabi\/usr\/bin\/arm-linux-gcc$/;"	m
 CC4600	Makefile	/^CC4600=\/usr\/local\/hybus-arm-linux-R1.1\/bin\/arm-linux-gcc$/;"	m
 CCUSG	Makefile	/^CCUSG=\/opt\/arm\/3.4.1\/bin\/arm-linux-gcc$/;"	m
 CHANGENODEINFO	include/CommManager.h	/^	CHANGENODEINFO		= 0x12,$/;"	e	enum:__anon11
 CHANGENODEINFO	include/M2MManager.h	/^	CHANGENODEINFO	= 0x12,$/;"	e	enum:__anon19
+CHECK_SECOND	DeviceStatusCheck.c	56;"	d	file:
 CNT	include/CommManager.h	/^	CNT		= 31$/;"	e	enum:__anon14
-CNTVALUE	UartManager.c	/^typedef struct CNTVALUE {$/;"	s	file:
-CNTVALUE	UartManager.c	/^} CNTVALUE;$/;"	t	typeref:struct:CNTVALUE	file:
 COMPORTINFO	include/iDCU.h	/^typedef struct COMPORTINFO {$/;"	s
 COMPORTINFO	include/iDCU.h	/^} COMPORTINFO;$/;"	t	typeref:struct:COMPORTINFO
 COMPORTINFO_VAR	include/iDCU.h	/^typedef struct COMPORTINFO_VAR  {$/;"	s
 COMPORTINFO_VAR	include/iDCU.h	/^} __attribute__ ((__packed__)) COMPORTINFO_VAR;$/;"	t	typeref:struct:COMPORTINFO_VAR
 CONFIGINFO	include/iDCU.h	/^typedef struct CONFIGINFO {$/;"	s
 CONFIGINFO	include/iDCU.h	/^} CONFIGINFO;$/;"	t	typeref:struct:CONFIGINFO
+CONFIGINFOPATH	DeviceStatusCheck.c	31;"	d	file:
+CONFIGINFOPATH	ModbusRTU.c	36;"	d	file:
+CONFIGINFOPATH	SerialToEthernet.c	34;"	d	file:
+CONFIGINFOPATH	SetupManager.c	46;"	d	file:
+CONFIGINFO_VAR	include/iDCU.h	/^typedef struct CONFIGINFO_VAR {$/;"	s
+CONFIGINFO_VAR	include/iDCU.h	/^} __attribute__ ((__packed__)) CONFIGINFO_VAR;$/;"	t	typeref:struct:CONFIGINFO_VAR
 CONNECTINFO	include/iDCU.h	/^typedef struct CONNECTINFO {$/;"	s
 CONNECTINFO	include/iDCU.h	/^} CONNECTINFO;$/;"	t	typeref:struct:CONNECTINFO
 CONNECTINFO_VAR	include/iDCU.h	/^typedef struct CONNECTINFO_VAR {$/;"	s
 CONNECTINFO_VAR	include/iDCU.h	/^} __attribute__ ((__packed__)) CONNECTINFO_VAR;$/;"	t	typeref:struct:CONNECTINFO_VAR
 CPP	Makefile	/^CPP=\/usr\/local\/arm\/4.2.2-eabi\/usr\/bin\/arm-linux-g++$/;"	m
-CRC16	driver/GN1200.c	/^static UINT16 CRC16(UINT8 *puchMsg, int usDataLen){$/;"	f	file:
-CloseSerial	CommManager.c	/^int CloseSerial(int fd)$/;"	f
-CloseSerial	IoTManager.c	/^int CloseSerial(int fd)$/;"	f
-CloseSerial	ModbusRTU.c	/^int CloseSerial(int fd)$/;"	f
-CloseSerial	UartManager.c	/^int CloseSerial(int fd)$/;"	f
 CloseSerial	lib/uart.c	/^int CloseSerial(int fd)$/;"	f
-CloseSerial	usnTowifi.c	/^int CloseSerial(int fd)$/;"	f
-CloseSerial	wifiTousn.c	/^int CloseSerial(int fd)$/;"	f
 CommDriver	lib/libcommdriver.c	/^COMMPARSING CommDriver( unsigned char *pack, int size )$/;"	f
-CommandProcess	IoTManager.c	/^int CommandProcess( unsigned char* buffer, int len ) $/;"	f
 CommandProcess	ModbusRTU.c	/^int CommandProcess( unsigned char* buffer, int len ) $/;"	f
 Command_Id	include/ETRI.h	/^    UINT32  Command_Id;$/;"	m	struct:Struct_ACK
 Command_Id	include/ETRI.h	/^    UINT32  Command_Id;$/;"	m	struct:Struct_SensingValueReport
-ConnectPorcess	IoTManager.c	/^void *ConnectPorcess() {$/;"	f
-ConnectPorcess	ModbusRTU.c	/^void *ConnectPorcess() {$/;"	f
+ConnectProcess	ModbusRTU.c	/^void *ConnectProcess() {$/;"	f
 ConnectWait	lib/TCPSocket.c	/^int ConnectWait(int sockfd, struct sockaddr *saddr, int addrsize, int sec) $/;"	f
-ConnectWait	socket_test.c	/^int ConnectWait(void *arg_sockfd, struct sockaddr *saddr, int addrsize, int sec)  $/;"	f
-Connect_Manager	M2MManager.c	/^int Connect_Manager() {$/;"	f
-Connect_Manager	socket_test.c	/^void* Connect_Manager( char *ip, char *port ) $/;"	f
-Connect_Manager	test/M2MManager.c	/^int Connect_Manager() {$/;"	f
-Connect_Manager	test/M2MManager2.c	/^int Connect_Manager() {$/;"	f
-CreateSync	IoTManager.c	/^int CreateSync( UINT8 type ) $/;"	f
-CreateSync	ModbusRTU.c	/^int CreateSync( UINT8 type ) $/;"	f
-DATABIT	uart_init.h	6;"	d
-DBPATH	IoTManager.c	32;"	d	file:
-DBPATH	M2MManager.c	25;"	d	file:
-DBPATH	ModbusRTU.c	36;"	d	file:
-DBPATH	SetupManager.c	40;"	d	file:
+DBPATH	DeviceStatusCheck.c	33;"	d	file:
+DBPATH	ModbusRTU.c	38;"	d	file:
+DBPATH	SetupManager.c	43;"	d	file:
 DBPATH	include/RealTimeDataManager.h	3;"	d
-DBPATH	socket_test.c	22;"	d	file:
-DBPATH	test/M2MManager.c	22;"	d	file:
-DBPATH	test/M2MManager2.c	22;"	d	file:
-DEBUG	PointManager.c	12;"	d	file:
-DEBUG	RealTimeDataManager_backup.c	14;"	d	file:
-DEBUG	serialsource.c	23;"	d	file:
-DEBUG	serialtonet.c	9;"	d	file:
-DEBUG	socket_test.c	21;"	d	file:
 DELETENODE	include/CommManager.h	/^	DELETENODE		= 0x04,$/;"	e	enum:__anon11
 DELETENODE	include/M2MManager.h	/^	DELETENODE		= 0x04,$/;"	e	enum:__anon19
 DEVICEINFO	include/iDCU.h	/^typedef struct DEVICEINFO {$/;"	s
 DEVICEINFO	include/iDCU.h	/^} DEVICEINFO;$/;"	t	typeref:struct:DEVICEINFO
 DEVINFO	include/iDCU.h	/^typedef struct DEVINFO {$/;"	s
 DEVINFO	include/iDCU.h	/^} __attribute__ ((__packed__)) DEVINFO;$/;"	t	typeref:struct:DEVINFO
-DI_PORT	ModbusRTU.c	40;"	d	file:
+DI_PORT	DeviceStatusCheck.c	37;"	d	file:
+DI_PORT	ModbusRTU.c	42;"	d	file:
 DI_PORT	include/CommManager.h	8;"	d
 DI_PORT	include/RealTimeDataManager.h	7;"	d
-DI_PORT	msgsnd.c	12;"	d	file:
 DataType	include/ETRI.h	/^    UINT8		DataType;$/;"	m	struct:Struct_Transducer_Registration
 DataUnit	include/ETRI.h	/^    UINT8		DataUnit[32];$/;"	m	struct:Struct_Transducer_Registration
 DataUnitLength	include/ETRI.h	/^    UINT8		DataUnitLength;$/;"	m	struct:Struct_Transducer_Registration
@@ -137,35 +99,22 @@ Depth	lib/libDeviceInfoParser.c	/^static int Depth = 0; $/;"	v	file:
 Depth	lib/libpointparser.c	/^int Depth = 0; $/;"	v
 Depth	lib/parser/configInfoParser.c	/^static int Depth = 0; $/;"	v	file:
 Depth	lib/parser/serialInfoParser.c	/^static int Depth = 0; $/;"	v	file:
-ESCAPED_STATE	sfsock.c	/^	ESCAPED_STATE,$/;"	e	enum:__anon34	file:
-ESCAPE_BYTE	serialsource.c	/^	ESCAPE_BYTE = 0x7d,$/;"	e	enum:__anon36	file:
-ESCAPE_BYTE	sfsock.c	/^  ESCAPE_BYTE = 0x7d,$/;"	e	enum:__anon33	file:
+Depth	lib/parser/timeSyncInfoParser.c	/^static int Depth = 0; $/;"	v	file:
+ETH0INFOPATH	SetupManager.c	47;"	d	file:
 ETRI_Deregistration	lib/ETRI_Deregistration.c	/^int ETRI_Deregistration( int *tcp, READENV *env ) {$/;"	f
 ETRI_Registration	lib/ETRI_Registration.c	/^int ETRI_Registration( int *tcp, READENV *env ) {$/;"	f
 ETRI_Registration_Retry	lib/ETRI_Registration.c	/^int ETRI_Registration_Retry( int *tcp, READENV *env ) {$/;"	f
-EVENT_Q_SIZE	eventHub.c	29;"	d	file:
-EVENT_Q_SIZE	tagServer.c	26;"	d	file:
 EYES	include/platform.h	7;"	d
 Expat_External_INCLUDED	include/expat_external.h	6;"	d
 Expat_INCLUDED	include/expat.h	6;"	d
-FALSE	serialsource.c	/^	FALSE = 0,$/;"	e	enum:__anon36	file:
-FALSE	sfsock.c	/^  FALSE = 0,$/;"	e	enum:__anon33	file:
-FIFO_FILE	main_receiver.c	9;"	d	file:
-FIFO_FILE	main_sender.c	7;"	d	file:
-FLOWCONTROL	uart_init.h	5;"	d
-GCC	test/Makefile	/^GCC=gcc$/;"	m
 GETCNT	include/CommManager.h	/^	GETCNT			= 0x13,$/;"	e	enum:__anon11
 GETCNT	include/M2MManager.h	/^	GETCNT		= 0x13,$/;"	e	enum:__anon19
 GETDATA	include/M2MManager.h	/^	GETDATA			= 0x03,$/;"	e	enum:__anon19
 GETLANINFO	include/M2MManager.h	/^	GETLANINFO		= 0x06,$/;"	e	enum:__anon19
 GETNODELIST	include/CommManager.h	/^	GETNODELIST		= 0x03,$/;"	e	enum:__anon11
 GETNODELIST	include/M2MManager.h	/^	GETNODELIST 	= 0x05,$/;"	e	enum:__anon19
-GN1200	driver/GN1200.c	/^void *GN1200(DEVICEINFO *device) {$/;"	f
 GPIO_CLOCK	include/wiringPi.h	44;"	d
 GROUP	include/CommManager.h	/^	GROUP	= 4,$/;"	e	enum:__anon14
-GW_BYTE1	sfsock.c	/^  GW_BYTE1 = 0x11,$/;"	e	enum:__anon33	file:
-GW_BYTE2	sfsock.c	/^  GW_BYTE2 = 0x13,$/;"	e	enum:__anon33	file:
-GW_BYTE3	sfsock.c	/^  GW_BYTE3 = 0x0d,$/;"	e	enum:__anon33	file:
 GateNode	include/ETRI.h	/^    Struct_GateNode GateNode;$/;"	m	struct:Struct_GateNode_Registration
 GateNode_Description_Deregistration	lib/ETRI_Deregistration.c	/^int GateNode_Description_Deregistration( int *tcp, READENV *info )$/;"	f
 GateNode_Description_Registration	lib/ETRI_Registration.c	/^int GateNode_Description_Registration( int *tcp, READENV *info )$/;"	f
@@ -186,13 +135,14 @@ INSERT_END	include/iDCU.h	/^	INSERT_END = 2,$/;"	e	enum:__anon4
 INT16	include/iDCU.h	/^typedef	    short	    INT16;$/;"	t
 INT32	include/iDCU.h	/^typedef	    long	    INT32;$/;"	t
 INT8	include/iDCU.h	/^typedef	    char	    INT8;$/;"	t
+INTERVALINFO	include/iDCU.h	/^typedef struct INTERVALINFO {$/;"	s
+INTERVALINFO	include/iDCU.h	/^} INTERVALINFO;$/;"	t	typeref:struct:INTERVALINFO
 INT_EDGE_BOTH	include/wiringPi.h	68;"	d
 INT_EDGE_FALLING	include/wiringPi.h	66;"	d
 INT_EDGE_RISING	include/wiringPi.h	67;"	d
 INT_EDGE_SETUP	include/wiringPi.h	65;"	d
-IN_SYNC_STATE	sfsock.c	/^	IN_SYNC_STATE,$/;"	e	enum:__anon34	file:
 IO	ModbusRTU.c	/^IOCheckStruct		IO[DI_PORT];$/;"	v
-IOCheckStruct	ModbusRTU.c	/^} IOCheckStruct;$/;"	t	typeref:struct:__anon35	file:
+IOCheckStruct	ModbusRTU.c	/^} IOCheckStruct;$/;"	t	typeref:struct:__anon30	file:
 InsertAustemNodeData	lib/librtdprocess.c	/^int InsertAustemNodeData( sqlite3 **pSQLite3, t_getNode	node )$/;"	f
 InsertAustemNodeStatusData	lib/librtdprocess.c	/^int InsertAustemNodeStatusData( sqlite3 **pSQLite3, t_getNode	node )$/;"	f
 InsertDebugNodeData	lib/libcommprocess.c	/^int InsertDebugNodeData( sqlite3 **pSQLite3, unsigned char *buff)$/;"	f
@@ -206,34 +156,22 @@ IoT_sqlite3_transaction	lib/SQLite3Interface.c	/^int IoT_sqlite3_transaction( sq
 IoT_sqlite3_update	lib/SQLite3Interface.c	/^int IoT_sqlite3_update( sqlite3 **pSQLite3, char* query )$/;"	f
 LDFLAGS	Makefile	/^LDFLAGS = -L..\/lib$/;"	m
 LDLIBS	Makefile	/^LDLIBS    = -lwiringPi -lwiringPiDev$/;"	m
+LED_PORT	DeviceStatusCheck.c	38;"	d	file:
+LED_PORT	ModbusRTU.c	43;"	d	file:
 LIB1	Makefile	/^LIB1 = .\/lib\/libpointparser.c$/;"	m
-LIB1	driver/Makefile	/^LIB1 = .\/lib\/libpointparser.c$/;"	m
 LIB10	Makefile	/^LIB10 = .\/lib\/libcommprocess.c$/;"	m
-LIB10	driver/Makefile	/^LIB10 = .\/lib\/libcommprocess.c$/;"	m
 LIB11	Makefile	/^LIB11 = .\/lib\/getDiffTime.c$/;"	m
-LIB11	driver/Makefile	/^LIB11 = .\/lib\/getDiffTime.c$/;"	m
 LIB2	Makefile	/^LIB2 = .\/lib\/librealtimeparser.c$/;"	m
-LIB2	driver/Makefile	/^LIB2 = .\/lib\/librealtimeparser.c$/;"	m
 LIB3	Makefile	/^LIB3 = .\/lib\/libreleasesharedmemory.c$/;"	m
-LIB3	driver/Makefile	/^LIB3 = .\/lib\/libreleasesharedmemory.c$/;"	m
 LIB4	Makefile	/^LIB4 = .\/lib\/librtdprocess.c$/;"	m
-LIB4	driver/Makefile	/^LIB4 = .\/lib\/librtdprocess.c$/;"	m
 LIB5	Makefile	/^LIB5 = .\/lib\/libsqlite3manage.c$/;"	m
-LIB5	driver/Makefile	/^LIB5 = .\/lib\/libsqlite3manage.c$/;"	m
 LIB6	Makefile	/^LIB6 = .\/lib\/libm2mprocess.c$/;"	m
-LIB6	driver/Makefile	/^LIB6 = .\/lib\/libm2mprocess.c$/;"	m
 LIB7	Makefile	/^LIB7 = .\/lib\/libcommdriver.c$/;"	m
-LIB7	driver/Makefile	/^LIB7 = .\/lib\/libcommdriver.c$/;"	m
 LIB8	Makefile	/^LIB8 = .\/lib\/libdeviceparser.c$/;"	m
-LIB8	driver/Makefile	/^LIB8 = .\/lib\/libdeviceparser.c$/;"	m
 LIB9	Makefile	/^LIB9 = .\/lib\/libm2mprotocol.c$/;"	m
-LIB9	driver/Makefile	/^LIB9 = .\/lib\/libm2mprotocol.c$/;"	m
 LIB_ETRIDEREG	Makefile	/^LIB_ETRIDEREG = -L..\/lib -lEtriDereg$/;"	m
-LIB_ETRIDEREG	driver/Makefile	/^LIB_ETRIDEREG = -L..\/..\/lib -lEtriDereg$/;"	m
 LIB_ETRIREG	Makefile	/^LIB_ETRIREG = -L..\/lib -lEtriReg$/;"	m
-LIB_ETRIREG	driver/Makefile	/^LIB_ETRIREG = -L..\/..\/lib -lEtriReg$/;"	m
 LIB_EXPAT	Makefile	/^LIB_EXPAT = -L..\/lib -lexpat$/;"	m
-LIB_EXPAT	driver/Makefile	/^LIB_EXPAT = -L..\/..\/lib -lexpat$/;"	m
 LIB_GN1200	Makefile	/^LIB_GN1200 = -L.\/driver -lGN1200$/;"	m
 LIB_IDCU_IOT	Makefile	/^LIB_IDCU_IOT= -L.\/driver -liDCU_IoT$/;"	m
 LIB_LIBEVENT	Makefile	/^LIB_LIBEVENT = -L..\/lib\/libevent\/lib -levent$/;"	m
@@ -243,16 +181,13 @@ LIB_PLCS_12ex	Makefile	/^LIB_PLCS_12ex = -L.\/driver -lPLCS_12ex$/;"	m
 LIB_PLCS_9	Makefile	/^LIB_PLCS_9 = -L.\/driver -lPLCS_9$/;"	m
 LIB_REDIS	Makefile	/^LIB_REDIS= -L..\/lib -lhiredis$/;"	m
 LIB_SQLITE3	Makefile	/^LIB_SQLITE3 = -L..\/lib -lsqlite3$/;"	m
-LIB_SQLITE3	driver/Makefile	/^LIB_SQLITE3 = -L..\/..\/lib -lsqlite3$/;"	m
 LIB_TARGET	Makefile	/^LIB_TARGET = .\/lib$/;"	m
-LIB_TARGET	driver/Makefile	/^LIB_TARGET = .\/lib$/;"	m
+LOGPATH	DeviceStatusCheck.c	32;"	d	file:
+LOGPATH	DeviceStatusCheck.c	63;"	d	file:
+LOGPATH	ModbusRTU.c	37;"	d	file:
+LOGPATH	SerialToEthernet.c	33;"	d	file:
+LOGPATH	SetupManager.c	42;"	d	file:
 LOW	include/wiringPi.h	49;"	d
-LPUSH_SensingData	driver/GN1200.c	/^static int LPUSH_SensingData(char redisValue[2048], int len )$/;"	f	file:
-LPUSH_SensingData	driver/PLCS_10.c	/^static int LPUSH_SensingData(char redisValue[2048], int len )$/;"	f	file:
-LPUSH_SensingData	driver/PLCS_12.c	/^static int LPUSH_SensingData(char redisValue[2048], int len )$/;"	f	file:
-LPUSH_SensingData	driver/PLCS_12ex.c	/^static int LPUSH_SensingData(char redisValue[2048], int len )$/;"	f	file:
-LPUSH_SensingData	driver/PLCS_9.c	/^static int LPUSH_SensingData(char redisValue[2048], int len )$/;"	f	file:
-LPUSH_SensingData	driver/iDCU_IoT.c	/^static int LPUSH_SensingData(char redisValue[2048], int len )$/;"	f	file:
 Latitude	include/ETRI.h	/^    INT32		Latitude;$/;"	m	struct:Struct_SensorNode_Registration
 Latitude	include/ETRI.h	/^    INT32	    Latitude;$/;"	m	struct:Struct_GateNode_Registration
 Length	include/ETRI.h	/^    UINT16  Length;$/;"	m	struct:Struct_ACK
@@ -267,19 +202,13 @@ Longitude	include/ETRI.h	/^    INT32	    Longitude;$/;"	m	struct:Struct_GateNode
 M2MProtocol	lib/libm2mprotocol.c	/^int M2MProtocol( void* socket_fd, sqlite3 *pSQLite3, QUERYTIME time, char type, int keepdata ) $/;"	f
 M2M_COMMAND	include/CommManager.h	6;"	d
 M2M_COMMAND	include/RealTimeDataManager.h	5;"	d
-M2M_COMMAND	msgsnd.c	10;"	d	file:
-M2M_COMMAND	usnTowifi.c	16;"	d	file:
-MAXLINE	test_server.c	8;"	d	file:
 MAX_BUFFER	include/iDCU.h	3;"	d
-MAX_BUF_SIZE	sfsock.c	4;"	d	file:
 MAX_DEVICE	include/iDCU.h	2;"	d
 MAX_POINT	include/iDCU.h	1;"	d
 MAX_STR_LEN	lib/stringTrim.c	5;"	d	file:
 MGData	include/iDCU.h	/^} MGData; $/;"	t	typeref:struct:__anon5
 MGIOData	include/iDCU.h	/^} MGIOData; $/;"	t	typeref:struct:__anon6
 MICAZ	include/platform.h	6;"	d
-MTU	serialsource.c	/^	MTU = 128,$/;"	e	enum:__anon36	file:
-MTU	sfsock.c	/^  MTU = 128,$/;"	e	enum:__anon33	file:
 Manufacturer	include/ETRI.h	/^    UINT8		Manufacturer[20];$/;"	m	struct:Struct_SensorNode_Registration
 Manufacturer	include/ETRI.h	/^    UINT8		Manufacturer[20];$/;"	m	struct:Struct_Transducer_Registration
 Manufacturer	include/ETRI.h	/^    UINT8	    Manufacturer[20];$/;"	m	struct:Struct_GateNode_Registration
@@ -296,23 +225,19 @@ Message_Length	include/ETRI.h	/^    UINT32  Message_Length;$/;"	m	struct:Struct_
 Min	include/ETRI.h	/^    float		Min;$/;"	m	struct:Struct_Transducer_Registration
 Monitoring_Mode	include/ETRI.h	/^    UINT8		Monitoring_Mode;$/;"	m	struct:Struct_SensorNode_Registration
 Monitoring_Period	include/ETRI.h	/^    INT32		Monitoring_Period;$/;"	m	struct:Struct_SensorNode_Registration
-NAMESIZE	test_client.c	12;"	d	file:
+NETWORKUSEINFOPATH	DeviceStatusCheck.c	28;"	d	file:
+NETWORKUSEINFOPATH	SetupManager.c	50;"	d	file:
 NODEID	include/CommManager.h	/^	NODEID 	= 7,$/;"	e	enum:__anon14
 NODEINFO	include/iDCU.h	/^typedef struct NODEINFO {$/;"	s
 NODEINFO	include/iDCU.h	/^} NODEINFO;$/;"	t	typeref:struct:NODEINFO
 NODELIST	include/RealTimeDataManager.h	/^} NODELIST;$/;"	t	typeref:struct:__anon18
-NULL_STATE	sfsock.c	/^	NULL_STATE,$/;"	e	enum:__anon34	file:
 NUM_PINS	include/wiringPi.h	30;"	d
+OPTIONSINFOPATH	DeviceStatusCheck.c	29;"	d	file:
+OPTIONSINFOPATH	SetupManager.c	51;"	d	file:
 OUTPUT	include/wiringPi.h	42;"	d
-OUT_SYNC_STATE	sfsock.c	/^	OUT_SYNC_STATE,$/;"	e	enum:__anon34	file:
 Offset	include/ETRI.h	/^    float		Offset;$/;"	m	struct:Struct_Transducer_Registration
-OpenSerial	CommManager.c	/^int OpenSerial(void)$/;"	f
-OpenSerial	IoTManager.c	/^int OpenSerial(void)$/;"	f
-OpenSerial	ModbusRTU.c	/^int OpenSerial(void)$/;"	f
-OpenSerial	UartManager.c	/^int OpenSerial(void)$/;"	f
 OpenSerial	lib/uart.c	/^int OpenSerial(char *baud, char parity, char databits, char stopbits )$/;"	f
-OpenSerial	usnTowifi.c	/^int OpenSerial(void)$/;"	f
-OpenSerial	wifiTousn.c	/^int OpenSerial(void)$/;"	f
+OpenSerialV2	lib/uart.c	/^int OpenSerialV2(char *port, char *baud, char parity, char databits, char stopbits )$/;"	f
 PACKET_SIZE	include/M2MManager.h	2;"	d
 PAN	include/ETRI.h	/^    Struct_PAN	    PAN;$/;"	m	struct:Struct_PAN_Registration
 PAN_Channel	include/ETRI.h	/^    UINT8	    PAN_Channel;$/;"	m	struct:Struct_PAN_Registration
@@ -325,7 +250,6 @@ PAN_Id	include/ETRI.h	/^    UINT16  PAN_Id;$/;"	m	struct:Struct_SensorNode
 PAN_Id	include/ETRI.h	/^    UINT16  PAN_Id;$/;"	m	struct:Struct_Transducer
 PAN_Protocol_Stack	include/ETRI.h	/^    UINT8	    PAN_Protocol_Stack;$/;"	m	struct:Struct_PAN_Registration
 PAN_Topology	include/ETRI.h	/^    UINT8	    PAN_Topology;$/;"	m	struct:Struct_PAN_Registration
-PARITYBIT	uart_init.h	7;"	d
 PI_MAKER_EGOMAN	include/wiringPi.h	88;"	d
 PI_MAKER_HARDKERNEL	include/wiringPi.h	91;"	d
 PI_MAKER_QISDA	include/wiringPi.h	90;"	d
@@ -345,13 +269,8 @@ PI_VERSION_1_2	include/wiringPi.h	84;"	d
 PI_VERSION_2	include/wiringPi.h	85;"	d
 PI_VERSION_UNKNOWN	include/wiringPi.h	81;"	d
 PLATFORM_H	include/platform.h	2;"	d
-PLCS10	driver/PLCS_10.c	/^void *PLCS10(DEVICEINFO *device) {$/;"	f
-PLCS12	driver/PLCS_12.c	/^void *PLCS12(DEVICEINFO *device) {$/;"	f
-PLCS12ex	driver/PLCS_12ex.c	/^void *PLCS12ex( DEVICEINFO *device) {$/;"	f
-PLCS9	driver/PLCS_9.c	/^void *PLCS9(DEVICEINFO *device) {$/;"	f
 POINTINFO_VAR	include/iDCU.h	/^typedef struct POINTINFO_VAR {$/;"	s
 POINTINFO_VAR	include/iDCU.h	/^} __attribute__ ((__packed__)) POINTINFO_VAR;$/;"	t	typeref:struct:POINTINFO_VAR
-POLYNORMIAL	driver/GN1200.c	29;"	d	file:
 PUD_DOWN	include/wiringPi.h	55;"	d
 PUD_OFF	include/wiringPi.h	54;"	d
 PUD_UP	include/wiringPi.h	56;"	d
@@ -359,36 +278,9 @@ PWM_MODE_BAL	include/wiringPi.h	61;"	d
 PWM_MODE_MS	include/wiringPi.h	60;"	d
 PWM_OUTPUT	include/wiringPi.h	43;"	d
 PWM_TONE_OUTPUT	include/wiringPi.h	47;"	d
-P_ACK	serialsource.c	/^	P_ACK = 64,$/;"	e	enum:__anon36	file:
-P_ACK	sfsock.c	/^  P_ACK = 64,$/;"	e	enum:__anon33	file:
-P_PACKET_ACK	serialsource.c	/^	P_PACKET_ACK = 65,$/;"	e	enum:__anon36	file:
-P_PACKET_ACK	sfsock.c	/^  P_PACKET_ACK = 65,$/;"	e	enum:__anon33	file:
-P_PACKET_NO_ACK	serialsource.c	/^	P_PACKET_NO_ACK = 66,$/;"	e	enum:__anon36	file:
-P_PACKET_NO_ACK	sfsock.c	/^  P_PACKET_NO_ACK = 66,$/;"	e	enum:__anon33	file:
-P_UNKNOWN	serialsource.c	/^	P_UNKNOWN = 255$/;"	e	enum:__anon36	file:
-P_UNKNOWN	sfsock.c	/^  P_UNKNOWN = 255$/;"	e	enum:__anon33	file:
-Pack_Manager	ETRI_simulator.c	/^int Pack_Manager( unsigned char* buffer, int len ) $/;"	f
-Pack_Manager	M2MManager.c	/^int Pack_Manager( unsigned char* buffer, int len ) $/;"	f
-Pack_Manager	PLCS-12.c	/^int Pack_Manager( unsigned char* buffer, int len ) $/;"	f
 Pack_Manager	SetupManager.c	/^int Pack_Manager( unsigned char* buffer, int len ) $/;"	f
-Pack_Manager	test/M2MManager.c	/^int Pack_Manager( unsigned char* buffer, int len ) $/;"	f
-Pack_Manager	test/M2MManager2.c	/^int Pack_Manager( unsigned char* buffer, int len ) $/;"	f
-ParsingReceiveValue	CommManager.c	/^int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
-ParsingReceiveValue	ETRI_simulator.c	/^int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
-ParsingReceiveValue	IoTManager.c	/^int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
-ParsingReceiveValue	M2MManager.c	/^int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
 ParsingReceiveValue	ModbusRTU.c	/^int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
-ParsingReceiveValue	PLCS-12.c	/^int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
 ParsingReceiveValue	SetupManager.c	/^int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
-ParsingReceiveValue	UartManager.c	/^int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
-ParsingReceiveValue	driver/GN1200.c	/^static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f	file:
-ParsingReceiveValue	driver/PLCS_10.c	/^static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f	file:
-ParsingReceiveValue	driver/PLCS_9.c	/^static int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f	file:
-ParsingReceiveValue	test/M2MManager.c	/^int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
-ParsingReceiveValue	test/M2MManager2.c	/^int ParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
-ParsingReceiveValue_12	driver/PLCS_12.c	/^static int ParsingReceiveValue_12(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f	file:
-ParsingReceiveValue_12ex	driver/PLCS_12ex.c	/^static int ParsingReceiveValue_12ex(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f	file:
-ParsingReceiveValue_iDCU_IoT	driver/iDCU_IoT.c	/^static int ParsingReceiveValue_iDCU_IoT(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f	file:
 ProducNo	include/ETRI.h	/^    UINT8		ProducNo[20];$/;"	m	struct:Struct_SensorNode_Registration
 ProducNo	include/ETRI.h	/^    UINT8		ProducNo[20];$/;"	m	struct:Struct_Transducer_Registration
 ProducNo	include/ETRI.h	/^    UINT8	    ProducNo[20];$/;"	m	struct:Struct_GateNode_Registration
@@ -396,14 +288,9 @@ ProducNo	include/ETRI.h	/^    UINT8	    ProducNo[20];$/;"	m	struct:Struct_PAN_Re
 QUERYTIME	include/M2MManager.h	/^typedef struct QUERYTIME{$/;"	s
 QUERYTIME	include/M2MManager.h	/^} QUERYTIME;$/;"	t	typeref:struct:QUERYTIME
 RASAR	Makefile	/^RASAR=arm-linux-gnueabi-ar$/;"	m
-RASAR	driver/Makefile	/^RASAR=arm-linux-gnueabi-ar$/;"	m
 RASCC	Makefile	/^RASCC=arm-linux-gnueabi-gcc$/;"	m
-RASCC	driver/Makefile	/^RASCC=arm-linux-gnueabi-gcc$/;"	m
-RASCC	test/Makefile	/^RASCC=arm-linux-gnueabi-gcc$/;"	m
 RASCPP	Makefile	/^RASCPP=arm-linux-gnueabi-cpp$/;"	m
-RASCPP	driver/Makefile	/^RASCPP=arm-linux-gnueabi-g++$/;"	m
 RASRANLIB	Makefile	/^RASRANLIB=arm-linux-gnueabi-ranlib$/;"	m
-RASRANLIB	driver/Makefile	/^RASRANLIB=arm-linux-gnueabi-ranlib$/;"	m
 READENV	include/iDCU.h	/^typedef struct READENV {$/;"	s
 READENV	include/iDCU.h	/^} READENV;$/;"	t	typeref:struct:READENV
 REBOOTNODE	include/CommManager.h	/^	REBOOTNODE		= 0x01,$/;"	e	enum:__anon11
@@ -436,10 +323,10 @@ RTRNNODEGROUP	include/M2MManager.h	/^typedef struct RTRNNODEGROUP{$/;"	s
 RTRNNODEGROUP	include/M2MManager.h	/^} RTRNNODEGROUP;$/;"	t	typeref:struct:RTRNNODEGROUP
 ReadDeviceInfo	lib/configRW.c	/^int ReadDeviceInfo(UINT8 *name, UINT8 *type, UINT8 *value )$/;"	f
 ReadEnvConfig	lib/configRW.c	/^void ReadEnvConfig(UINT8 *name, READENV *env )$/;"	f
-ReadNetworkConfig	SetupManager.c	/^void ReadNetworkConfig(UINT8 *name, struct lan_var *lan)$/;"	f
+ReadNetworkConfig	lib/configRW.c	/^void ReadNetworkConfig(UINT8 *name, struct lan_var *lan)$/;"	f
 ReadNetworkUseConfig	lib/configRW.c	/^void ReadNetworkUseConfig(UINT8 *name, UINT8 *lan, UINT8 *wlan )$/;"	f
 ReadOptionsConfig	lib/configRW.c	/^void ReadOptionsConfig(UINT8 *name, UINT8 *lan, UINT8 *wlan )$/;"	f
-ReadSecurityConfig	SetupManager.c	/^void ReadSecurityConfig(UINT8 *name, struct security_var *security)$/;"	f
+ReadSecurityConfig	lib/configRW.c	/^void ReadSecurityConfig(UINT8 *name, struct security_var *security)$/;"	f
 ReadTransducer	lib/configRW.c	/^UINT32 ReadTransducer(UINT8 *name, UINT16 *transducerId )$/;"	f
 RedisControl	Makefile	/^RedisControl = .\/lib\/RedisControl.c$/;"	m
 Result_Code	include/ETRI.h	/^    UINT8  Result_Code;$/;"	m	struct:Struct_ACK
@@ -452,11 +339,13 @@ Return_Selectdata	include/RealTimeDataManager.h	/^typedef struct Return_Selectda
 Return_Selectdata	include/RealTimeDataManager.h	/^} Return_Selectdata;$/;"	t	typeref:struct:Return_Selectdata
 SAVEINFO	include/iDCU.h	/^typedef struct SAVEINFO {$/;"	s
 SAVEINFO	include/iDCU.h	/^} SAVEINFO;$/;"	t	typeref:struct:SAVEINFO
-SENDBUFF	test/M2MManager2.c	1130;"	d	file:
+SECURITYINFOPATH	SetupManager.c	49;"	d	file:
 SENSING_VALUE_REPORT_HEAD_SIZE	include/ETRI.h	2;"	d
 SEQ	include/CommManager.h	/^	SEQ		= 10,$/;"	e	enum:__anon14
 SERIALINFO	include/iDCU.h	/^typedef struct SERIALINFO {$/;"	s
 SERIALINFO	include/iDCU.h	/^} SERIALINFO;$/;"	t	typeref:struct:SERIALINFO
+SERIALINFOPATH	SerialToEthernet.c	35;"	d	file:
+SERIALINFOPATH	SetupManager.c	45;"	d	file:
 SERIALSOURCE_H	include/serialsource.h	3;"	d
 SETCNT	include/M2MManager.h	/^	SETCNT		= 0x14,$/;"	e	enum:__anon19
 SETLANINFO	include/M2MManager.h	/^	SETLANINFO		= 0x0B,$/;"	e	enum:__anon19
@@ -706,14 +595,9 @@ SQLITE_REINDEX	include/sqlite3.h	2510;"	d
 SQLITE_REPLACE	include/sqlite3.h	7169;"	d
 SQLITE_ROLLBACK	include/sqlite3.h	7165;"	d
 SQLITE_ROW	include/sqlite3.h	430;"	d
-SQLITE_SAFE_FREE	DataTranslator.c	25;"	d	file:
-SQLITE_SAFE_FREE	DataTranslator_20150227_networkdisconnecterr.c	24;"	d	file:
-SQLITE_SAFE_FREE	ETRI_simulator.c	27;"	d	file:
-SQLITE_SAFE_FREE	IoTManager.c	33;"	d	file:
-SQLITE_SAFE_FREE	M2MManager.c	26;"	d	file:
-SQLITE_SAFE_FREE	ModbusRTU.c	37;"	d	file:
-SQLITE_SAFE_FREE	PLCS-12.c	28;"	d	file:
-SQLITE_SAFE_FREE	SetupManager.c	41;"	d	file:
+SQLITE_SAFE_FREE	DeviceStatusCheck.c	34;"	d	file:
+SQLITE_SAFE_FREE	ModbusRTU.c	39;"	d	file:
+SQLITE_SAFE_FREE	SetupManager.c	54;"	d	file:
 SQLITE_SAFE_FREE	include/RealTimeDataManager.h	1;"	d
 SQLITE_SAFE_FREE	include/iDCU.h	4;"	d
 SQLITE_SAFE_FREE	lib/SQLite3Interface.c	10;"	d	file:
@@ -722,9 +606,6 @@ SQLITE_SAFE_FREE	lib/libm2mprocess.c	9;"	d	file:
 SQLITE_SAFE_FREE	lib/librtdprocess.c	10;"	d	file:
 SQLITE_SAFE_FREE	lib/libsqlite3manage.c	11;"	d	file:
 SQLITE_SAFE_FREE	lib/sqliteManager.c	9;"	d	file:
-SQLITE_SAFE_FREE	socket_test.c	309;"	d	file:
-SQLITE_SAFE_FREE	test/M2MManager.c	23;"	d	file:
-SQLITE_SAFE_FREE	test/M2MManager2.c	23;"	d	file:
 SQLITE_SAVEPOINT	include/sqlite3.h	2515;"	d
 SQLITE_SCHEMA	include/sqlite3.h	418;"	d
 SQLITE_SELECT	include/sqlite3.h	2504;"	d
@@ -788,14 +669,10 @@ SQLITE_VTAB_CONSTRAINT_SUPPORT	include/sqlite3.h	7140;"	d
 SQLITE_WARNING	include/sqlite3.h	429;"	d
 SQLite3Data	include/iDCU.h	/^} SQLite3Data;$/;"	t	typeref:struct:__anon7
 SQLite3Interface	Makefile	/^SQLite3Interface = .\/lib\/SQLite3Interface.c$/;"	m
-SQLite3Interface	driver/Makefile	/^SQLite3Interface = ..\/lib\/SQLite3Interface.c$/;"	m
 SRC1	Makefile	/^SRC1 = serialsource.c$/;"	m
 SRC2	Makefile	/^SRC2 = sfsock.c$/;"	m
 SRC3	Makefile	/^SRC3 = sf.c$/;"	m
 SRC4	Makefile	/^SRC4 = sfsource.c$/;"	m
-STOPBIT	uart_init.h	8;"	d
-SYNC_BYTE	serialsource.c	/^	SYNC_BYTE = 0x7e,$/;"	e	enum:__anon36	file:
-SYNC_BYTE	sfsock.c	/^  SYNC_BYTE = 0x7e,$/;"	e	enum:__anon33	file:
 Sensing_Time	include/ETRI.h	/^    UINT32  Sensing_Time;$/;"	m	struct:Struct_TransducerInfo
 Sensing_Value	include/ETRI.h	/^    UINT32   Sensing_Value;$/;"	m	struct:Struct_TR52
 Sensing_Value	include/ETRI.h	/^    UINT8   Sensing_Value;$/;"	m	struct:Struct_TR51
@@ -807,21 +684,8 @@ SensorNode_Id	include/ETRI.h	/^    UINT16  SensorNode_Id;$/;"	m	struct:Struct_Se
 SensorNode_Id	include/ETRI.h	/^    UINT16  SensorNode_Id;$/;"	m	struct:Struct_SensorNode
 SensorNode_Id	include/ETRI.h	/^    UINT16  SensorNode_Id;$/;"	m	struct:Struct_Transducer
 SensorNode_Info	include/ETRI.h	/^    Struct_SensorNode SensorNode_Info;$/;"	m	struct:Struct_UserDefinedMessage
-SocketPorcess	IoTManager.c	/^int SocketPorcess( void ) {$/;"	f
-SocketPorcess	ModbusRTU.c	/^int SocketPorcess( void ) {$/;"	f
-Socket_Manager	ETRI_simulator.c	/^int Socket_Manager( int *client_sock ) {$/;"	f
-Socket_Manager	M2MManager.c	/^int Socket_Manager( void ) {$/;"	f
-Socket_Manager	PLCS-12.c	/^int Socket_Manager( int *client_sock ) {$/;"	f
+SocketProcess	ModbusRTU.c	/^int SocketProcess( void ) {$/;"	f
 Socket_Manager	SetupManager.c	/^int Socket_Manager( int *fd) {$/;"	f
-Socket_Manager	driver/GN1200.c	/^static int Socket_Manager( int *client_sock ) {$/;"	f	file:
-Socket_Manager	driver/PLCS_10.c	/^static int Socket_Manager( int *client_sock ) {$/;"	f	file:
-Socket_Manager	driver/PLCS_9.c	/^static int Socket_Manager( int *client_sock ) {$/;"	f	file:
-Socket_Manager	socket_test.c	/^int Socket_Manager( void* socket_fd, sqlite3 *pSQLite3 ) {$/;"	f
-Socket_Manager	test/M2MManager.c	/^int Socket_Manager( void ) {$/;"	f
-Socket_Manager	test/M2MManager2.c	/^int Socket_Manager( void ) {$/;"	f
-Socket_Manager_12	driver/PLCS_12.c	/^static int Socket_Manager_12( int *client_sock ) {$/;"	f	file:
-Socket_Manager_12ex	driver/PLCS_12ex.c	/^static int Socket_Manager_12ex( int *client_sock ) {$/;"	f	file:
-Socket_Manager_iDCU_IoT	driver/iDCU_IoT.c	/^static int Socket_Manager_iDCU_IoT( int *client_sock ) {$/;"	f	file:
 StatusSendData	include/iDCU.h	/^} __attribute__ ((__packed__)) StatusSendData;$/;"	t	typeref:struct:__anon9
 Struct_ACK	include/ETRI.h	/^  } __attribute__ ((__packed__)) Struct_ACK;$/;"	t	typeref:struct:Struct_ACK
 Struct_ACK	include/ETRI.h	/^typedef struct Struct_ACK{$/;"	s
@@ -851,29 +715,27 @@ Struct_Transducer_Registration	include/ETRI.h	/^typedef struct Struct_Transducer
 Struct_Transducer_Registration	include/ETRI.h	/^} __attribute__ ((__packed__)) Struct_Transducer_Registration;$/;"	t	typeref:struct:Struct_Transducer_Registration
 Struct_UserDefinedMessage	include/ETRI.h	/^typedef struct Struct_UserDefinedMessage {$/;"	s
 Struct_UserDefinedMessage	include/ETRI.h	/^} __attribute__ ((__packed__)) Struct_UserDefinedMessage;$/;"	t	typeref:struct:Struct_UserDefinedMessage
-TABLE_PATH	DataTranslator.c	28;"	d	file:
-TABLE_PATH	DataTranslator_20150227_networkdisconnecterr.c	27;"	d	file:
 TABLE_PATH	lib/libcommprocess.c	9;"	d	file:
 TABLE_PATH	lib/librtdprocess.c	11;"	d	file:
-TABLE_PATH	tagServer.c	25;"	d	file:
 TAGINFO	include/iDCU.h	/^typedef struct TAGINFO {$/;"	s
 TAGINFO	include/iDCU.h	/^} TAGINFO;$/;"	t	typeref:struct:TAGINFO
 TARGET0	Makefile	/^TARGET0 = .\/bin$/;"	m
-TARGET0	driver/Makefile	/^TARGET0 = .\/bin$/;"	m
 TCPClient	lib/TCPSocket.c	/^INT32 TCPClient(INT8 *serverIP, UINT16 port )$/;"	f
 TCPParsingReceiveValue	lib/TCPSocket.c	/^int TCPParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
 TCPServer	lib/TCPSocket.c	/^INT32 TCPServer(INT32 port) {$/;"	f
 TCPSocket	Makefile	/^TCPSocket = .\/lib\/TCPSocket.c$/;"	m
-TCPSocket	driver/Makefile	/^TCPSocket = ..\/lib\/TCPSocket.c$/;"	m
 TELOS	include/platform.h	5;"	d
 TIMESYNC	include/M2MManager.h	/^	TIMESYNC		= 0x02,$/;"	e	enum:__anon19
+TIMESYNCINFO	include/iDCU.h	/^typedef struct TIMESYNCINFO {$/;"	s
+TIMESYNCINFO	include/iDCU.h	/^} TIMESYNCINFO;$/;"	t	typeref:struct:TIMESYNCINFO
+TIMESYNCINFOPATH	SetupManager.c	52;"	d	file:
+TIMESYNCINFO_VAR	include/iDCU.h	/^typedef struct TIMESYNCINFO_VAR {$/;"	s
+TIMESYNCINFO_VAR	include/iDCU.h	/^} __attribute__ ((__packed__)) TIMESYNCINFO_VAR;$/;"	t	typeref:struct:TIMESYNCINFO_VAR
 TINYNODE	include/platform.h	8;"	d
 TMSTRUCT	include/getDiffTime.h	/^typedef struct TMSTRUCT$/;"	s
 TMSTRUCT	include/getDiffTime.h	/^} TMSTRUCT;$/;"	t	typeref:struct:TMSTRUCT
 TMSTRUCT	lib/getDiffTime.c	/^typedef struct TMSTRUCT$/;"	s	file:
 TMSTRUCT	lib/getDiffTime.c	/^} TMSTRUCT;$/;"	t	typeref:struct:TMSTRUCT	file:
-TRUE	serialsource.c	/^	TRUE = 1,$/;"	e	enum:__anon36	file:
-TRUE	sfsock.c	/^  TRUE = 1,$/;"	e	enum:__anon33	file:
 TimeOrigin	include/iDCU.h	/^} __attribute__ ((__packed__)) TimeOrigin;$/;"	t	typeref:struct:__anon8
 TimeSync	lib/libm2mprotocol.c	/^int TimeSync( QUERYTIME time )$/;"	f
 Transducer	include/ETRI.h	/^    Struct_Transducer	Transducer;$/;"	m	struct:Struct_Transducer_Registration
@@ -897,10 +759,15 @@ UINT8	include/iDCU.h	/^typedef	    unsigned char   UINT8;$/;"	t
 USN	include/CommManager.h	2;"	d
 USN_RETURN	include/CommManager.h	7;"	d
 USN_RETURN	include/RealTimeDataManager.h	6;"	d
-USN_RETURN	msgsnd.c	11;"	d	file:
-USN_RETURN	usnTowifi.c	17;"	d	file:
 UpdateAustemNodeData	lib/librtdprocess.c	/^int UpdateAustemNodeData( sqlite3 **pSQLite3, t_getNode	node )$/;"	f
+UpgradeFirmware	Makefile	/^UpgradeFirmware = .\/lib\/UpgradeFirmware.c$/;"	m
+VERSIONINFO_VAR	include/iDCU.h	/^typedef struct VERSIONINFO_VAR {$/;"	s
+VERSIONINFO_VAR	include/iDCU.h	/^} __attribute__ ((__packed__)) VERSIONINFO_VAR;$/;"	t	typeref:struct:VERSIONINFO_VAR
+WHITE	DeviceStatusCheck.c	/^    WHITE = 1$/;"	e	enum:__anon1	file:
+WHITE	ModbusRTU.c	/^    WHITE = 1$/;"	e	enum:__anon29	file:
+WLAN0INFOPATH	SetupManager.c	48;"	d	file:
 WO	include/CommManager.h	/^	WO		= 13,$/;"	e	enum:__anon14
+WPAPATH	SetupManager.c	44;"	d	file:
 WPI_ALMOST	include/wiringPi.h	107;"	d
 WPI_FATAL	include/wiringPi.h	106;"	d
 WPI_MODE_GPIO	include/wiringPi.h	33;"	d
@@ -909,12 +776,14 @@ WPI_MODE_PHYS	include/wiringPi.h	35;"	d
 WPI_MODE_PIFACE	include/wiringPi.h	36;"	d
 WPI_MODE_PINS	include/wiringPi.h	32;"	d
 WPI_MODE_UNINITIALISED	include/wiringPi.h	37;"	d
-WriteNetworkConfig	SetupManager.c	/^void WriteNetworkConfig(UINT8 *name, struct lan_var *lan)$/;"	f
+WriteConfigConfig	lib/configRW.c	/^void WriteConfigConfig( UINT8 *name, CONFIGINFO_VAR  *config)$/;"	f
+WriteNetworkConfig	lib/configRW.c	/^void WriteNetworkConfig(UINT8 *name, struct lan_var *lan)$/;"	f
 WriteNetworkUseConfig	lib/configRW.c	/^void WriteNetworkUseConfig(UINT8 *name, UINT8 *lan, UINT8 *wlan )$/;"	f
 WriteOptionsConfig	lib/configRW.c	/^void WriteOptionsConfig(UINT8 *name, UINT8 *lan, UINT8 *wlan )$/;"	f
-WriteSecurityConfig	SetupManager.c	/^void WriteSecurityConfig(UINT8 *name, struct security_var *security)$/;"	f
-WriteSecurityScript	SetupManager.c	/^void WriteSecurityScript(UINT8 *name, struct security_var *security)$/;"	f
+WriteSecurityConfig	lib/configRW.c	/^void WriteSecurityConfig(UINT8 *name, struct security_var *security)$/;"	f
+WriteSecurityScript	lib/configRW.c	/^void WriteSecurityScript(UINT8 *name, struct security_var *security)$/;"	f
 WriteSerialConfig	lib/configRW.c	/^void WriteSerialConfig( UINT8 *name, COMPORTINFO_VAR  *comport, CONNECTINFO_VAR *connect )$/;"	f
+WriteTimeSyncConfig	lib/configRW.c	/^void WriteTimeSyncConfig( UINT8 *name, TIMESYNCINFO_VAR  *timeSync )$/;"	f
 XMLCALL	include/expat_external.h	38;"	d
 XMLCALL	include/expat_external.h	40;"	d
 XMLCALL	include/expat_external.h	52;"	d
@@ -1059,26 +928,6 @@ XML_UnknownEncodingHandler	include/expat.h	/^typedef int (XMLCALL *XML_UnknownEn
 XML_UnparsedEntityDeclHandler	include/expat.h	/^typedef void (XMLCALL *XML_UnparsedEntityDeclHandler) ($/;"	t
 XML_XmlDeclHandler	include/expat.h	/^typedef void (XMLCALL *XML_XmlDeclHandler) (void           *userData,$/;"	t
 XML_cp	include/expat.h	/^struct XML_cp {$/;"	s
-ZIGBEE	usnTowifi.c	12;"	d	file:
-ZIGBEE	wifiTousn.c	10;"	d	file:
-_1byte	socket_test.c	330;"	d	file:
-_2byte	socket_test.c	331;"	d	file:
-_3byte	socket_test.c	332;"	d	file:
-_4byte	socket_test.c	333;"	d	file:
-_PAC	ETRI_simulator.c	/^typedef struct _PAC {$/;"	s	file:
-_PAC	ETRI_simulator.c	/^} _PAC;$/;"	t	typeref:struct:_PAC	file:
-_PAC	M2MManager.c	/^typedef struct _PAC {$/;"	s	file:
-_PAC	M2MManager.c	/^} _PAC;$/;"	t	typeref:struct:_PAC	file:
-_PAC	PLCS-12.c	/^typedef struct _PAC {$/;"	s	file:
-_PAC	PLCS-12.c	/^} _PAC;$/;"	t	typeref:struct:_PAC	file:
-_PAC	SetupManager.c	/^typedef struct _PAC {$/;"	s	file:
-_PAC	SetupManager.c	/^} _PAC;$/;"	t	typeref:struct:_PAC	file:
-_PAC	socket_test.c	/^typedef struct _PAC {$/;"	s	file:
-_PAC	socket_test.c	/^} _PAC;$/;"	t	typeref:struct:_PAC	file:
-_PAC	test/M2MManager.c	/^typedef struct _PAC {$/;"	s	file:
-_PAC	test/M2MManager.c	/^} _PAC;$/;"	t	typeref:struct:_PAC	file:
-_PAC	test/M2MManager2.c	/^typedef struct _PAC {$/;"	s	file:
-_PAC	test/M2MManager2.c	/^} _PAC;$/;"	t	typeref:struct:_PAC	file:
 _SQLITE3EXT_H_	include/sqlite3ext.h	19;"	d
 _SQLITE3RTREE_H_	include/sqlite3.h	7200;"	d
 _SQLITE3_H_	include/sqlite3.h	34;"	d
@@ -1090,16 +939,7 @@ __uint16_t_defined	include/sf2.h	4;"	d
 __uint32_t_defined	include/platform.h	17;"	d
 __uint32_t_defined	include/sf2.h	14;"	d
 __uint8_t_defined	include/sf2.h	9;"	d
-_getCheckSum	CommManager.c	/^unsigned char _getCheckSum( unsigned char* buffer, int len )$/;"	f
-_getCheckSum	ETRI_simulator.c	/^unsigned char _getCheckSum( int len )$/;"	f
-_getCheckSum	IoTManager.c	/^unsigned char _getCheckSum( int len )$/;"	f
-_getCheckSum	M2MManager.c	/^unsigned char _getCheckSum( int len )$/;"	f
 _getCheckSum	ModbusRTU.c	/^unsigned char _getCheckSum( int len )$/;"	f
-_getCheckSum	PLCS-12.c	/^unsigned char _getCheckSum( int len )$/;"	f
-_getCheckSum	SetupManager.c	/^unsigned char _getCheckSum( int len )$/;"	f
-_getCheckSum	UartManager.c	/^unsigned char _getCheckSum( unsigned char* buffer, int len )$/;"	f
-_getCheckSum	test/M2MManager.c	/^unsigned char _getCheckSum( int len )$/;"	f
-_getCheckSum	test/M2MManager2.c	/^unsigned char _getCheckSum( int len )$/;"	f
 _sqlite3_close	lib/sqliteManager.c	/^int _sqlite3_close( sqlite3 **pSQLite3 )$/;"	f
 _sqlite3_customize	lib/sqliteManager.c	/^int _sqlite3_customize( sqlite3 **pSQLite3 )$/;"	f
 _sqlite3_nolock	lib/sqliteManager.c	/^int _sqlite3_nolock( sqlite3 **pSQLite3 )$/;"	f
@@ -1107,7 +947,6 @@ _sqlite3_open	lib/sqliteManager.c	/^int _sqlite3_open( char *path, sqlite3 **pSQ
 _sqlite3_select	lib/sqliteManager.c	/^SQLite3Data _sqlite3_select( sqlite3 *pSQLite3, char *query )$/;"	f
 _sqlite3_transaction	lib/sqliteManager.c	/^int _sqlite3_transaction( sqlite3 **pSQLite3, char status )$/;"	f
 _sqlite3_update	lib/sqliteManager.c	/^int _sqlite3_update( sqlite3 **pSQLite3, MGData node )$/;"	f
-_uartGetCheckSum	IoTManager.c	/^unsigned char _uartGetCheckSum( unsigned char* buffer, int len )$/;"	f
 _uartGetCheckSum	ModbusRTU.c	/^unsigned char _uartGetCheckSum( unsigned char* buffer, int len )$/;"	f
 aConstraint	include/sqlite3.h	/^  } *aConstraint;            \/* Table of WHERE clause constraints *\/$/;"	m	struct:sqlite3_index_info	typeref:struct:sqlite3_index_info::sqlite3_index_constraint
 aConstraintUsage	include/sqlite3.h	/^  } *aConstraintUsage;$/;"	m	struct:sqlite3_index_info	typeref:struct:sqlite3_index_info::sqlite3_index_constraint_usage
@@ -1115,23 +954,15 @@ aOrderBy	include/sqlite3.h	/^  } *aOrderBy;               \/* The ORDER BY claus
 aParam	include/sqlite3.h	/^  double *aParam;                 \/* Parameters passed to SQL geom function *\/$/;"	m	struct:sqlite3_rtree_geometry
 addRead	include/hiredis/async.h	/^        void (*addRead)(void *privdata);$/;"	m	struct:redisAsyncContext::__anon2
 addWrite	include/hiredis/async.h	/^        void (*addWrite)(void *privdata);$/;"	m	struct:redisAsyncContext::__anon2
-add_client	sf.c	/^void add_client(int fd)$/;"	f
-add_timeval	serialsource.c	/^static void add_timeval(struct timeval *tv, long us)$/;"	f	file:
 addr	include/iDCU.h	/^	char addr[MAX_BUFFER];$/;"	m	struct:TAGINFO
+address	include/iDCU.h	/^	UINT32 address;$/;"	m	struct:TIMESYNCINFO_VAR
+address	include/iDCU.h	/^	char address[MAX_BUFFER];$/;"	m	struct:TIMESYNCINFO
 aggregate_context	include/sqlite3ext.h	/^  void * (*aggregate_context)(sqlite3_context*,int nBytes);$/;"	m	struct:sqlite3_api_routines
 aggregate_count	include/sqlite3ext.h	/^  int  (*aggregate_count)(sqlite3_context*);$/;"	m	struct:sqlite3_api_routines
 alive	include/RealTimeDataManager.h	/^	char alive;$/;"	m	struct:Return_RTDParser
 analogRead	include/wiringPi.h	/^  int    (*analogRead)      (struct wiringPiNodeStruct *node, int pin) ;$/;"	m	struct:wiringPiNodeStruct
 analogWrite	include/wiringPi.h	/^  void   (*analogWrite)     (struct wiringPiNodeStruct *node, int pin, int value) ;$/;"	m	struct:wiringPiNodeStruct
 argvIndex	include/sqlite3.h	/^    int argvIndex;           \/* if >0, constraint is part of argv to xFilter *\/$/;"	m	struct:sqlite3_index_info::sqlite3_index_constraint_usage
-austemSend	M2MManager.c	/^AustemSendData austemSend[2048];$/;"	v
-austemSend	SetupManager.c	/^AustemSendData austemSend[2048];$/;"	v
-austemSend	test/M2MManager.c	/^AustemSendData austemSend[2048];$/;"	v
-austemSend	test/M2MManager2.c	/^AustemSendData austemSend[2048];$/;"	v
-austemStatusSend	M2MManager.c	/^AustemStatusSendData austemStatusSend[256];$/;"	v
-austemStatusSend	SetupManager.c	/^AustemStatusSendData austemStatusSend[256];$/;"	v
-austemStatusSend	test/M2MManager.c	/^AustemStatusSendData austemStatusSend[256];$/;"	v
-austemStatusSend	test/M2MManager2.c	/^AustemStatusSendData austemStatusSend[256];$/;"	v
 auth_alg	include/iDCU.h	/^    unsigned char auth_alg;$/;"	m	struct:security_var
 backup_finish	include/sqlite3ext.h	/^  int (*backup_finish)(sqlite3_backup*);$/;"	m	struct:sqlite3_api_routines
 backup_init	include/sqlite3ext.h	/^  sqlite3_backup *(*backup_init)(sqlite3*,const char*,sqlite3*,const char*);$/;"	m	struct:sqlite3_api_routines
@@ -1160,44 +991,20 @@ blob_open	include/sqlite3ext.h	/^  int (*blob_open)(sqlite3*,const char*,const c
 blob_read	include/sqlite3ext.h	/^  int (*blob_read)(sqlite3_blob*,void*,int,int);$/;"	m	struct:sqlite3_api_routines
 blob_reopen	include/sqlite3ext.h	/^  int (*blob_reopen)(sqlite3_blob*,sqlite3_int64);$/;"	m	struct:sqlite3_api_routines
 blob_write	include/sqlite3ext.h	/^  int (*blob_write)(sqlite3_blob*,const void*,int,int);$/;"	m	struct:sqlite3_api_routines
-bool	serialsource.c	/^typedef int bool;$/;"	t	file:
 buf	include/hiredis/hiredis.h	/^    char *buf; \/* Read buffer *\/$/;"	m	struct:redisReader
 buf	include/sfsock.h	/^char *buf;$/;"	v
-buffer	serialsource.c	/^		uint8_t buffer[BUFSIZE];$/;"	m	struct:serial_source::__anon37	file:
-bufpos	serialsource.c	/^		int bufpos, bufused;$/;"	m	struct:serial_source::__anon37	file:
-bufused	serialsource.c	/^		int bufpos, bufused;$/;"	m	struct:serial_source::__anon37	file:
-buggyread	serialsource.c	/^static int buggyread(serial_source src, void *buffer, int n)$/;"	f	file:
-busy	DBSchedule.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	DataTranslator.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	DataTranslator_20150227_networkdisconnecterr.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	ETRI_simulator.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	IoT_Listen.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	M2MManager.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	PLCS-12.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	RealTimeDataManager(radiopulse_direct_getCnt).c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	RealTimeDataManager.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	SetupManager.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
 busy	lib/SQLite3Interface.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
 busy	lib/libm2mprocess.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
 busy	lib/librtdprocess.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
 busy	lib/libsqlite3manage.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	tagServer.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	test/M2MManager.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
-busy	test/M2MManager2.c	/^static int busy(void *handle, int nTry)$/;"	f	file:
 busy_handler	include/sqlite3ext.h	/^  int  (*busy_handler)(sqlite3*,int(*)(void*,int),void*);$/;"	m	struct:sqlite3_api_routines
 busy_timeout	include/sqlite3ext.h	/^  int  (*busy_timeout)(sqlite3*,int ms);$/;"	m	struct:sqlite3_api_routines
+buttonPin	DeviceStatusCheck.c	/^char buttonPin[BUTTON_PORT] = { 7, 1, 0 };$/;"	v
+buttonPin	ModbusRTU.c	/^char buttonPin[BUTTON_PORT] = { 7, 1, 0 };$/;"	v
 byteMap	lib/hexString.c	/^static char byteMap[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };$/;"	v	file:
 byteMapLen	lib/hexString.c	/^static int byteMapLen = sizeof(byteMap);$/;"	v	file:
 bytesToHexString	lib/hexString.c	/^*bytesToHexString(uint8_t *bytes, size_t buflen)$/;"	f
-c	DataTranslator.c	/^static redisContext *c;$/;"	v	file:
-c	IoTManager.c	/^static redisContext *c;$/;"	v	file:
 c	SetupManager.c	/^static redisContext *c;$/;"	v	file:
-c	driver/GN1200.c	/^static redisContext *c;$/;"	v	file:
-c	driver/PLCS_10.c	/^static redisContext *c;$/;"	v	file:
-c	driver/PLCS_12.c	/^static redisContext *c;$/;"	v	file:
-c	driver/PLCS_12ex.c	/^static redisContext *c;$/;"	v	file:
-c	driver/PLCS_9.c	/^static redisContext *c;$/;"	v	file:
-c	driver/iDCU_IoT.c	/^static redisContext *c;$/;"	v	file:
 c	include/hiredis/async.h	/^    redisContext c;$/;"	m	struct:redisAsyncContext
 changed	include/RealTimeDataManager.h	/^	char 			changed[DI_PORT];$/;"	m	struct:__anon17
 changes	include/sqlite3ext.h	/^  int  (*changes)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
@@ -1205,45 +1012,27 @@ channel	include/M2MManager.h	/^	unsigned char channel[8][4];$/;"	m	struct:Austem
 channel	include/iDCU.h	/^	UINT8 channel[8][4];$/;"	m	struct:__anon9
 channelSize	include/M2MManager.h	/^	unsigned char channelSize;$/;"	m	struct:AustemStatusSendData
 channels	include/hiredis/async.h	/^        struct dict *channels;$/;"	m	struct:redisAsyncContext::__anon3	typeref:struct:redisAsyncContext::__anon3::dict
-checkAck	DataTranslator.c	/^static int checkAck()$/;"	f	file:
-checkAckData	DataTranslator.c	/^static int checkAckData(Struct_ACK pac)$/;"	f	file:
-check_auth_alg	SetupManager.c	/^int check_auth_alg(UINT8 *value )$/;"	f
-check_clients	sf.c	/^void check_clients(fd_set *fds)$/;"	f
-check_group	SetupManager.c	/^int check_group(UINT8 *value )$/;"	f
-check_key_mgmt	SetupManager.c	/^int check_key_mgmt(UINT8 *value )$/;"	f
-check_new_client	sf.c	/^void check_new_client(void)$/;"	f
-check_serial	sf.c	/^void check_serial(void)$/;"	f
+check_auth_alg	lib/configRW.c	/^int check_auth_alg(UINT8 *value )$/;"	f
+check_group	lib/configRW.c	/^int check_group(UINT8 *value )$/;"	f
+check_interval	lib/configRW.c	/^int check_interval(UINT8 value )$/;"	f
+check_key_mgmt	lib/configRW.c	/^int check_key_mgmt(UINT8 *value )$/;"	f
+check_process	DeviceStatusCheck.c	/^int check_process(char* appName)$/;"	f
 children	include/expat.h	/^  XML_Content *                 children;$/;"	m	struct:XML_cp
 cleanup	include/hiredis/async.h	/^        void (*cleanup)(void *privdata);$/;"	m	struct:redisAsyncContext::__anon2
 clear_bindings	include/sqlite3ext.h	/^  int (*clear_bindings)(sqlite3_stmt*);$/;"	m	struct:sqlite3_api_routines
-client_addr	ETRI_simulator.c	/^struct sockaddr_in   client_addr;$/;"	v	typeref:struct:sockaddr_in
-client_addr	PLCS-12.c	/^struct sockaddr_in   client_addr;$/;"	v	typeref:struct:sockaddr_in
 client_addr	SetupManager.c	/^struct sockaddr_in   client_addr;$/;"	v	typeref:struct:sockaddr_in
-client_addr_size	ETRI_simulator.c	/^int client_addr_size;$/;"	v
-client_addr_size	PLCS-12.c	/^int client_addr_size;$/;"	v
 client_addr_size	SetupManager.c	/^int client_addr_size;$/;"	v
-client_list	sf.c	/^struct client_list$/;"	s	file:
-client_sock	IoTManager.c	/^int client_sock; $/;"	v
-client_sock	M2MManager.c	/^int client_sock; $/;"	v
 client_sock	ModbusRTU.c	/^int client_sock; $/;"	v
-client_sock	PLCS-12.c	/^int client_sock; $/;"	v
 client_sock	SetupManager.c	/^int client_sock; $/;"	v
-client_sock	test/M2MManager.c	/^int client_sock; $/;"	v
-client_sock	test/M2MManager2.c	/^int client_sock;$/;"	v
-clients	sf.c	/^} *clients;$/;"	v	typeref:struct:client_list
 close	include/sqlite3ext.h	/^  int  (*close)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
-close_serial_source	serialsource.c	/^int close_serial_source(serial_source src)$/;"	f
 close_v2	include/sqlite3ext.h	/^  int (*close_v2)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
-cnt	ModbusRTU.c	/^    UINT32 cnt;$/;"	m	struct:__anon35	file:
+cnt	ModbusRTU.c	/^    UINT32 cnt;$/;"	m	struct:__anon30	file:
 cnt	include/CommManager.h	/^unsigned int cnt[DI_PORT]; $/;"	m	struct:__anon12
 cnt	include/RealTimeDataManager.h	/^	unsigned char cnt[4]; $/;"	m	struct:__anon15
 cnt	include/RealTimeDataManager.h	/^	unsigned int	cnt[DI_PORT];$/;"	m	struct:__anon16
 cnt	include/RealTimeDataManager.h	/^	unsigned int	cnt[DI_PORT];$/;"	m	struct:__anon17
 cnt	include/iDCU.h	/^	UINT32 cnt[8];$/;"	m	struct:__anon5
-cnt	msgsnd.c	/^	unsigned int	cnt[DI_PORT];$/;"	m	struct:__anon31	file:
-cnt	msgsnd.c	/^	unsigned int cnt[DI_PORT]; $/;"	m	struct:__anon32	file:
-cntPastData	driver/iDCU_IoT.c	/^static UINT8 cntPastData[4];$/;"	v	file:
-cnt_inc_size	ModbusRTU.c	/^    UINT8 cnt_inc_size;$/;"	m	struct:__anon35	file:
+cnt_inc_size	ModbusRTU.c	/^    UINT8 cnt_inc_size;$/;"	m	struct:__anon30	file:
 collation_needed	include/sqlite3ext.h	/^  int  (*collation_needed)(sqlite3*,void*,void(*)(void*,sqlite3*,$/;"	m	struct:sqlite3_api_routines
 collation_needed16	include/sqlite3ext.h	/^  int  (*collation_needed16)(sqlite3*,void*,void(*)(void*,sqlite3*,$/;"	m	struct:sqlite3_api_routines
 column_blob	include/sqlite3ext.h	/^  const void * (*column_blob)(sqlite3_stmt*,int iCol);$/;"	m	struct:sqlite3_api_routines
@@ -1267,30 +1056,6 @@ column_text	include/sqlite3ext.h	/^  const unsigned char * (*column_text)(sqlite
 column_text16	include/sqlite3ext.h	/^  const void * (*column_text16)(sqlite3_stmt*,int iCol);$/;"	m	struct:sqlite3_api_routines
 column_type	include/sqlite3ext.h	/^  int  (*column_type)(sqlite3_stmt*,int iCol);$/;"	m	struct:sqlite3_api_routines
 column_value	include/sqlite3ext.h	/^  sqlite3_value* (*column_value)(sqlite3_stmt*,int iCol);$/;"	m	struct:sqlite3_api_routines
-comm_id	driver/GN1200.c	/^static int comm_id;$/;"	v	file:
-comm_id	driver/iDCU_IoT.c	/^static int comm_id;$/;"	v	file:
-commandDeleteNode	IoT_Listen.c	/^int commandDeleteNode( sqlite3 *pSQLite3, unsigned char nodeid )$/;"	f
-commandDeleteNode	M2MManager.c	/^int commandDeleteNode( unsigned char nodeid )$/;"	f
-commandDeleteNode	RealTimeDataManager(radiopulse_direct_getCnt).c	/^int commandDeleteNode( sqlite3 *pSQLite3, unsigned char nodeid )$/;"	f
-commandDeleteNode	RealTimeDataManager.c	/^int commandDeleteNode( sqlite3 *pSQLite3, unsigned char nodeid )$/;"	f
-commandDeleteNode	SetupManager.c	/^int commandDeleteNode( unsigned char nodeid )$/;"	f
-commandDeleteNode	test/M2MManager.c	/^int commandDeleteNode( unsigned char nodeid )$/;"	f
-commandDeleteNode	test/M2MManager2.c	/^int commandDeleteNode( unsigned char nodeid )$/;"	f
-commandGetNodeInfo	M2MManager.c	/^int commandGetNodeInfo( )$/;"	f
-commandGetNodeInfo	SetupManager.c	/^int commandGetNodeInfo( )$/;"	f
-commandGetNodeInfo	test/M2MManager.c	/^int commandGetNodeInfo( )$/;"	f
-commandGetNodeInfo	test/M2MManager2.c	/^int commandGetNodeInfo( )$/;"	f
-commandM2MConfig	M2MManager.c	/^int commandM2MConfig( unsigned char* buffer, int len )$/;"	f
-commandM2MConfig	SetupManager.c	/^int commandM2MConfig( unsigned char* buffer, int len )$/;"	f
-commandM2MConfig	test/M2MManager.c	/^int commandM2MConfig( unsigned char* buffer, int len )$/;"	f
-commandM2MConfig	test/M2MManager2.c	/^int commandM2MConfig( unsigned char* buffer, int len )$/;"	f
-commandNodeConfig	M2MManager.c	/^int commandNodeConfig( unsigned char* buffer, int len )$/;"	f
-commandNodeConfig	SetupManager.c	/^int commandNodeConfig( unsigned char* buffer, int len )$/;"	f
-commandNodeConfig	test/M2MManager.c	/^int commandNodeConfig( unsigned char* buffer, int len )$/;"	f
-commandNodeConfig	test/M2MManager2.c	/^int commandNodeConfig( unsigned char* buffer, int len )$/;"	f
-commandUpdateNode	IoT_Listen.c	/^int commandUpdateNode( sqlite3 *pSQLite3, unsigned char nodeid, unsigned char changenodeid, unsigned char groupid )$/;"	f
-commandUpdateNode	RealTimeDataManager(radiopulse_direct_getCnt).c	/^int commandUpdateNode( sqlite3 *pSQLite3, unsigned char nodeid, unsigned char changenodeid, unsigned char groupid )$/;"	f
-commandUpdateNode	RealTimeDataManager.c	/^int commandUpdateNode( sqlite3 *pSQLite3, unsigned char nodeid, unsigned char changenodeid, unsigned char groupid )$/;"	f
 commit_hook	include/sqlite3ext.h	/^  void * (*commit_hook)(sqlite3*,int(*)(void*),void*);$/;"	m	struct:sqlite3_api_routines
 compileoption_get	include/sqlite3ext.h	/^  const char *(*compileoption_get)(int);$/;"	m	struct:sqlite3_api_routines
 compileoption_used	include/sqlite3ext.h	/^  int (*compileoption_used)(const char*);$/;"	m	struct:sqlite3_api_routines
@@ -1298,37 +1063,24 @@ complete	include/sqlite3ext.h	/^  int  (*complete)(const char*sql);$/;"	m	struct
 complete16	include/sqlite3ext.h	/^  int  (*complete16)(const void*sql);$/;"	m	struct:sqlite3_api_routines
 comport	include/iDCU.h	/^    COMPORTINFO comport;$/;"	m	struct:SERIALINFO
 comport	include/iDCU.h	/^    COMPORTINFO_VAR comport;$/;"	m	struct:DEVINFO
-configInfo	IoTManager.c	/^static CONFIGINFO configInfo;$/;"	v	file:
+config	include/iDCU.h	/^    CONFIGINFO_VAR  config;$/;"	m	struct:DEVINFO
 configInfo	ModbusRTU.c	/^static CONFIGINFO configInfo;$/;"	v	file:
 configInfo	SerialToEthernet.c	/^static CONFIGINFO configInfo;$/;"	v	file:
 configInfo	SetupManager.c	/^static CONFIGINFO configInfo;$/;"	v	file:
 configInfoParser	Makefile	/^configInfoParser = .\/lib\/parser\/configInfoParser.c$/;"	m
 configInfoParser	lib/parser/configInfoParser.c	/^CONFIGINFO configInfoParser(const char *path) { $/;"	f
 configRW	Makefile	/^configRW = .\/lib\/configRW.c$/;"	m
-configRW	driver/Makefile	/^configRW = ..\/lib\/configRW.c$/;"	m
 connect	include/iDCU.h	/^    CONNECTINFO connect;$/;"	m	struct:SERIALINFO
 connect	include/iDCU.h	/^    CONNECTINFO_VAR connect;$/;"	m	struct:DEVINFO
 connect_nonb	lib/TCPSocket.c	/^static int connect_nonb(int sockfd, const struct sockaddr *saptr, int salen, int nsec)$/;"	f	file:
 context	include/hiredis/adaters/libevent.h	/^    redisAsyncContext *context;$/;"	m	struct:redisLibeventEvents
 context_db_handle	include/sqlite3ext.h	/^  sqlite3 *(*context_db_handle)(sqlite3_context*);$/;"	m	struct:sqlite3_api_routines
 convert	include/expat.h	/^  int (XMLCALL *convert)(void *data, const char *s);$/;"	m	struct:__anon24
-convert	serialtonet.c	/^unsigned char* convert(unsigned char* ch, int size) {$/;"	f
-count	serialsource.c	/^		int count;$/;"	m	struct:serial_source::__anon37	file:
 countSend	ModbusRTU.c	/^StatusSendData countSend;$/;"	v
-crc	serialsource.c	/^		uint16_t crc;$/;"	m	struct:serial_source::__anon38	file:
-crc_byte	serialsource.c	/^static uint16_t crc_byte(uint16_t crc, uint8_t b)$/;"	f	file:
-crc_packet	serialsource.c	/^static uint16_t crc_packet(uint8_t *data, int len)$/;"	f	file:
 createArray	include/hiredis/hiredis.h	/^    void *(*createArray)(const redisReadTask*, int);$/;"	m	struct:redisReplyObjectFunctions
-createDriver	CommunicationManager.c	/^static void createDriver( DEVICEINFO *device, TAGINFO *tag )$/;"	f	file:
-createDriver	SerialToEthernet.c	/^static void createDriver( DEVICEINFO *device, TAGINFO *tag )$/;"	f	file:
-createETRIPacketFormat	driver/PLCS_12ex.c	/^static int createETRIPacketFormat( UINT8 *id, unsigned char parsing[1024][32], UINT16 parsingCnt )$/;"	f	file:
-createETRIPacketFormat	driver/PLCS_9.c	/^static int createETRIPacketFormat( UINT8 *id, unsigned char parsing[1024][32], UINT16 parsingCnt )$/;"	f	file:
 createInteger	include/hiredis/hiredis.h	/^    void *(*createInteger)(const redisReadTask*, long long);$/;"	m	struct:redisReplyObjectFunctions
 createNil	include/hiredis/hiredis.h	/^    void *(*createNil)(const redisReadTask*);$/;"	m	struct:redisReplyObjectFunctions
-createProcess	CommunicationManager.c	/^static void createProcess( pid_t *pid, DEVICEINFO *device, TAGINFO *tag )$/;"	f	file:
-createProcess	SerialToEthernet.c	/^static void createProcess( pid_t *pid, DEVICEINFO *device, TAGINFO *tag )$/;"	f	file:
 createString	include/hiredis/hiredis.h	/^    void *(*createString)(const redisReadTask*, char*, size_t);$/;"	m	struct:redisReplyObjectFunctions
-create_child	createtree.c	/^xmlNodePtr create_child(xmlNodePtr root_node, int attr_on) \/\/if attr_on is 0 no attribute is added$/;"	f
 create_collation	include/sqlite3ext.h	/^  int  (*create_collation)(sqlite3*,const char*,int,void*,$/;"	m	struct:sqlite3_api_routines
 create_collation16	include/sqlite3ext.h	/^  int  (*create_collation16)(sqlite3*,const void*,int,void*,$/;"	m	struct:sqlite3_api_routines
 create_collation_v2	include/sqlite3ext.h	/^  int (*create_collation_v2)(sqlite3*,const char*,int,void*,$/;"	m	struct:sqlite3_api_routines
@@ -1337,27 +1089,23 @@ create_function16	include/sqlite3ext.h	/^  int  (*create_function16)(sqlite3*,co
 create_function_v2	include/sqlite3ext.h	/^  int (*create_function_v2)(sqlite3*,const char*,int,int,void*,$/;"	m	struct:sqlite3_api_routines
 create_module	include/sqlite3ext.h	/^  int (*create_module)(sqlite3*,const char*,const sqlite3_module*,void*);$/;"	m	struct:sqlite3_api_routines
 create_module_v2	include/sqlite3ext.h	/^  int (*create_module_v2)(sqlite3*,const char*,const sqlite3_module*,void*,$/;"	m	struct:sqlite3_api_routines
-ctagID	driver/GN1200.c	/^static char* ctagID;$/;"	v	file:
-ctagID	driver/PLCS_10.c	/^static char* ctagID;$/;"	v	file:
-ctagID	driver/PLCS_12.c	/^static char* ctagID;$/;"	v	file:
-ctagID	driver/PLCS_12ex.c	/^static char* ctagID;$/;"	v	file:
-ctagID	driver/PLCS_9.c	/^static char* ctagID;$/;"	v	file:
-ctagID	driver/iDCU_IoT.c	/^static char* ctagID;$/;"	v	file:
 curCnt	include/RealTimeDataManager.h	/^	unsigned int	curCnt[DI_PORT];$/;"	m	struct:__anon16
-curCnt	msgsnd.c	/^	unsigned int	curCnt[DI_PORT];$/;"	m	struct:__anon31	file:
 curWo	include/RealTimeDataManager.h	/^	char 			curWo[DI_PORT];$/;"	m	struct:__anon16
-curWo	msgsnd.c	/^	char 			curWo[DI_PORT];$/;"	m	struct:__anon31	file:
-curdi	ModbusRTU.c	/^    UINT8 curdi;$/;"	m	struct:__anon35	file:
+curdi	ModbusRTU.c	/^    UINT8 curdi;$/;"	m	struct:__anon30	file:
 current_el	lib/libDeviceInfoParser.c	/^static const char *current_el;   \/\/ 가장 최근 태그 기억용 $/;"	v	file:
 current_el	lib/libdeviceparser.c	/^const char *current_el;   \/\/ 가장 최근 태그 기억용 $/;"	v
 current_el	lib/libpointparser.c	/^const char *current_el;   \/\/ 가장 최근 태그 기억용 $/;"	v
 current_el	lib/parser/configInfoParser.c	/^static const char *current_el;   \/\/ 가장 최근 태그 기억용 $/;"	v	file:
 current_el	lib/parser/serialInfoParser.c	/^static const char *current_el;   \/\/ 가장 최근 태그 기억용 $/;"	v	file:
+current_el	lib/parser/timeSyncInfoParser.c	/^static const char *current_el;   \/\/ 가장 최근 태그 기억용 $/;"	v	file:
 current_id	lib/libDeviceInfoParser.c	/^static const char **current_id;  \/\/ 태그의 특성값 기억용 $/;"	v	file:
 current_id	lib/libdeviceparser.c	/^const char **current_id;  \/\/ 태그의 특성값 기억용 $/;"	v
 current_id	lib/libpointparser.c	/^const char **current_id;  \/\/ 태그의 특성값 기억용 $/;"	v
 current_id	lib/parser/configInfoParser.c	/^static const char **current_id;  \/\/ 태그의 특성값 기억용 $/;"	v	file:
 current_id	lib/parser/serialInfoParser.c	/^static const char **current_id;  \/\/ 태그의 특성값 기억용 $/;"	v	file:
+current_id	lib/parser/timeSyncInfoParser.c	/^static const char **current_id;  \/\/ 태그의 특성값 기억용 $/;"	v	file:
+cycle	include/iDCU.h	/^	UINT8 cycle;$/;"	m	struct:TIMESYNCINFO_VAR
+cycle	include/iDCU.h	/^	char cycle[MAX_BUFFER];$/;"	m	struct:TIMESYNCINFO
 data	include/expat.h	/^  void *data;$/;"	m	struct:__anon24
 data	include/hiredis/async.h	/^        void *data;$/;"	m	struct:redisAsyncContext::__anon2
 data	include/hiredis/async.h	/^    void *data;$/;"	m	struct:redisAsyncContext
@@ -1367,31 +1115,20 @@ data1	include/wiringPi.h	/^  unsigned int data1 ;	\/\/  ditto$/;"	m	struct:wirin
 data2	include/wiringPi.h	/^  unsigned int data2 ;	\/\/  ditto$/;"	m	struct:wiringPiNodeStruct
 data3	include/wiringPi.h	/^  unsigned int data3 ;	\/\/  ditto$/;"	m	struct:wiringPiNodeStruct
 data_buff	include/iDCU.h	/^	unsigned char  data_buff[4096];$/;"	m	struct:__anon10
-data_buff	msgrcv.c	/^   char  data_buff[BUFF_SIZE];$/;"	m	struct:__anon29	file:
-data_buff	msgsnd.c	/^	char  data_buff[BUFF_SIZE];$/;"	m	struct:__anon30	file:
-data_buff	usnTowifi.c	/^char data_buff[BUFFER_SIZE]; $/;"	m	struct:__anon1	file:
 data_count	include/sqlite3ext.h	/^  int  (*data_count)(sqlite3_stmt*pStmt);$/;"	m	struct:sqlite3_api_routines
 data_num	include/iDCU.h	/^	int   data_num;$/;"	m	struct:__anon10
-data_num	msgrcv.c	/^   int   data_num;$/;"	m	struct:__anon29	file:
-data_num	msgsnd.c	/^	int   data_num;$/;"	m	struct:__anon30	file:
-data_num	usnTowifi.c	/^int data_num; $/;"	m	struct:__anon1	file:
 data_type	include/CommManager.h	/^long data_type; $/;"	m	struct:__anon12
 data_type	include/iDCU.h	/^	long  data_type;$/;"	m	struct:__anon10
-data_type	msgrcv.c	/^   long  data_type;$/;"	m	struct:__anon29	file:
-data_type	msgsnd.c	/^	long  data_type;$/;"	m	struct:__anon30	file:
-data_type	usnTowifi.c	/^long data_type; $/;"	m	struct:__anon1	file:
 databit	include/iDCU.h	/^	UINT8 databit;$/;"	m	struct:COMPORTINFO_VAR
 databit	include/iDCU.h	/^	char databit[MAX_BUFFER];$/;"	m	struct:COMPORTINFO
 day	include/M2MManager.h	/^	char day;$/;"	m	struct:QUERYTIME
 day	include/M2MManager.h	/^	char day;$/;"	m	struct:__anon20
 day	include/M2MManager.h	/^	char day;$/;"	m	struct:__anon21
 day	include/iDCU.h	/^	INT8 day;$/;"	m	struct:__anon8
-db_addr	serialtonet.c	/^char* db_addr="127.0.0.1";$/;"	v
 db_config	include/sqlite3ext.h	/^  int (*db_config)(sqlite3*,int,...);$/;"	m	struct:sqlite3_api_routines
 db_filename	include/sqlite3ext.h	/^  const char *(*db_filename)(sqlite3*,const char*);$/;"	m	struct:sqlite3_api_routines
 db_handle	include/sqlite3ext.h	/^  sqlite3 * (*db_handle)(sqlite3_stmt*);$/;"	m	struct:sqlite3_api_routines
 db_mutex	include/sqlite3ext.h	/^  sqlite3_mutex *(*db_mutex)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
-db_port	serialtonet.c	/^char* db_port="8668";$/;"	v
 db_readonly	include/sqlite3ext.h	/^  int (*db_readonly)(sqlite3*,const char*);$/;"	m	struct:sqlite3_api_routines
 db_release_memory	include/sqlite3ext.h	/^  int (*db_release_memory)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
 db_status	include/sqlite3ext.h	/^  int (*db_status)(sqlite3*,int,int*,int*,int);$/;"	m	struct:sqlite3_api_routines
@@ -1401,13 +1138,9 @@ debugPrintf	lib/debugPrintf.c	/^void debugPrintf( UINT8 *debug, const char *str,
 declare_vtab	include/sqlite3ext.h	/^  int (*declare_vtab)(sqlite3*,const char*);$/;"	m	struct:sqlite3_api_routines
 delRead	include/hiredis/async.h	/^        void (*delRead)(void *privdata);$/;"	m	struct:redisAsyncContext::__anon2
 delWrite	include/hiredis/async.h	/^        void (*delWrite)(void *privdata);$/;"	m	struct:redisAsyncContext::__anon2
-deleteCommLog	DataTranslator.c	/^static void deleteCommLog(int	idIndex)$/;"	f	file:
-deluge_socket_process	serialtonet.c	/^void* deluge_socket_process(){$/;"	f
 desc	include/sqlite3.h	/^     unsigned char desc;       \/* True for DESC.  False for ASC. *\/$/;"	m	struct:sqlite3_index_info::sqlite3_index_orderby
 detachSharedMem	lib/libreleasesharedmemory.c	/^int detachSharedMem( char type, char nodeid, const void *addr, const void *id )$/;"	f
 devInfo	lib/libDeviceInfoParser.c	/^static NODEINFO devInfo;$/;"	v	file:
-device	ETRI_simulator.c	/^DEVINFO	    device;$/;"	v
-device	PLCS-12.c	/^DEVINFO	    device;$/;"	v
 device	SetupManager.c	/^DEVINFO	    device;$/;"	v
 device	include/iDCU.h	/^	DEVICEINFO device[MAX_DEVICE];$/;"	m	struct:NODEINFO
 deviceInfoParser	lib/libDeviceInfoParser.c	/^NODEINFO deviceInfoParser(const char *path) { $/;"	f
@@ -1420,22 +1153,17 @@ deviceparser_parser	lib/libdeviceparser.c	/^void deviceparser_parser(void *data,
 deviceparser_start	lib/libdeviceparser.c	/^deviceparser_start(void *data, const char *el, const char **attr) { $/;"	f
 deviceparser_user_num	lib/libdeviceparser.c	/^int  deviceparser_user_num = 0;   \/\/ 몇개의 레코드가 저장되었는지 검사  $/;"	v
 devinfo	lib/libdeviceparser.c	/^DEVINFO devinfo;$/;"	v
-di	UartManager.c	/^CNTVALUE di[DI_PORT];$/;"	v
-diPin	ModbusRTU.c	/^char diPin[4] = { 5,6,4,14 };	\/\/ c1 pin 18,22,16,23$/;"	v
+diPin	DeviceStatusCheck.c	/^char diPin[DI_PORT] = { 5,6,4,14,13, 12, 3, 2 };	\/\/ c1 pin 18,22,16,23$/;"	v
+diPin	ModbusRTU.c	/^char diPin[DI_PORT] = { 5,6,4,14,13, 12, 3, 2 };	\/\/ c1 pin 18,22,16,23$/;"	v
 digitalRead	include/wiringPi.h	/^  int    (*digitalRead)     (struct wiringPiNodeStruct *node, int pin) ;$/;"	m	struct:wiringPiNodeStruct
 digitalWrite	include/wiringPi.h	/^  void   (*digitalWrite)    (struct wiringPiNodeStruct *node, int pin, int value) ;$/;"	m	struct:wiringPiNodeStruct
-disconnectCheck	DataTranslator.c	/^static int disconnectCheck()$/;"	f	file:
-dispatch_packet	sf.c	/^void dispatch_packet(const void *packet, int len)$/;"	f
 dispens	lib/librealtimeparser.c	/^Return_RTDParser dispens;$/;"	v
-dl_addr	serialtonet.c	/^char* dl_addr="127.0.0.1";$/;"	v
-dl_port	serialtonet.c	/^char* dl_port="5000";$/;"	v
+doPin	DeviceStatusCheck.c	/^char doPin[4] = { 13, 12, 3, 2 };$/;"	v
 doPin	ModbusRTU.c	/^char doPin[4] = { 13, 12, 3, 2 };$/;"	v
-done	UartManager.c	/^int done[5];$/;"	v
 double	include/sqlite3.h	264;"	d
 double	include/sqlite3.h	7178;"	d
 driver	include/iDCU.h	/^	char driver[MAX_BUFFER];$/;"	m	struct:DEVICEINFO
 driver	include/iDCU.h	/^	char driver[MAX_BUFFER];$/;"	m	struct:TAGINFO
-dump	serialsource.c	/^static void dump(const char *msg, unsigned char *packet, int len)$/;"	f	file:
 eACK	include/ETRI.h	/^	eACK			    = 0xff,$/;"	e	enum:__anon22
 eContinuous_Command	include/ETRI.h	/^	eContinuous_Command	    = 0x21,$/;"	e	enum:__anon22
 eGateNode_Deregistration	include/ETRI.h	/^	eGateNode_Deregistration	    = 0x02,$/;"	e	enum:__anon22
@@ -1472,113 +1200,68 @@ end	lib/libDeviceInfoParser.c	/^static void end(void *data, const char *el)  $/;
 end	lib/libpointparser.c	/^end(void *data, const char *el)  $/;"	f
 end	lib/parser/configInfoParser.c	/^end(void *data, const char *el)  $/;"	f	file:
 end	lib/parser/serialInfoParser.c	/^end(void *data, const char *el)  $/;"	f	file:
-env	DataTranslator.c	/^static READENV env;$/;"	v	file:
-env	DataTranslator_20150227_networkdisconnecterr.c	/^static READENV env;$/;"	v	file:
-env	eventHub.c	/^static READENV env;$/;"	v	file:
+end	lib/parser/timeSyncInfoParser.c	/^end(void *data, const char *el)  $/;"	f	file:
 err	include/hiredis/async.h	/^    int err;$/;"	m	struct:redisAsyncContext
 err	include/hiredis/hiredis.h	/^    int err; \/* Error flags, 0 when there is no error *\/$/;"	m	struct:redisContext
 err	include/hiredis/hiredis.h	/^    int err; \/* Error flags, 0 when there is no error *\/$/;"	m	struct:redisReader
 errcode	include/sqlite3ext.h	/^  int  (*errcode)(sqlite3*db);$/;"	m	struct:sqlite3_api_routines
 errmsg	include/sqlite3ext.h	/^  const char * (*errmsg)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
 errmsg16	include/sqlite3ext.h	/^  const void * (*errmsg16)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
-error_handling	test_client.c	/^void error_handling(char * message){$/;"	f
 errstr	include/hiredis/async.h	/^    char *errstr;$/;"	m	struct:redisAsyncContext
 errstr	include/hiredis/hiredis.h	/^    char errstr[128]; \/* String representation of error when applicable *\/$/;"	m	struct:redisContext
 errstr	include/hiredis/hiredis.h	/^    char errstr[128]; \/* String representation of error when applicable *\/$/;"	m	struct:redisReader
 errstr	include/sqlite3ext.h	/^  const char *(*errstr)(int);$/;"	m	struct:sqlite3_api_routines
-escape_add	serialsource.c	/^static void escape_add(serial_source src, uint8_t b)$/;"	f	file:
-escape_byte	serialsource.c	/^static void escape_byte(serial_source src, uint8_t b)$/;"	f	file:
-escaped	serialsource.c	/^		bool in_sync, escaped;$/;"	m	struct:serial_source::__anon37	file:
-escaped	serialsource.c	/^		uint8_t *escaped;$/;"	m	struct:serial_source::__anon38	file:
-escapeptr	serialsource.c	/^		int escapeptr;$/;"	m	struct:serial_source::__anon38	file:
 estimatedCost	include/sqlite3.h	/^  double estimatedCost;      \/* Estimated cost of using this index *\/$/;"	m	struct:sqlite3_index_info
 ev	include/hiredis/async.h	/^    } ev;$/;"	m	struct:redisAsyncContext	typeref:struct:redisAsyncContext::__anon2
 event	ModbusRTU.c	/^static redisContext *event;$/;"	v	file:
-eventCount	eventHub.c	/^static UINT8 eventCount;$/;"	v	file:
-eventCount	tagServer.c	/^static UINT8 eventCount;$/;"	v	file:
-eventIn	eventHub.c	/^static UINT8 eventIn;$/;"	v	file:
-eventIn	tagServer.c	/^static UINT8 eventIn;$/;"	v	file:
-eventOut	eventHub.c	/^static UINT8 eventOut;$/;"	v	file:
-eventOut	tagServer.c	/^static UINT8 eventOut;$/;"	v	file:
-eventid	ETRI_simulator.c	/^int eventid;$/;"	v
-eventid	IoTManager.c	/^int eventid;$/;"	v
-eventid	M2MManager.c	/^int eventid;$/;"	v
-eventid	ModbusRTU.c	/^int eventid;$/;"	v
-eventid	PLCS-12.c	/^int eventid;$/;"	v
-eventid	SetupManager.c	/^int eventid;$/;"	v
-eventid	test/M2MManager.c	/^int eventid;$/;"	v
-eventid	test/M2MManager2.c	/^int eventid;$/;"	v
 exec	include/sqlite3ext.h	/^  int  (*exec)(sqlite3*,const char*,sqlite3_callback,void*,char**);$/;"	m	struct:sqlite3_api_routines
 exist	include/RealTimeDataManager.h	/^	unsigned char	exist;$/;"	m	struct:__anon16
 expired	include/sqlite3ext.h	/^  int  (*expired)(sqlite3_stmt*);$/;"	m	struct:sqlite3_api_routines
 extended_errcode	include/sqlite3ext.h	/^  int (*extended_errcode)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
 extended_result_codes	include/sqlite3ext.h	/^  int (*extended_result_codes)(sqlite3*,int);$/;"	m	struct:sqlite3_api_routines
-fd	IoTManager.c	/^int fd; \/\/ Serial Port File Descriptor$/;"	v
 fd	ModbusRTU.c	/^int fd; \/\/ Serial Port File Descriptor$/;"	v
 fd	SerialToEthernet.c	/^static int fd;$/;"	v	file:
 fd	include/hiredis/hiredis.h	/^    int fd;$/;"	m	struct:redisContext
 fd	include/wiringPi.h	/^  int          fd ;	\/\/ Node specific$/;"	m	struct:wiringPiNodeStruct
-fd	serialsource.c	/^	int fd;$/;"	m	struct:serial_source	file:
-fd	sf.c	/^  int fd;$/;"	m	struct:client_list	file:
-fd	uart_test.c	/^int fd;$/;"	v
-fd_wait	sf.c	/^void fd_wait(fd_set *fds, int *maxfd, int fd)$/;"	f
 feature	include/expat.h	/^  enum XML_FeatureEnum  feature;$/;"	m	struct:__anon27	typeref:enum:__anon27::XML_FeatureEnum
-fgetstr	createtree.c	/^char *fgetstr(char *string, int n, FILE *stream)$/;"	f
 file_control	include/sqlite3ext.h	/^  int (*file_control)(sqlite3*,const char*,int,void*);$/;"	m	struct:sqlite3_api_routines
 finalBuffer	include/expat.h	/^  XML_Bool finalBuffer;$/;"	m	struct:__anon25
 finalize	include/sqlite3ext.h	/^  int  (*finalize)(sqlite3_stmt*pStmt);$/;"	m	struct:sqlite3_api_routines
-flag	serialtonet.c	/^int flag = 0;$/;"	v
 flags	include/hiredis/hiredis.h	/^    int flags;$/;"	m	struct:redisContext
 flowcontrol	include/iDCU.h	/^	UINT8 flowcontrol;$/;"	m	struct:COMPORTINFO_VAR
 flowcontrol	include/iDCU.h	/^	char flowcontrol[MAX_BUFFER];$/;"	m	struct:COMPORTINFO
 fn	include/hiredis/async.h	/^    redisCallbackFn *fn;$/;"	m	struct:redisCallback
 fn	include/hiredis/hiredis.h	/^    redisReplyObjectFunctions *fn;$/;"	m	struct:redisReader
-forward_packet	sf.c	/^void forward_packet(const void *packet, int len)$/;"	f
-frameIndex	sfsock.c	/^uint8_t frameIndex=0;$/;"	v
 free	include/sqlite3ext.h	/^  void  (*free)(void*);$/;"	m	struct:sqlite3_api_routines
 freeObject	include/hiredis/hiredis.h	/^    void (*freeObject)(void*);$/;"	m	struct:redisReplyObjectFunctions
-free_escaper	serialsource.c	/^static void free_escaper(serial_source src)$/;"	f	file:
 free_fcn	include/expat.h	/^  void (*free_fcn)(void *ptr);$/;"	m	struct:__anon23
 free_table	include/sqlite3ext.h	/^  void  (*free_table)(char**result);$/;"	m	struct:sqlite3_api_routines
 gatenode	include/iDCU.h	/^    UINT16 gatenode;$/;"	m	struct:READENV
-gatewaysend_flag	sfsock.c	/^uint8_t gatewaysend_flag=0;$/;"	v
-gatewaysendingProcess	sfsock.c	/^void* gatewaysendingProcess(){$/;"	f
 getBaudrate	lib/uart.c	/^int getBaudrate(char *baud)$/;"	f
-getCommStatus	IoTManager.c	/^int getCommStatus( ) {$/;"	f
 getCommStatus	ModbusRTU.c	/^int getCommStatus( ) {$/;"	f
 getConnectMode	lib/uart.c	/^int getConnectMode(char *mode)$/;"	f
 getCount	ModbusRTU.c	/^int getCount( ) {$/;"	f
 getDOStatus	ModbusRTU.c	/^int getDOStatus( ) {$/;"	f
 getDatabit	lib/uart.c	/^int getDatabit(char databit )$/;"	f
 getDiffTime	lib/getDiffTime.c	/^int getDiffTime( struct tm callTime )$/;"	f
-getIOStatus	IoTManager.c	/^int getIOStatus( ) {$/;"	f
 getIOStatus	ModbusRTU.c	/^int getIOStatus( ) {$/;"	f
-getNodeData	M2MManager.c	/^int getNodeData( QUERYTIME time ) {$/;"	f
-getNodeData	SetupManager.c	/^int getNodeData( QUERYTIME time ) {$/;"	f
-getNodeData	test/M2MManager.c	/^int getNodeData( QUERYTIME time ) {$/;"	f
-getNodeData	test/M2MManager2.c	/^int getNodeData( QUERYTIME time ) {$/;"	f
 getNodeInfo	lib/libm2mprocess.c	/^Return_Selectdata getNodeInfo( sqlite3 *pSQLite3, char *query )$/;"	f
 getNodeInfo	lib/librtdprocess.c	/^int getNodeInfo( sqlite3 *pSQLite3, char nodeid )$/;"	f
 getNodeList	lib/librtdprocess.c	/^int getNodeList( sqlite3 *pSQLite3, unsigned char* node)$/;"	f
-getNodeStatusData	M2MManager.c	/^int getNodeStatusData( QUERYTIME time ) {$/;"	f
-getNodeStatusData	SetupManager.c	/^int getNodeStatusData( QUERYTIME time ) {$/;"	f
-getNodeStatusData	test/M2MManager.c	/^int getNodeStatusData( QUERYTIME time ) {$/;"	f
-getNodeStatusData	test/M2MManager2.c	/^int getNodeStatusData( QUERYTIME time ) {$/;"	f
 getParity	lib/uart.c	/^UINT8 getParity(UINT8 parity)$/;"	f
 getPointInfo	SetupManager.c	/^static int getPointInfo( void ) {$/;"	f	file:
 getPointSize	include/iDCU.h	/^	char getPointSize;$/;"	m	struct:NODEINFO
 getStopbit	lib/uart.c	/^UINT8 getStopbit(UINT8 stopbit)$/;"	f
-getValueLength	socket_test.c	/^char getValueLength(int data)$/;"	f
+getTimeSyncCycle	lib/parser/timeSyncInfoParser.c	/^int getTimeSyncCycle(char *data)$/;"	f
 get_autocommit	include/sqlite3ext.h	/^  int  (*get_autocommit)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
 get_auxdata	include/sqlite3ext.h	/^  void * (*get_auxdata)(sqlite3_context*,int);$/;"	m	struct:sqlite3_api_routines
 get_table	include/sqlite3ext.h	/^  int  (*get_table)(sqlite3*,const char*,char***,int*,int*,char**);$/;"	m	struct:sqlite3_api_routines
-getdoubledt	testtime.c	/^void getdoubledt(char *dt)$/;"	f
+get_timef	DeviceStatusCheck.c	/^void get_timef(time_t org_time, char *time_str)$/;"	f
 global_recover	include/sqlite3ext.h	/^  int  (*global_recover)(void);$/;"	m	struct:sqlite3_api_routines
 group	include/CommManager.h	/^unsigned char group; $/;"	m	struct:__anon12
 group	include/M2MManager.h	/^	unsigned char group;$/;"	m	struct:RTRNNODEGROUP
 group	include/RealTimeDataManager.h	/^	unsigned char group; $/;"	m	struct:__anon17
 group	include/iDCU.h	/^    unsigned char group;$/;"	m	struct:security_var
-group	msgsnd.c	/^	unsigned char group; $/;"	m	struct:__anon32	file:
 groupid	include/RealTimeDataManager.h	/^	char *groupid;$/;"	m	struct:Return_RTDParser
 head	include/hiredis/async.h	/^    redisCallback *head, *tail;$/;"	m	struct:redisCallbackList
 hexString	Makefile	/^hexString = .\/lib\/hexString.c$/;"	m
@@ -1590,7 +1273,6 @@ hour	include/iDCU.h	/^	INT8 hour;$/;"	m	struct:__anon8
 humi	include/RealTimeDataManager.h	/^	char *humi;$/;"	m	struct:Return_RTDParser
 iColumn	include/sqlite3.h	/^     int iColumn;              \/* Column number *\/$/;"	m	struct:sqlite3_index_info::sqlite3_index_orderby
 iColumn	include/sqlite3.h	/^     int iColumn;              \/* Column on left-hand side of constraint *\/$/;"	m	struct:sqlite3_index_info::sqlite3_index_constraint
-iDCU_IoT	driver/iDCU_IoT.c	/^void *iDCU_IoT(DEVICEINFO *device) {$/;"	f
 iTermOffset	include/sqlite3.h	/^     int iTermOffset;          \/* Used internally - xBestIndex should ignore *\/$/;"	m	struct:sqlite3_index_info::sqlite3_index_constraint
 iVersion	include/sqlite3.h	/^  int iVersion;            \/* Structure version number (currently 3) *\/$/;"	m	struct:sqlite3_vfs
 iVersion	include/sqlite3.h	/^  int iVersion;$/;"	m	struct:sqlite3_io_methods
@@ -1601,20 +1283,13 @@ id	include/iDCU.h	/^	char id[MAX_BUFFER];$/;"	m	struct:TAGINFO
 idx	include/hiredis/hiredis.h	/^    int idx; \/* index in parent (array) object *\/$/;"	m	struct:redisReadTask
 idxNum	include/sqlite3.h	/^  int idxNum;                \/* Number used to identify the index *\/$/;"	m	struct:sqlite3_index_info
 idxStr	include/sqlite3.h	/^  char *idxStr;              \/* String, possibly obtained from sqlite3_malloc *\/$/;"	m	struct:sqlite3_index_info
-in_sync	serialsource.c	/^		bool in_sync, escaped;$/;"	m	struct:serial_source::__anon37	file:
-indexCount	driver/PLCS_12ex.c	/^static int indexCount = 1;$/;"	v	file:
-indexCount	driver/PLCS_9.c	/^static int indexCount = 1;$/;"	v	file:
-init	DataTranslator.c	/^static int init(void)$/;"	f	file:
-init	DataTranslator_20150227_networkdisconnecterr.c	/^static int init(void)$/;"	f	file:
-init	IoTManager.c	/^int init( void ) {$/;"	f
 init	ModbusRTU.c	/^int init( void ) {$/;"	f
 init	SerialToEthernet.c	/^static void init()$/;"	f	file:
-init_escaper	serialsource.c	/^static int init_escaper(serial_source src, int count)$/;"	f	file:
-init_sf_source	sfsource.c	/^int init_sf_source(int fd)$/;"	f
 integer	include/hiredis/hiredis.h	/^    long long integer; \/* The integer when type is REDIS_REPLY_INTEGER *\/$/;"	m	struct:redisReply
 interruptx	include/sqlite3ext.h	/^  void  (*interruptx)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
+interval	include/iDCU.h	/^	UINT8 interval[8];$/;"	m	struct:CONFIGINFO_VAR
+interval	include/iDCU.h	/^	char interval[MAX_BUFFER];$/;"	m	struct:INTERVALINFO
 invalid	include/hiredis/async.h	/^        redisCallbackList invalid;$/;"	m	struct:redisAsyncContext::__anon3
-io	IoTManager.c	/^UINT8 io[8];$/;"	v
 io	ModbusRTU.c	/^UINT8 io[8];$/;"	v
 io	include/iDCU.h	/^	UINT8 io[8];$/;"	m	struct:__anon6
 ip	include/iDCU.h	/^	UINT32 ip;$/;"	m	struct:CONNECTINFO_VAR
@@ -1624,6 +1299,7 @@ is_value	lib/libDeviceInfoParser.c	/^static int is_value = 0; $/;"	v	file:
 is_value	lib/libpointparser.c	/^int is_value = 0; $/;"	v
 is_value	lib/parser/configInfoParser.c	/^static int is_value = 0; $/;"	v	file:
 is_value	lib/parser/serialInfoParser.c	/^static int is_value = 0; $/;"	v	file:
+is_value	lib/parser/timeSyncInfoParser.c	/^static int is_value = 0; $/;"	v	file:
 key_flag	include/iDCU.h	/^    unsigned char key_flag;$/;"	m	struct:security_var
 key_mgmt	include/iDCU.h	/^    unsigned char key_mgmt;$/;"	m	struct:security_var
 lan	include/iDCU.h	/^    struct lan_var	lan;$/;"	m	struct:DEVINFO	typeref:struct:DEVINFO::lan_var
@@ -1643,22 +1319,13 @@ lan_netmask	include/iDCU.h	/^    UINT32  lan_netmask;$/;"	m	struct:wlan_var
 lan_netmask	include/iDCU.h	/^    char*   lan_netmask;$/;"	m	struct:SAVEINFO
 lan_var	include/iDCU.h	/^struct lan_var$/;"	s
 last_insert_rowid	include/sqlite3ext.h	/^  sqlite_int64  (*last_insert_rowid)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
-ledPin	ModbusRTU.c	/^char ledPin[2] = { 10, 11 };$/;"	v
+ledPin	DeviceStatusCheck.c	/^char ledPin[LED_PORT] = { 10, 11 };$/;"	v
+ledPin	ModbusRTU.c	/^char ledPin[LED_PORT] = { 10, 11 };$/;"	v
 len	include/hiredis/hiredis.h	/^    int len; \/* Length of string *\/$/;"	m	struct:redisReply
 len	include/hiredis/hiredis.h	/^    size_t len; \/* Buffer length *\/$/;"	m	struct:redisReader
-len	serialsource.c	/^	int len;$/;"	m	struct:packet_list	file:
-length	ETRI_simulator.c	/^    char length;$/;"	m	struct:_PAC	file:
-length	M2MManager.c	/^	char length;$/;"	m	struct:_PAC	file:
-length	PLCS-12.c	/^    char length;$/;"	m	struct:_PAC	file:
-length	SetupManager.c	/^    char length;$/;"	m	struct:_PAC	file:
-length	UartManager.c	/^    unsigned char length;$/;"	m	struct:CNTVALUE	file:
 length	include/CommManager.h	/^		unsigned char length;$/;"	m	struct:__anon13
-length	socket_test.c	/^	char length;$/;"	m	struct:_PAC	file:
-length	test/M2MManager.c	/^	char length;$/;"	m	struct:_PAC	file:
-length	test/M2MManager2.c	/^	char length;$/;"	m	struct:_PAC	file:
 libDeivceInfoParser	Makefile	/^libDeivceInfoParser = .\/lib\/libDeviceInfoParser.c$/;"	m
 libpointparser	Makefile	/^libpointparser = .\/lib\/libpointparser.c$/;"	m
-libpointparser	driver/Makefile	/^libpointparser = ..\/lib\/libpointparser.c$/;"	m
 libversion	include/sqlite3ext.h	/^  const char * (*libversion)(void);$/;"	m	struct:sqlite3_api_routines
 libversion_number	include/sqlite3ext.h	/^  int  (*libversion_number)(void);$/;"	m	struct:sqlite3_api_routines
 limit	include/sqlite3ext.h	/^  int (*limit)(sqlite3*,int,int);$/;"	m	struct:sqlite3_api_routines
@@ -1667,83 +1334,21 @@ localport	include/iDCU.h	/^	char localport[MAX_BUFFER];$/;"	m	struct:CONNECTINFO
 log	include/sqlite3ext.h	/^  void (*log)(int,const char*,...);$/;"	m	struct:sqlite3_api_routines
 ltrim	lib/stringTrim.c	/^char* ltrim(char *s) {$/;"	f
 lux	include/RealTimeDataManager.h	/^	char *lux;$/;"	m	struct:Return_RTDParser
-m2mid	CommManager.c	/^int m2mid;$/;"	v
-m2mid	ETRI_simulator.c	/^int m2mid;$/;"	v
-m2mid	IoTManager.c	/^int m2mid;$/;"	v
-m2mid	M2MManager.c	/^int m2mid;$/;"	v
-m2mid	ModbusRTU.c	/^int m2mid;$/;"	v
-m2mid	PLCS-12.c	/^int m2mid;$/;"	v
-m2mid	SetupManager.c	/^int m2mid;$/;"	v
-m2mid	UartManager.c	/^int m2mid;$/;"	v
-m2mid	test/M2MManager.c	/^int m2mid;$/;"	v
-m2mid	test/M2MManager2.c	/^int m2mid;$/;"	v
 mSec	include/M2MManager.h	/^	unsigned char mSec[2];$/;"	m	struct:__anon21
-m_deluge_process	sf.c	/^void m_deluge_process(serial_source s_src)$/;"	f
-main	CommManager.c	/^int main(int argc, char** argv)$/;"	f
-main	CommunicationManager.c	/^int main(int argc, char **argv) { $/;"	f
-main	DBSchedule.c	/^int main( void)$/;"	f
-main	DataTranslator.c	/^int main( void)$/;"	f
-main	DataTranslator_20150227_networkdisconnecterr.c	/^int main( void)$/;"	f
-main	ETRI_simulator.c	/^int main(int argc, char **argv) { $/;"	f
-main	IoTManager.c	/^int main(int argc, char **argv) { $/;"	f
-main	IoT_Listen.c	/^int main( void)$/;"	f
-main	M2MManager.c	/^int main(int argc, char **argv) { $/;"	f
+mac	include/iDCU.h	/^	UINT8 mac[32];$/;"	m	struct:VERSIONINFO_VAR
+main	DeviceStatusCheck.c	/^int main(int argc, char **argv) { $/;"	f
 main	ModbusRTU.c	/^int main(int argc, char **argv) { $/;"	f
-main	PLCS-12.c	/^int main(int argc, char **argv) { $/;"	f
-main	PointManager.c	/^int main(int argc, char **argv) { $/;"	f
-main	RealTimeDataManager(radiopulse_direct_getCnt).c	/^int main( void)$/;"	f
-main	RealTimeDataManager.c	/^int main( void)$/;"	f
-main	RealTimeDataManager_backup.c	/^int main(int argc, char **argv) { $/;"	f
 main	SerialToEthernet.c	/^int main(int argc, char **argv) { $/;"	f
 main	SetupManager.c	/^int main(int argc, char **argv) { $/;"	f
-main	UartManager.c	/^int main(int argc, char** argv)$/;"	f
-main	createtree.c	/^int main(int argc, char **argv)$/;"	f
-main	createtree.c	/^int main(void)$/;"	f
-main	eventHub.c	/^int main (int argc, char **argv) {$/;"	f
-main	hello.c	/^int main()$/;"	f
-main	hello_cc.cpp	/^int main()$/;"	f
-main	logwrite.c	/^int main( void)$/;"	f
-main	main_receiver.c	/^int main( void)$/;"	f
-main	main_sender.c	/^int main( void)$/;"	f
-main	msgrcv.c	/^int main( void)$/;"	f
-main	msgsnd.c	/^int main( void)$/;"	f
-main	serialtonet.c	/^int main(int argc, char **argv) {$/;"	f
-main	socket_test.c	/^int main(int argc, char **argv) { $/;"	f
-main	tagServer.c	/^int main( void)$/;"	f
-main	test/M2MManager.c	/^int main(int argc, char **argv) { $/;"	f
-main	test/M2MManager2.c	/^int main(int argc, char **argv) { $/;"	f
-main	test/cal.c	/^int main()$/;"	f
-main	test_client.c	/^int main(int argc, char **argv){$/;"	f
-main	test_getnetinfo.c	/^int main(int argc, char * args[]) {$/;"	f
-main	test_server.c	/^void main()$/;"	f
-main	testhwclock.c	/^int main()$/;"	f
-main	testtime.c	/^int main()$/;"	f
-main	uart_read.c	/^int main(int argc, char **argv)$/;"	f
-main	uart_test.c	/^int main(int argc, char **argv)$/;"	f
-main	udpRecv.c	/^int   main( void)$/;"	f
-main	usnTowifi.c	/^int main(int argc, char** argv)$/;"	f
-main	wifiTousn.c	/^int main(int argc, char** argv)$/;"	f
-main_quit	ETRI_simulator.c	/^unsigned char main_quit = 0;$/;"	v
-main_quit	M2MManager.c	/^unsigned char main_quit = 0;$/;"	v
-main_quit	PLCS-12.c	/^unsigned char main_quit = 0;$/;"	v
-main_quit	SetupManager.c	/^unsigned char main_quit = 0;$/;"	v
-main_quit	socket_test.c	/^unsigned char main_quit = 0;$/;"	v
-main_quit	test/M2MManager.c	/^unsigned char main_quit = 0;$/;"	v
-main_quit	test/M2MManager2.c	/^unsigned char main_quit = 0;$/;"	v
+main	test/exereturn.c	/^int main( void)$/;"	f
 major	include/expat.h	/^  int major;$/;"	m	struct:__anon26
-make_connect_sock	serialtonet.c	/^void make_connect_sock(char* addr, char* port){$/;"	f
 malloc	include/sqlite3ext.h	/^  void *(*malloc)(int);$/;"	m	struct:sqlite3_api_routines
 malloc_fcn	include/expat.h	/^  void *(*malloc_fcn)(size_t size);$/;"	m	struct:__anon23
 manufacturer	include/iDCU.h	/^    UINT8 manufacturer[20];$/;"	m	struct:READENV
 map	include/expat.h	/^  int map[256];$/;"	m	struct:__anon24
 maxbuf	include/hiredis/hiredis.h	/^    size_t maxbuf; \/* Max length of unused buffer *\/$/;"	m	struct:redisReader
-maxforreceviceProcess	sfsock.c	/^void* maxforreceviceProcess(void *socket){$/;"	f
-maxforserverSock	sfsock.c	/^void* maxforserverSock() {$/;"	f
 memory_highwater	include/sqlite3ext.h	/^  sqlite3_int64 (*memory_highwater)(int);$/;"	m	struct:sqlite3_api_routines
 memory_used	include/sqlite3ext.h	/^  sqlite3_int64 (*memory_used)(void);$/;"	m	struct:sqlite3_api_routines
-message	serialsource.c	/^	void (*message)(serial_source_msg problem);$/;"	m	struct:serial_source	file:
-message	serialsource.c	/^static void message(serial_source src, serial_source_msg msg)$/;"	f	file:
-message	test_client.c	/^char message[BUFSIZE];$/;"	v
 micro	include/expat.h	/^  int micro;$/;"	m	struct:__anon26
 middleware_ip	include/iDCU.h	/^    UINT32 middleware_ip;$/;"	m	struct:READENV
 middleware_port	include/iDCU.h	/^    UINT16 middleware_port;$/;"	m	struct:READENV
@@ -1760,7 +1365,6 @@ month	include/M2MManager.h	/^	char month;$/;"	m	struct:__anon20
 month	include/M2MManager.h	/^	char month;$/;"	m	struct:__anon21
 month	include/iDCU.h	/^	INT8 month;$/;"	m	struct:__anon8
 mprintf	include/sqlite3ext.h	/^  char * (*mprintf)(const char*,...);$/;"	m	struct:sqlite3_api_routines
-msgQId	driver/PLCS_9.c	/^static int msgQId;$/;"	v	file:
 msg_ack_timeout	include/serialsource.h	/^  msg_ack_timeout, 		\/* ack not received within timeout *\/$/;"	e	enum:__anon28
 msg_bad_crc	include/serialsource.h	/^  msg_bad_crc,			\/* received packet has bad crc *\/$/;"	e	enum:__anon28
 msg_bad_sync	include/serialsource.h	/^  msg_bad_sync,			\/* unexpected sync byte received *\/$/;"	e	enum:__anon28
@@ -1778,33 +1382,22 @@ mutex_free	include/sqlite3ext.h	/^  void (*mutex_free)(sqlite3_mutex*);$/;"	m	st
 mutex_leave	include/sqlite3ext.h	/^  void (*mutex_leave)(sqlite3_mutex*);$/;"	m	struct:sqlite3_api_routines
 mutex_try	include/sqlite3ext.h	/^  int (*mutex_try)(sqlite3_mutex*);$/;"	m	struct:sqlite3_api_routines
 mxPathname	include/sqlite3.h	/^  int mxPathname;          \/* Maximum file pathname length *\/$/;"	m	struct:sqlite3_vfs
-myFunc	test_server.c	/^void *myFunc(void *arg)$/;"	f
 nConstraint	include/sqlite3.h	/^  int nConstraint;           \/* Number of entries in aConstraint *\/$/;"	m	struct:sqlite3_index_info
 nOrderBy	include/sqlite3.h	/^  int nOrderBy;              \/* Number of terms in the ORDER BY clause *\/$/;"	m	struct:sqlite3_index_info
 nParam	include/sqlite3.h	/^  int nParam;                     \/* Size of array aParam[] *\/$/;"	m	struct:sqlite3_rtree_geometry
 nRef	include/sqlite3.h	/^  int nRef;                       \/* NO LONGER USED *\/$/;"	m	struct:sqlite3_vtab
 name	include/expat.h	/^  XML_Char *                    name;$/;"	m	struct:XML_cp
 name	include/expat.h	/^  const XML_LChar       *name;$/;"	m	struct:__anon27
-name	test_client.c	/^char name[NAMESIZE] = "[Defalut]";$/;"	v
 needToFreeIdxStr	include/sqlite3.h	/^  int needToFreeIdxStr;      \/* Free idxStr using sqlite3_free() if true *\/$/;"	m	struct:sqlite3_index_info
 networkInfo	Makefile	/^networkInfo = .\/lib\/networkInfo.c$/;"	m
-new_client	sf.c	/^void new_client(int fd)$/;"	f
 newsock	include/sfsock.h	/^int newsock;$/;"	v
 next	include/hiredis/async.h	/^    struct redisCallback *next; \/* simple singly linked list *\/$/;"	m	struct:redisCallback	typeref:struct:redisCallback::redisCallback
 next	include/wiringPi.h	/^  struct wiringPiNodeStruct *next ;$/;"	m	struct:wiringPiNodeStruct	typeref:struct:wiringPiNodeStruct::wiringPiNodeStruct
-next	serialsource.c	/^	struct packet_list *next;$/;"	m	struct:packet_list	typeref:struct:packet_list::packet_list	file:
-next	sf.c	/^  struct client_list *next;$/;"	m	struct:client_list	typeref:struct:client_list::client_list	file:
-next_frame_buffer	sfsock.c	/^int next_frame_buffer(){$/;"	f
 next_stmt	include/sqlite3ext.h	/^  sqlite3_stmt *(*next_stmt)(sqlite3*,sqlite3_stmt*);$/;"	m	struct:sqlite3_api_routines
 nibbleFromChar	lib/hexString.c	/^nibbleFromChar(char c)$/;"	f	file:
 nibbleToChar	lib/hexString.c	/^nibbleToChar(uint8_t nibble)$/;"	f	file:
-node	IoTManager.c	/^MGData node;$/;"	v
 node	ModbusRTU.c	/^MGData node;$/;"	v
 nodeCMDTLV	include/CommManager.h	/^} nodeCMDTLV;$/;"	t	typeref:struct:__anon13
-nodeInfoupdate	M2MManager.c	/^int nodeInfoupdate( unsigned char nodeid, unsigned char setNodeid, unsigned char setGroup)$/;"	f
-nodeInfoupdate	SetupManager.c	/^int nodeInfoupdate( unsigned char nodeid, unsigned char setNodeid, unsigned char setGroup)$/;"	f
-nodeInfoupdate	test/M2MManager.c	/^int nodeInfoupdate( unsigned char nodeid, unsigned char setNodeid, unsigned char setGroup)$/;"	f
-nodeInfoupdate	test/M2MManager2.c	/^int nodeInfoupdate( unsigned char nodeid, unsigned char setNodeid, unsigned char setGroup)$/;"	f
 nodeListSize	include/RealTimeDataManager.h	/^	int	nodeListSize;$/;"	m	struct:__anon18
 nodeid	include/CommManager.h	/^unsigned char nodeid; $/;"	m	struct:__anon12
 nodeid	include/M2MManager.h	/^	unsigned char nodeid;$/;"	m	struct:AustemSendData
@@ -1813,31 +1406,19 @@ nodeid	include/M2MManager.h	/^	unsigned char nodeid;$/;"	m	struct:RTRNNODEGROUP
 nodeid	include/RealTimeDataManager.h	/^	char nodeid;$/;"	m	struct:Return_RTDParser
 nodeid	include/RealTimeDataManager.h	/^	unsigned char nodeid; $/;"	m	struct:__anon17
 nodeid	include/RealTimeDataManager.h	/^	unsigned char* nodeid; $/;"	m	struct:__anon18
-nodeid	msgsnd.c	/^	unsigned char nodeid; $/;"	m	struct:__anon32	file:
-nodeid	serialtonet.c	/^int nodeid;$/;"	v
-non_blocking	serialsource.c	/^	bool non_blocking;$/;"	m	struct:serial_source	file:
-num_clients	sf.c	/^int packets_read, packets_written, num_clients;$/;"	v
 numchildren	include/expat.h	/^  unsigned int                  numchildren;$/;"	m	struct:XML_cp
 obj	include/hiredis/hiredis.h	/^    void *obj; \/* holds user-generated value for a read task *\/$/;"	m	struct:redisReadTask
 obuf	include/hiredis/hiredis.h	/^    char *obuf; \/* Write buffer *\/$/;"	m	struct:redisContext
-old_frameIndex	sfsock.c	/^uint8_t old_frameIndex=0;$/;"	v
 omit	include/sqlite3.h	/^    unsigned char omit;      \/* Do not code a test for this constraint *\/$/;"	m	struct:sqlite3_index_info::sqlite3_index_constraint_usage
 onConnect	include/hiredis/async.h	/^    redisConnectCallback *onConnect;$/;"	m	struct:redisAsyncContext
 onDisconnect	include/hiredis/async.h	/^    redisDisconnectCallback *onDisconnect;$/;"	m	struct:redisAsyncContext
-onMessage	IoTManager.c	/^static void onMessage(redisAsyncContext *c, void *reply, void *privdata) {$/;"	f	file:
 onMessage	ModbusRTU.c	/^static void onMessage(redisAsyncContext *c, void *reply, void *privdata) {$/;"	f	file:
 onMessage	SetupManager.c	/^static void onMessage(redisAsyncContext *c, void *reply, void *privdata) {$/;"	f	file:
-onMessage	eventHub.c	/^static void onMessage(redisAsyncContext *c, void *reply, void *privdata) {$/;"	f	file:
 op	include/sqlite3.h	/^     unsigned char op;         \/* Constraint operator *\/$/;"	m	struct:sqlite3_index_info::sqlite3_index_constraint
 open	include/sqlite3ext.h	/^  int  (*open)(const char*,sqlite3**);$/;"	m	struct:sqlite3_api_routines
 open16	include/sqlite3ext.h	/^  int  (*open16)(const void*,sqlite3**);$/;"	m	struct:sqlite3_api_routines
-open_serial	sf.c	/^void open_serial(const char *dev, int baud)$/;"	f
-open_serial_source	serialsource.c	/^serial_source open_serial_source(const char *device, int baud_rate,	int non_blocking, void (*message)(serial_source_msg problem))$/;"	f
-open_server_socket	sf.c	/^void open_server_socket(int port)$/;"	f
-open_sf_source	sfsource.c	/^int open_sf_source(const char *host, int port)$/;"	f
 open_v2	include/sqlite3ext.h	/^  int (*open_v2)(const char*,sqlite3**,int,const char*);$/;"	m	struct:sqlite3_api_routines
 orderByConsumed	include/sqlite3.h	/^  int orderByConsumed;       \/* True if output is already ordered *\/$/;"	m	struct:sqlite3_index_info
-outsync_count	sfsock.c	/^int outsync_count=0;$/;"	v
 overload_function	include/sqlite3ext.h	/^  int (*overload_function)(sqlite3*, const char *zFuncName, int nArg);$/;"	m	struct:sqlite3_api_routines
 pAppData	include/sqlite3.h	/^  void *pAppData;                \/* Argument to xInit() and xShutdown() *\/$/;"	m	struct:sqlite3_mem_methods
 pAppData	include/sqlite3.h	/^  void *pAppData;          \/* Pointer to application-specific data *\/$/;"	m	struct:sqlite3_vfs
@@ -1849,32 +1430,14 @@ pExtra	include/sqlite3.h	/^  void *pExtra;      \/* Extra information associated
 pMethods	include/sqlite3.h	/^  const struct sqlite3_io_methods *pMethods;  \/* Methods for an open file *\/$/;"	m	struct:sqlite3_file	typeref:struct:sqlite3_file::sqlite3_io_methods
 pModule	include/sqlite3.h	/^  const sqlite3_module *pModule;  \/* The module for this virtual table *\/$/;"	m	struct:sqlite3_vtab
 pNext	include/sqlite3.h	/^  sqlite3_vfs *pNext;      \/* Next registered VFS *\/$/;"	m	struct:sqlite3_vfs
-pSQLite3	DataTranslator.c	/^static sqlite3 *pSQLite3;$/;"	v	file:
-pSQLite3	ETRI_simulator.c	/^sqlite3 *pSQLite3;$/;"	v
-pSQLite3	IoTManager.c	/^sqlite3 *pSQLite3;$/;"	v
-pSQLite3	M2MManager.c	/^sqlite3 *pSQLite3;$/;"	v
 pSQLite3	ModbusRTU.c	/^sqlite3 *pSQLite3;$/;"	v
-pSQLite3	PLCS-12.c	/^sqlite3 *pSQLite3;$/;"	v
 pSQLite3	SetupManager.c	/^sqlite3 *pSQLite3;$/;"	v
-pSQLite3	UartManager.c	/^	sqlite3 *pSQLite3;$/;"	v
-pSQLite3	tagServer.c	/^static sqlite3 *pSQLite3;$/;"	v	file:
-pSQLite3	test/M2MManager.c	/^sqlite3 *pSQLite3;$/;"	v
-pSQLite3	test/M2MManager2.c	/^sqlite3 *pSQLite3;$/;"	v
 pUser	include/sqlite3.h	/^  void *pUser;                    \/* Callback implementation user data *\/$/;"	m	struct:sqlite3_rtree_geometry
 pVtab	include/sqlite3.h	/^  sqlite3_vtab *pVtab;      \/* Virtual table of this cursor *\/$/;"	m	struct:sqlite3_vtab_cursor
-pac	DataTranslator_20150227_networkdisconnecterr.c	/^static Struct_SensingValueReport pac;$/;"	v	file:
-packet	serialsource.c	/^		uint8_t packet[MTU];$/;"	m	struct:serial_source::__anon37	file:
-packet	serialsource.c	/^	uint8_t *packet;$/;"	m	struct:packet_list	file:
-packet_available	serialsource.c	/^static bool packet_available(serial_source src, uint8_t type)$/;"	f	file:
-packet_list	serialsource.c	/^struct packet_list {$/;"	s	file:
-packets_read	sf.c	/^int packets_read, packets_written, num_clients;$/;"	v
-packets_written	sf.c	/^int packets_read, packets_written, num_clients;$/;"	v
 pan	include/iDCU.h	/^    UINT16 pan;$/;"	m	struct:READENV
 parent	include/hiredis/hiredis.h	/^    struct redisReadTask *parent; \/* parent task *\/$/;"	m	struct:redisReadTask	typeref:struct:redisReadTask::redisReadTask
 parity	include/iDCU.h	/^	UINT8 parity;$/;"	m	struct:COMPORTINFO_VAR
 parity	include/iDCU.h	/^	char parity[MAX_BUFFER];$/;"	m	struct:COMPORTINFO
-parsePlatform	sf.c	/^int parsePlatform(char *platformName) {$/;"	f
-parse_baudrate	serialsource.c	/^static tcflag_t parse_baudrate(int requested)$/;"	f	file:
 parser	include/expat.h	/^XMLPARSEAPI(XML_Index) XML_GetCurrentByteIndex(XML_Parser parser);$/;"	v
 parser	include/expat.h	/^XMLPARSEAPI(XML_Size) XML_GetCurrentColumnNumber(XML_Parser parser);$/;"	v
 parser	include/expat.h	/^XMLPARSEAPI(XML_Size) XML_GetCurrentLineNumber(XML_Parser parser);$/;"	v
@@ -1891,10 +1454,9 @@ parser	lib/libDeviceInfoParser.c	/^static void parser(void *data, const char *s,
 parser	lib/libpointparser.c	/^void parser(void *data, const char *s, int len) $/;"	f
 parser	lib/parser/configInfoParser.c	/^static void parser(void *data, const char *s, int len) $/;"	f	file:
 parser	lib/parser/serialInfoParser.c	/^static void parser(void *data, const char *s, int len) $/;"	f	file:
+parser	lib/parser/timeSyncInfoParser.c	/^static void parser(void *data, const char *s, int len) $/;"	f	file:
 parsing	include/expat.h	/^  enum XML_Parsing parsing;$/;"	m	struct:__anon25	typeref:enum:__anon25::XML_Parsing
-parsing_buffer	sfsock.c	/^int parsing_buffer(char *sockbuf, uint8_t len) {$/;"	f
 parsingdata	include/RealTimeDataManager.h	/^	char parsingdata[64];$/;"	m	struct:Return_RTDParser
-pastData	IoTManager.c	/^MGData pastData;$/;"	v
 pastData	ModbusRTU.c	/^MGData pastData;$/;"	v
 past_result	include/M2MManager.h	/^	char **past_result;$/;"	m	struct:Return_Selectdata
 past_result	include/RealTimeDataManager.h	/^	char **past_result;$/;"	m	struct:Return_Selectdata
@@ -1902,25 +1464,18 @@ patterns	include/hiredis/async.h	/^        struct dict *patterns;$/;"	m	struct:r
 pinBase	include/wiringPi.h	/^  int     pinBase ;$/;"	m	struct:wiringPiNodeStruct
 pinMax	include/wiringPi.h	/^  int     pinMax ;$/;"	m	struct:wiringPiNodeStruct
 pinMode	include/wiringPi.h	/^  void   (*pinMode)         (struct wiringPiNodeStruct *node, int pin, int mode) ;$/;"	m	struct:wiringPiNodeStruct
-platform	platform.c	/^uint32_t platform;$/;"	v
-platform	sfsource.c	/^uint32_t platform;$/;"	v
-plcs_12_id	ETRI_simulator.c	/^int plcs_12_id;$/;"	v
-plcs_12_id	PLCS-12.c	/^int plcs_12_id;$/;"	v
-plcs_12_id	driver/PLCS_12.c	/^static int plcs_12_id;$/;"	v	file:
-plcs_12ex_id	driver/PLCS_12ex.c	/^static int plcs_12ex_id;$/;"	v	file:
 point	include/iDCU.h	/^    POINTINFO_VAR point[8];$/;"	m	struct:DEVINFO
 pointparser	lib/libpointparser.c	/^NODEINFO pointparser(const char *path) { $/;"	f
-pop_protocol_packet	serialsource.c	/^static struct packet_list *pop_protocol_packet(serial_source src, uint8_t type)$/;"	f	file:
 port	include/M2MManager.h	/^	unsigned char port;$/;"	m	struct:AustemSendData
 port	include/RealTimeDataManager.h	/^	char 			port;$/;"	m	struct:__anon17
+port	include/iDCU.h	/^	INTERVALINFO port[8];$/;"	m	struct:CONFIGINFO
 port	include/iDCU.h	/^	UINT32 port;$/;"	m	struct:CONNECTINFO_VAR
 port	include/iDCU.h	/^	UINT8 port;$/;"	m	struct:POINTINFO_VAR
 port	include/iDCU.h	/^	char port[MAX_BUFFER];$/;"	m	struct:CONNECTINFO
 port	include/iDCU.h	/^	char port[MAX_BUFFER];$/;"	m	struct:TAGINFO
 pos	include/hiredis/hiredis.h	/^    size_t pos; \/* Buffer cursor *\/$/;"	m	struct:redisReader
-preQty	driver/iDCU_IoT.c	/^static UINT32 preQty = 0;$/;"	v	file:
-precnt	ModbusRTU.c	/^    UINT32 precnt;$/;"	m	struct:__anon35	file:
-predi	ModbusRTU.c	/^    UINT8 predi;$/;"	m	struct:__anon35	file:
+precnt	ModbusRTU.c	/^    UINT32 precnt;$/;"	m	struct:__anon30	file:
+predi	ModbusRTU.c	/^    UINT8 predi;$/;"	m	struct:__anon30	file:
 prepare	include/sqlite3ext.h	/^  int  (*prepare)(sqlite3*,const char*,int,sqlite3_stmt**,const char**);$/;"	m	struct:sqlite3_api_routines
 prepare16	include/sqlite3ext.h	/^  int  (*prepare16)(sqlite3*,const void*,int,sqlite3_stmt**,const void**);$/;"	m	struct:sqlite3_api_routines
 prepare16_v2	include/sqlite3ext.h	/^  int (*prepare16_v2)(sqlite3*,const void*,int,sqlite3_stmt**,const void**);$/;"	m	struct:sqlite3_api_routines
@@ -1928,43 +1483,20 @@ prepare_v2	include/sqlite3ext.h	/^  int (*prepare_v2)(sqlite3*,const char*,int,s
 privdata	include/hiredis/async.h	/^    void *privdata;$/;"	m	struct:redisCallback
 privdata	include/hiredis/hiredis.h	/^    void *privdata; \/* user-settable arbitrary field *\/$/;"	m	struct:redisReadTask
 privdata	include/hiredis/hiredis.h	/^    void *privdata;$/;"	m	struct:redisReader
-process_packet	serialsource.c	/^static void process_packet(serial_source src, uint8_t *packet, int len)$/;"	f	file:
 producno	include/iDCU.h	/^    UINT8 producno[20];$/;"	m	struct:READENV
 profile	include/sqlite3ext.h	/^  void * (*profile)(sqlite3*,void(*)(void*,const char*,sqlite_uint64),void*);$/;"	m	struct:sqlite3_api_routines
-program_start	socket_test.c	/^int	program_start = 1;$/;"	v
 progress_handler	include/sqlite3ext.h	/^  void  (*progress_handler)(sqlite3*,int,int(*)(void*),void*);$/;"	m	struct:sqlite3_api_routines
 psk	include/iDCU.h	/^    unsigned char psk[32];$/;"	m	struct:security_var
-pstatus	sf.c	/^void pstatus(void)$/;"	f
 pullUpDnControl	include/wiringPi.h	/^  void   (*pullUpDnControl) (struct wiringPiNodeStruct *node, int pin, int mode) ;$/;"	m	struct:wiringPiNodeStruct
-pushStart	DataTranslator.c	/^static int pushStart;$/;"	v	file:
-pushStart	DataTranslator_20150227_networkdisconnecterr.c	/^static int pushStart;$/;"	v	file:
-push_protocol_packet	serialsource.c	/^static void push_protocol_packet(serial_source src,$/;"	f	file:
 pwmWrite	include/wiringPi.h	/^  void   (*pwmWrite)        (struct wiringPiNodeStruct *node, int pin, int value) ;$/;"	m	struct:wiringPiNodeStruct
 quant	include/expat.h	/^  enum XML_Content_Quant        quant;$/;"	m	struct:XML_cp	typeref:enum:XML_cp::XML_Content_Quant
-queue	serialsource.c	/^		struct packet_list *queue[4096]; \/\/ indexed by protocol$/;"	m	struct:serial_source::__anon37	typeref:struct:serial_source::__anon37::packet_list	file:
-quit	sfsock.c	/^void quit(int signum)$/;"	f
-quitsignal	PointManager.c	/^void quitsignal(int sig) $/;"	f
-quitsignal	RealTimeDataManager_backup.c	/^void quitsignal(int sig) $/;"	f
 quitsignal	SetupManager.c	/^void quitsignal(int sig) $/;"	f
-quitsignal	serialtonet.c	/^void quitsignal(int sig) $/;"	f
-quitsignal	socket_test.c	/^void quitsignal(int sig) $/;"	f
 randomness	include/sqlite3ext.h	/^  void (*randomness)(int,void*);$/;"	m	struct:sqlite3_api_routines
-reConnect	DataTranslator.c	/^static int reConnect(void)$/;"	f	file:
-read_and_process	serialsource.c	/^static void read_and_process(serial_source src)$/;"	f	file:
-read_byte	serialsource.c	/^int read_byte(serial_source src)$/;"	f
-read_gw_byte	sfsock.c	/^void read_gw_byte(unsigned int byte) {$/;"	f
-read_serial_packet	serialsource.c	/^void *read_serial_packet(serial_source src, int *len)$/;"	f
-read_sf_packet	sfsource.c	/^void *read_sf_packet(int fd, int *len)$/;"	f
 reader	include/hiredis/hiredis.h	/^    redisReader *reader; \/* Protocol reader *\/$/;"	m	struct:redisContext
 realloc	include/sqlite3ext.h	/^  void *(*realloc)(void*,int);$/;"	m	struct:sqlite3_api_routines
 realloc_fcn	include/expat.h	/^  void *(*realloc_fcn)(void *ptr, size_t size);$/;"	m	struct:__anon23
 receive	lib/TCPSocket.c	/^int receive( int *tcp, int timeout ) {$/;"	f
-receiveEvent	IoTManager.c	/^int receiveEvent( unsigned char* buffer, int len ) $/;"	f
 receiveEvent	ModbusRTU.c	/^int receiveEvent( unsigned char* buffer, int len ) $/;"	f
-receviceProcess	sfsock.c	/^void* receviceProcess(void *socket){$/;"	f
-recv	serialsource.c	/^	} recv;$/;"	m	struct:serial_source	typeref:struct:serial_source::__anon37	file:
-recv_cnt	serialtonet.c	/^int recv_cnt = 0;$/;"	v
-recv_message	test_client.c	/^void * recv_message(void * arg){$/;"	f
 redisAsyncContext	include/hiredis/async.h	/^typedef struct redisAsyncContext {$/;"	s
 redisAsyncContext	include/hiredis/async.h	/^} redisAsyncContext;$/;"	t	typeref:struct:redisAsyncContext
 redisCallback	include/hiredis/async.h	/^typedef struct redisCallback {$/;"	s
@@ -1976,13 +1508,6 @@ redisConnectCallback	include/hiredis/async.h	/^typedef void (redisConnectCallbac
 redisContext	include/hiredis/hiredis.h	/^typedef struct redisContext {$/;"	s
 redisContext	include/hiredis/hiredis.h	/^} redisContext;$/;"	t	typeref:struct:redisContext
 redisDisconnectCallback	include/hiredis/async.h	/^typedef void (redisDisconnectCallback)(const struct redisAsyncContext*, int status);$/;"	t
-redisInitialize	DataTranslator.c	/^static void redisInitialize() {$/;"	f	file:
-redisInitialize	driver/GN1200.c	/^static void redisInitialize() {$/;"	f	file:
-redisInitialize	driver/PLCS_10.c	/^static void redisInitialize() {$/;"	f	file:
-redisInitialize	driver/PLCS_12.c	/^static void redisInitialize() {$/;"	f	file:
-redisInitialize	driver/PLCS_12ex.c	/^static void redisInitialize() {$/;"	f	file:
-redisInitialize	driver/PLCS_9.c	/^static void redisInitialize() {$/;"	f	file:
-redisInitialize	driver/iDCU_IoT.c	/^static void redisInitialize() {$/;"	f	file:
 redisInitialize	lib/RedisControl.c	/^redisContext* redisInitialize() {$/;"	f
 redisLibeventAddRead	include/hiredis/adaters/libevent.h	/^static void redisLibeventAddRead(void *privdata) {$/;"	f
 redisLibeventAddWrite	include/hiredis/adaters/libevent.h	/^static void redisLibeventAddWrite(void *privdata) {$/;"	f
@@ -2012,13 +1537,12 @@ redisReplyReaderSetPrivdata	include/hiredis/hiredis.h	153;"	d
 registration	include/iDCU.h	/^    UINT8 registration;$/;"	m	struct:READENV
 release	include/expat.h	/^  void (XMLCALL *release)(void *data);$/;"	m	struct:__anon24
 release_memory	include/sqlite3ext.h	/^  int (*release_memory)(int);$/;"	m	struct:sqlite3_api_routines
-rem_client	sf.c	/^void rem_client(struct client_list **c)$/;"	f
-remoteNodeCommand	CommManager.c	/^int remoteNodeCommand(int fd, unsigned char *buffer, int len)$/;"	f
-remoteNodeCommand	UartManager.c	/^int remoteNodeCommand(int fd, unsigned char *buffer, int len)$/;"	f
 removeSharedMem	lib/libreleasesharedmemory.c	/^int removeSharedMem( char nodeid, const void *id )$/;"	f
 replies	include/hiredis/async.h	/^    redisCallbackList replies;$/;"	m	struct:redisAsyncContext
 reply	include/hiredis/hiredis.h	/^    void *reply; \/* Temporary reply pointer *\/$/;"	m	struct:redisReader
 reset	include/sqlite3ext.h	/^  int  (*reset)(sqlite3_stmt*pStmt);$/;"	m	struct:sqlite3_api_routines
+resetLED	DeviceStatusCheck.c	/^static void resetLED()$/;"	f	file:
+resetNetwork	DeviceStatusCheck.c	/^static void resetNetwork()$/;"	f	file:
 result_blob	include/sqlite3ext.h	/^  void  (*result_blob)(sqlite3_context*,const void*,int,void(*)(void*));$/;"	m	struct:sqlite3_api_routines
 result_double	include/sqlite3ext.h	/^  void  (*result_double)(sqlite3_context*,double);$/;"	m	struct:sqlite3_api_routines
 result_error	include/sqlite3ext.h	/^  void  (*result_error)(sqlite3_context*,const char*,int);$/;"	m	struct:sqlite3_api_routines
@@ -2039,81 +1563,41 @@ rev	include/hiredis/adaters/libevent.h	/^    struct event rev, wev;$/;"	m	struct
 ridx	include/hiredis/hiredis.h	/^    int ridx; \/* Index of current read task *\/$/;"	m	struct:redisReader
 rollback_hook	include/sqlite3ext.h	/^  void * (*rollback_hook)(sqlite3*,void(*)(void*),void*);$/;"	m	struct:sqlite3_api_routines
 rstack	include/hiredis/hiredis.h	/^    redisReadTask rstack[9];$/;"	m	struct:redisReader
-rtdid	CommManager.c	/^int rtdid;$/;"	v
-rtdid	UartManager.c	/^int rtdid;$/;"	v
 rtrim	lib/stringTrim.c	/^char* rtrim(char* s) {$/;"	f
 rtrn	include/RealTimeDataManager.h	/^	signed char rtrn; $/;"	m	struct:Return_RTDParser
+s_getFirmware	lib/UpgradeFirmware.c	/^int s_getFirmware (char * out)$/;"	f
 s_getIpAddress	lib/networkInfo.c	/^int s_getIpAddress (const char * ifr, unsigned char * out) {$/;"	f
-s_getIpAddress	test_getnetinfo.c	/^int s_getIpAddress (const char * ifr, unsigned char * out) {$/;"	f
-saferead	sfsource.c	/^int saferead(int fd, void *buffer, int count)$/;"	f
-safewrite	sfsource.c	/^int safewrite(int fd, const void *buffer, int count)$/;"	f
-saveDev	ETRI_simulator.c	/^DEVINFO	    saveDev;$/;"	v
-saveDev	PLCS-12.c	/^DEVINFO	    saveDev;$/;"	v
+s_getMacAddress	lib/networkInfo.c	/^int s_getMacAddress (const char * ifr, unsigned char * out) {$/;"	f
 saveDev	SetupManager.c	/^DEVINFO	    saveDev;$/;"	v
 save_fd	lib/uart.c	/^int save_fd = -1;	\/\/ tty setting$/;"	v
-save_fd	uart_init.c	/^int save_fd = -1;	\/\/ tty setting$/;"	v
 save_tios	lib/uart.c	/^struct termios save_tios;	\/\/ for tty setting$/;"	v	typeref:struct:termios
-save_tios	uart_init.c	/^struct termios save_tios;	\/\/ for tty setting$/;"	v	typeref:struct:termios
 sec	include/M2MManager.h	/^	char sec;$/;"	m	struct:QUERYTIME
 sec	include/M2MManager.h	/^	char sec;$/;"	m	struct:__anon20
 sec	include/M2MManager.h	/^	char sec;$/;"	m	struct:__anon21
 sec	include/iDCU.h	/^	INT8 sec;$/;"	m	struct:__anon8
 security	include/iDCU.h	/^    struct security_var	security;$/;"	m	struct:DEVINFO	typeref:struct:DEVINFO::security_var
 security_var	include/iDCU.h	/^struct security_var$/;"	s
-selectTag	CommManager.c	/^int selectTag(unsigned char* buffer, int len )$/;"	f
-selectTag	ETRI_simulator.c	/^int selectTag(unsigned char* buffer, int len )$/;"	f
-selectTag	PLCS-12.c	/^int selectTag(unsigned char* buffer, int len )$/;"	f
-selectTag	UartManager.c	/^int selectTag(unsigned char* buffer, int len )$/;"	f
-selectTag	driver/GN1200.c	/^static int selectTag(unsigned char* buffer, int len, INT32 type )$/;"	f	file:
-selectTag	driver/PLCS_10.c	/^static int selectTag(unsigned char* buffer, int len )$/;"	f	file:
-selectTag	driver/PLCS_9.c	/^static int selectTag(unsigned char* buffer, int trCount, int len )$/;"	f	file:
-selectTag_12	driver/PLCS_12.c	/^static int selectTag_12(unsigned char* buffer, int trCount, int len )$/;"	f	file:
-selectTag_12ex	driver/PLCS_12ex.c	/^static int selectTag_12ex(unsigned char* buffer, int trCount, int len )$/;"	f	file:
-selectTag_iDCU_IoT	driver/iDCU_IoT.c	/^static int selectTag_iDCU_IoT(unsigned char* buffer, int len, INT32 type )$/;"	f	file:
-send	ModbusRTU.c	/^    UINT32 send;$/;"	m	struct:__anon35	file:
-send	serialsource.c	/^	} send;$/;"	m	struct:serial_source	typeref:struct:serial_source::__anon38	file:
-send_message	test_client.c	/^void * send_message(void *arg){$/;"	f
+send	ModbusRTU.c	/^    UINT32 send;$/;"	m	struct:__anon30	file:
 sender	lib/TCPSocket.c	/^int sender( int *tcp, UINT8 *packet, UINT32 size )$/;"	f
 sensornode	include/iDCU.h	/^    UINT16 sensornode;$/;"	m	struct:READENV
 seq	include/CommManager.h	/^unsigned char seq; $/;"	m	struct:__anon12
 seq	include/RealTimeDataManager.h	/^	char *seq;$/;"	m	struct:Return_RTDParser
 seq	include/RealTimeDataManager.h	/^	unsigned char seq; $/;"	m	struct:__anon17
-seq	msgsnd.c	/^	unsigned char seq; $/;"	m	struct:__anon32	file:
-seqno	serialsource.c	/^		uint8_t seqno;$/;"	m	struct:serial_source::__anon38	file:
 serialInfoParser	Makefile	/^serialInfoParser = .\/lib\/parser\/serialInfoParser.c$/;"	m
 serialInfoParser	lib/parser/serialInfoParser.c	/^SERIALINFO serialInfoParser(const char *path) { $/;"	f
-serial_frame	sfsock.c	/^uint8_t serial_frame[10][MAX_BUF_SIZE];$/;"	v
-serial_frame_len	sfsock.c	/^uint8_t serial_frame_len;$/;"	v
-serial_frame_ptr	sfsock.c	/^uint8_t *serial_frame_ptr;$/;"	v
-serial_frame_semaphor	sfsock.c	/^uint8_t serial_frame_semaphor=0;$/;"	v
 serial_source	include/serialsource.h	/^typedef struct serial_source *serial_source;$/;"	t	typeref:struct:serial_source
-serial_source	serialsource.c	/^struct serial_source {$/;"	s	file:
-serial_source_empty	serialsource.c	/^int serial_source_empty(serial_source src)$/;"	f
-serial_source_fd	serialsource.c	/^int serial_source_fd(serial_source src)$/;"	f
 serial_source_msg	include/serialsource.h	/^} serial_source_msg;$/;"	t	typeref:enum:__anon28
-serialcount	sfsock.c	/^uint16_t serialcount=0;$/;"	v
 serv_addr	include/sfsock.h	/^struct sockaddr_in serv_addr;$/;"	v	typeref:struct:sockaddr_in
-serverSock	sfsock.c	/^void* serverSock() {$/;"	f
-server_sock	IoTManager.c	/^int server_sock; $/;"	v
-server_sock	M2MManager.c	/^int server_sock; $/;"	v
 server_sock	ModbusRTU.c	/^int server_sock; $/;"	v
-server_sock	test/M2MManager.c	/^int server_sock; $/;"	v
-server_sock	test/M2MManager2.c	/^int server_sock; $/;"	v
-server_socket	sf.c	/^int server_socket;$/;"	v
-setCountClear	IoTManager.c	/^int setCountClear(UINT8 port ) {$/;"	f
 setCountClear	ModbusRTU.c	/^int setCountClear(unsigned char* buffer, int len, UINT8 port, UINT8 value ) {$/;"	f
 setDO	ModbusRTU.c	/^int setDO(UINT8* buffer, int len, UINT8 port, UINT8 value ) {$/;"	f
 setRedisEventCountClear	ModbusRTU.c	/^int setRedisEventCountClear( INT32 port ) {$/;"	f
 set_authorizer	include/sqlite3ext.h	/^  int  (*set_authorizer)(sqlite3*,int(*)(void*,int,const char*,const char*,$/;"	m	struct:sqlite3_api_routines
 set_auxdata	include/sqlite3ext.h	/^  void  (*set_auxdata)(sqlite3_context*,int,void*,void (*)(void*));$/;"	m	struct:sqlite3_api_routines
-set_highest_priority	tagServer.c	/^int set_highest_priority (pid_t pid)$/;"	f
-setaddr	sfsock.c	/^void setaddr(char* addr, char* port) {$/;"	f
+setupport	include/iDCU.h	/^	UINT32 setupport;$/;"	m	struct:CONFIGINFO_VAR
 setupport	include/iDCU.h	/^	char setupport[MAX_BUFFER];$/;"	m	struct:CONFIGINFO
-sig_handler	CommunicationManager.c	/^static void sig_handler( int signo)$/;"	f	file:
-sig_handler	IoTManager.c	/^void sig_handler( int signo)$/;"	f
 sig_handler	ModbusRTU.c	/^void sig_handler( int signo)$/;"	f
 sig_handler	SerialToEthernet.c	/^static void sig_handler( int signo)$/;"	f	file:
-sig_handler	socket_test.c	/^static void sig_handler(int signo) $/;"	f	file:
 size	include/M2MManager.h	/^	int size;$/;"	m	struct:Return_Selectdata
 size	include/RealTimeDataManager.h	/^	int size;$/;"	m	struct:Return_Selectdata
 size	include/iDCU.h	/^	INT32 size;$/;"	m	struct:__anon7
@@ -2121,13 +1605,8 @@ size	include/iDCU.h	/^	char size[MAX_BUFFER];$/;"	m	struct:TAGINFO
 sleep	include/sqlite3ext.h	/^  int (*sleep)(int);$/;"	m	struct:sqlite3_api_routines
 snprintf	include/sqlite3ext.h	/^  char * (*snprintf)(int,char*,const char*,...);$/;"	m	struct:sqlite3_api_routines
 sock	include/sfsock.h	/^int sock;$/;"	v
-sockclose	sfsock.c	/^void sockclose() {$/;"	f
-sockconn	sfsock.c	/^void sockconn() {$/;"	f
-socksend	sfsock.c	/^void socksend(char* msg, int length) {$/;"	f
 soft_heap_limit	include/sqlite3ext.h	/^  void (*soft_heap_limit)(int);$/;"	m	struct:sqlite3_api_routines
 soft_heap_limit64	include/sqlite3ext.h	/^  sqlite3_int64 (*soft_heap_limit64)(sqlite3_int64);$/;"	m	struct:sqlite3_api_routines
-source_wait	serialsource.c	/^static int source_wait(serial_source src, struct timeval *deadline)$/;"	f	file:
-source_write	serialsource.c	/^static int source_write(serial_source src, const void *buffer, int count)$/;"	f	file:
 sourceid	include/sqlite3ext.h	/^  const char *(*sourceid)(void);$/;"	m	struct:sqlite3_api_routines
 sql	include/sqlite3ext.h	/^  const char *(*sql)(sqlite3_stmt*);$/;"	m	struct:sqlite3_api_routines
 sqlite3	include/sqlite3.h	/^typedef struct sqlite3 sqlite3;$/;"	t	typeref:struct:sqlite3
@@ -2372,30 +1851,24 @@ sqlite3_wal_checkpoint	include/sqlite3ext.h	451;"	d
 sqlite3_wal_checkpoint_v2	include/sqlite3ext.h	469;"	d
 sqlite3_wal_hook	include/sqlite3ext.h	452;"	d
 sqliteManager	Makefile	/^sqliteManager = .\/lib\/sqliteManager.c$/;"	m
-sqliteManager	driver/Makefile	/^sqliteManager = ..\/lib\/sqliteManager.c$/;"	m
 sqlite_int64	include/sqlite3.h	/^  typedef SQLITE_INT64_TYPE sqlite_int64;$/;"	t
 sqlite_int64	include/sqlite3.h	/^  typedef __int64 sqlite_int64;$/;"	t
 sqlite_int64	include/sqlite3.h	/^  typedef long long int sqlite_int64;$/;"	t
 sqlite_uint64	include/sqlite3.h	/^  typedef unsigned SQLITE_INT64_TYPE sqlite_uint64;$/;"	t
 sqlite_uint64	include/sqlite3.h	/^  typedef unsigned __int64 sqlite_uint64;$/;"	t
 sqlite_uint64	include/sqlite3.h	/^  typedef unsigned long long int sqlite_uint64;$/;"	t
-src	serialtonet.c	/^serial_source src;$/;"	v
-src	sf.c	/^serial_source src;$/;"	v
 ssid	include/iDCU.h	/^    unsigned char ssid[32];$/;"	m	struct:security_var
 start	lib/libDeviceInfoParser.c	/^static void start(void *data, const char *el, const char **attr) { $/;"	f	file:
 start	lib/libpointparser.c	/^start(void *data, const char *el, const char **attr) { $/;"	f
 start	lib/parser/configInfoParser.c	/^start(void *data, const char *el, const char **attr) { $/;"	f	file:
 start	lib/parser/serialInfoParser.c	/^start(void *data, const char *el, const char **attr) { $/;"	f	file:
+start	lib/parser/timeSyncInfoParser.c	/^start(void *data, const char *el, const char **attr) { $/;"	f	file:
 startSerialToEthernet	SerialToEthernet.c	/^static int startSerialToEthernet()$/;"	f	file:
 startSerialToEthernetClient	SerialToEthernet.c	/^static int startSerialToEthernetClient()$/;"	f	file:
-start_io_check	ModbusRTU.c	/^    UINT8 start_io_check;$/;"	m	struct:__anon35	file:
-state	sfsock.c	/^uint16_t state=NULL_STATE;$/;"	v
+start_io_check	ModbusRTU.c	/^    UINT8 start_io_check;$/;"	m	struct:__anon30	file:
 status	include/iDCU.h	/^	UINT8 status;$/;"	m	struct:POINTINFO_VAR
 status	include/sqlite3ext.h	/^  int (*status)(int,int*,int*,int);$/;"	m	struct:sqlite3_api_routines
-statusSend	IoTManager.c	/^StatusSendData statusSend[8];$/;"	v
 statusSend	ModbusRTU.c	/^StatusSendData statusSend[8];$/;"	v
-stderr_msg	sf.c	/^void stderr_msg(serial_source_msg problem)$/;"	f
-stderr_msg1	serialtonet.c	/^void stderr_msg1(serial_source_msg problem) {$/;"	f
 step	include/sqlite3ext.h	/^  int  (*step)(sqlite3_stmt*);$/;"	m	struct:sqlite3_api_routines
 stmt_busy	include/sqlite3ext.h	/^  int (*stmt_busy)(sqlite3_stmt*);$/;"	m	struct:sqlite3_api_routines
 stmt_readonly	include/sqlite3ext.h	/^  int (*stmt_readonly)(sqlite3_stmt*);$/;"	m	struct:sqlite3_api_routines
@@ -2403,124 +1876,62 @@ stmt_status	include/sqlite3ext.h	/^  int (*stmt_status)(sqlite3_stmt*,int,int);$
 stopbit	include/iDCU.h	/^	UINT8 stopbit;$/;"	m	struct:COMPORTINFO_VAR
 stopbit	include/iDCU.h	/^	char stopbit[MAX_BUFFER];$/;"	m	struct:COMPORTINFO
 str	include/hiredis/hiredis.h	/^    char *str; \/* Used for both REDIS_REPLY_ERROR and REDIS_REPLY_STRING *\/$/;"	m	struct:redisReply
-strPac	eventHub.c	/^static char strPac[EVENT_Q_SIZE][BUFFER_SIZE*2];$/;"	v	file:
-strPac	tagServer.c	/^static unsigned char strPac[EVENT_Q_SIZE][BUFFER_SIZE*2];$/;"	v	file:
 str_len	include/sfsock.h	/^int str_len;$/;"	v
 stricmp	include/sqlite3ext.h	/^  int (*stricmp)(const char*,const char*);$/;"	m	struct:sqlite3_api_routines
 stringTrim	Makefile	/^stringTrim = .\/lib\/stringTrim.c$/;"	m
-stringTrim	driver/Makefile	/^stringTrim = ..\/lib\/stringTrim.c$/;"	m
 strnicmp	include/sqlite3ext.h	/^  int (*strnicmp)(const char*,const char*,int);$/;"	m	struct:sqlite3_api_routines
 sub	include/hiredis/async.h	/^    } sub;$/;"	m	struct:redisAsyncContext	typeref:struct:redisAsyncContext::__anon3
-subcnt	ModbusRTU.c	/^    UINT8 subcnt;$/;"	m	struct:__anon35	file:
-sum	test/sum.c	/^int sum(int a, int b)$/;"	f
-sum2	test/sum2.c	/^int sum2(int a, int b)$/;"	f
+subcnt	ModbusRTU.c	/^    UINT8 subcnt;$/;"	m	struct:__anon30	file:
 szOsFile	include/sqlite3.h	/^  int szOsFile;            \/* Size of subclassed sqlite3_file *\/$/;"	m	struct:sqlite3_vfs
 t_CntValue	include/RealTimeDataManager.h	/^} t_CntValue;$/;"	t	typeref:struct:__anon15
 t_data	include/iDCU.h	/^} t_data;$/;"	t	typeref:struct:__anon10
-t_data	msgrcv.c	/^} t_data;$/;"	t	typeref:struct:__anon29	file:
-t_data	msgsnd.c	/^} t_data;$/;"	t	typeref:struct:__anon30	file:
-t_data	usnTowifi.c	/^} t_data; $/;"	t	typeref:struct:__anon1	file:
 t_getNode	include/RealTimeDataManager.h	/^} t_getNode; $/;"	t	typeref:struct:__anon17
-t_getNode	msgsnd.c	/^} t_getNode; $/;"	t	typeref:struct:__anon32	file:
 t_node	include/CommManager.h	/^} t_node; $/;"	t	typeref:struct:__anon12
 t_node	include/RealTimeDataManager.h	/^} t_node;$/;"	t	typeref:struct:__anon16
-t_node	msgsnd.c	/^} t_node;$/;"	t	typeref:struct:__anon31	file:
 table_column_metadata	include/sqlite3ext.h	/^  int  (*table_column_metadata)(sqlite3*,const char*,const char*,const char*,$/;"	m	struct:sqlite3_api_routines
 tag	include/iDCU.h	/^	TAGINFO tag[MAX_DEVICE];$/;"	m	struct:NODEINFO
-tagID	driver/GN1200.c	/^static int tagID;$/;"	v	file:
-tagID	driver/PLCS_10.c	/^static int tagID;$/;"	v	file:
-tagID	driver/PLCS_12.c	/^static int tagID;$/;"	v	file:
-tagID	driver/PLCS_12ex.c	/^static int tagID;$/;"	v	file:
-tagID	driver/PLCS_9.c	/^static int tagID;$/;"	v	file:
-tagID	driver/iDCU_IoT.c	/^static int tagID;$/;"	v	file:
-tagID	eventHub.c	/^static char tagID[EVENT_Q_SIZE][BUFFER_SIZE];$/;"	v	file:
-tagLPOP	DataTranslator.c	/^static void tagLPOP(int	count)$/;"	f	file:
 taginfo	lib/libpointparser.c	/^NODEINFO taginfo;$/;"	v
 taginfo	lib/parser/serialInfoParser.c	/^static SERIALINFO taginfo;$/;"	v	file:
 tail	include/hiredis/async.h	/^    redisCallback *head, *tail;$/;"	m	struct:redisCallbackList
-tcp	DataTranslator.c	/^static int tcp = -1;$/;"	v	file:
-tcp	DataTranslator_20150227_networkdisconnecterr.c	/^static int tcp;$/;"	v	file:
-tcp	ETRI_simulator.c	/^int tcp;$/;"	v
-tcp	IoT_Listen.c	/^int tcp;$/;"	v
-tcp	PLCS-12.c	/^int tcp;$/;"	v
-tcp	RealTimeDataManager.c	/^int tcp;$/;"	v
 tcp	SerialToEthernet.c	/^static int tcp;$/;"	v	file:
 temp	include/RealTimeDataManager.h	/^	char *temp;$/;"	m	struct:Return_RTDParser
-terminate_escaper	serialsource.c	/^static void terminate_escaper(serial_source src)$/;"	f	file:
 test_control	include/sqlite3ext.h	/^  int (*test_control)(int, ...);$/;"	m	struct:sqlite3_api_routines
-teststrPac	eventHub.c	/^static unsigned char *teststrPac;$/;"	v	file:
-thread	uart_test.c	/^pthread_t thread;$/;"	v
-threadCheck	DataTranslator.c	/^static void threadCheck()$/;"	f	file:
 thread_cleanup	include/sqlite3ext.h	/^  void  (*thread_cleanup)(void);$/;"	m	struct:sqlite3_api_routines
-thread_insert	eventHub.c	/^static void *thread_insert(void *arg)$/;"	f	file:
-thread_insert	tagServer.c	/^static void *thread_insert(void *arg)$/;"	f	file:
-thread_main	IoTManager.c	/^void *thread_main(void *arg)$/;"	f
 thread_main	ModbusRTU.c	/^void *thread_main(void *arg)$/;"	f
 thread_main	SerialToEthernet.c	/^static void *thread_main(void *arg)$/;"	f	file:
 thread_main	SetupManager.c	/^void *thread_main(void *arg)$/;"	f
-thread_main	UartManager.c	/^void *thread_main(void *arg)$/;"	f
-thread_main	driver/GN1200.c	/^static void *thread_main(void *arg)$/;"	f	file:
-thread_main	driver/iDCU_IoT.c	/^static void *thread_main(void *arg)$/;"	f	file:
-thread_receive	DataTranslator.c	/^static void *thread_receive(void *arg)$/;"	f	file:
-thread_receive	DataTranslator_20150227_networkdisconnecterr.c	/^static void *thread_receive(void *arg)$/;"	f	file:
-thread_receive	uart_test.c	/^void *thread_receive(void *arg)$/;"	f
-thread_sender	DataTranslator_20150227_networkdisconnecterr.c	/^static void *thread_sender(void *arg)$/;"	f	file:
-thread_syncCount	IoTManager.c	/^void *thread_syncCount(void *arg)$/;"	f
-thread_syncCount	ModbusRTU.c	/^void *thread_syncCount(void *arg)$/;"	f
-threads	DataTranslator.c	/^static pthread_t threads;$/;"	v	file:
-threads	DataTranslator_20150227_networkdisconnecterr.c	/^static pthread_t threads[2];$/;"	v	file:
-threads	IoTManager.c	/^pthread_t threads[5];$/;"	v
 threads	ModbusRTU.c	/^pthread_t threads[5];$/;"	v
-threads	UartManager.c	/^pthread_t threads[5];$/;"	v
-threads	eventHub.c	/^static pthread_t threads;$/;"	v	file:
-threads	tagServer.c	/^static pthread_t threads;$/;"	v	file:
 time	include/M2MManager.h	/^	AustemSendTime time;$/;"	m	struct:AustemSendData
 time	include/M2MManager.h	/^	AustemSendTimeOrigin time;$/;"	m	struct:AustemStatusSendData
 time	include/M2MManager.h	/^	AustemSendTimeOrigin time;$/;"	m	struct:RTRNNODEGROUP
+timeSync	include/iDCU.h	/^    TIMESYNCINFO_VAR timeSync;$/;"	m	struct:DEVINFO
+timeSyncInfoParser	Makefile	/^timeSyncInfoParser = .\/lib\/parser\/timeSyncInfoParser.c$/;"	m
+timeSyncInfoParser	lib/parser/timeSyncInfoParser.c	/^TIMESYNCINFO timeSyncInfoParser(const char *path) { $/;"	f
 timeout	include/iDCU.h	/^	UINT32 timeout;$/;"	m	struct:CONNECTINFO_VAR
 timeout	include/iDCU.h	/^	char timeout[MAX_BUFFER];$/;"	m	struct:CONNECTINFO
 timeout	include/iDCU.h	/^    UINT32 timeout;$/;"	m	struct:READENV
-tlvSendBuffer	ETRI_simulator.c	/^unsigned char tlvSendBuffer[20480];$/;"	v
-tlvSendBuffer	IoTManager.c	/^UINT8 tlvSendBuffer[BUFFER_SIZE];$/;"	v
-tlvSendBuffer	M2MManager.c	/^unsigned char tlvSendBuffer[20480];$/;"	v
 tlvSendBuffer	ModbusRTU.c	/^UINT8 tlvSendBuffer[BUFFER_SIZE];$/;"	v
-tlvSendBuffer	PLCS-12.c	/^unsigned char tlvSendBuffer[20480];$/;"	v
-tlvSendBuffer	SetupManager.c	/^unsigned char tlvSendBuffer[20480];$/;"	v
-tlvSendBuffer	test/M2MManager.c	/^unsigned char tlvSendBuffer[20480];$/;"	v
-tlvSendBuffer	test/M2MManager2.c	/^unsigned char tlvSendBuffer[20480];$/;"	v
 tm_data	include/getDiffTime.h	/^    struct tm *tm_data;$/;"	m	struct:TMSTRUCT	typeref:struct:TMSTRUCT::tm
 tm_data	lib/getDiffTime.c	/^    struct tm *tm_data;$/;"	m	struct:TMSTRUCT	typeref:struct:TMSTRUCT::tm	file:
-toggle_size	ModbusRTU.c	/^    UINT8 toggle_size;$/;"	m	struct:__anon35	file:
+toggle_size	ModbusRTU.c	/^    UINT8 toggle_size;$/;"	m	struct:__anon30	file:
 total_changes	include/sqlite3ext.h	/^  int  (*total_changes)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
 trace	include/sqlite3ext.h	/^  void * (*trace)(sqlite3*,void(*xTrace)(void*,const char*),void*);$/;"	m	struct:sqlite3_api_routines
 transfer_bindings	include/sqlite3ext.h	/^  int  (*transfer_bindings)(sqlite3_stmt*,sqlite3_stmt*);$/;"	m	struct:sqlite3_api_routines
 trim	lib/stringTrim.c	/^char* trim(char *s) {$/;"	f
 tty_raw	lib/uart.c	/^int tty_raw(int fd, char *baud, char flowc, char databits, char parity, char stopbits)$/;"	f
-tty_raw	uart_init.c	/^int tty_raw(int fd, int baud, char flowc, unsigned char databits, unsigned char parity, unsigned char stopbits)$/;"	f
 tty_reset	lib/uart.c	/^void tty_reset(void)$/;"	f
-tty_reset	uart_init.c	/^void tty_reset(void)$/;"	f
-type	ETRI_simulator.c	/^    char type;$/;"	m	struct:_PAC	file:
-type	M2MManager.c	/^	char type;$/;"	m	struct:_PAC	file:
-type	PLCS-12.c	/^    char type;$/;"	m	struct:_PAC	file:
-type	SetupManager.c	/^    char type;$/;"	m	struct:_PAC	file:
-type	UartManager.c	/^    unsigned char type;$/;"	m	struct:CNTVALUE	file:
 type	include/CommManager.h	/^		unsigned char type;$/;"	m	struct:__anon13
 type	include/expat.h	/^  enum XML_Content_Type         type;$/;"	m	struct:XML_cp	typeref:enum:XML_cp::XML_Content_Type
 type	include/hiredis/hiredis.h	/^    int type; \/* REDIS_REPLY_* *\/$/;"	m	struct:redisReply
 type	include/hiredis/hiredis.h	/^    int type;$/;"	m	struct:redisReadTask
 type	include/iDCU.h	/^	char type[MAX_BUFFER];$/;"	m	struct:TAGINFO
-type	socket_test.c	/^	char type;$/;"	m	struct:_PAC	file:
-type	test/M2MManager.c	/^	char type;$/;"	m	struct:_PAC	file:
-type	test/M2MManager2.c	/^	char type;$/;"	m	struct:_PAC	file:
 uart	Makefile	/^uart = .\/lib\/uart.c$/;"	m
-uartParsingReceiveValue	IoTManager.c	/^int uartParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
 uartParsingReceiveValue	ModbusRTU.c	/^int uartParsingReceiveValue(unsigned char* cvalue, int len, unsigned char* remainder, int remainSize )$/;"	f
 udp	SetupManager.c	/^int udp;$/;"	v
 uint16_t	include/sf2.h	/^typedef u_int16_t uint16_t;$/;"	t
 uint32_t	include/platform.h	/^typedef u_int32_t uint32_t;$/;"	t
 uint32_t	include/sf2.h	/^typedef u_int32_t uint32_t;$/;"	t
 uint8_t	include/sf2.h	/^typedef u_int8_t uint8_t;$/;"	t
-unix_check	sf.c	/^int unix_check(const char *msg, int result)$/;"	f
 unlock_notify	include/sqlite3ext.h	/^  int (*unlock_notify)(sqlite3*,void(*)(void**,int),void*);$/;"	m	struct:sqlite3_api_routines
 update_hook	include/sqlite3ext.h	/^  void * (*update_hook)(sqlite3*,void(*)(void*,int ,char const*,char const*,$/;"	m	struct:sqlite3_api_routines
 uri_boolean	include/sqlite3ext.h	/^  int (*uri_boolean)(const char*,const char*,int);$/;"	m	struct:sqlite3_api_routines
@@ -2532,24 +1943,13 @@ user_num	lib/libDeviceInfoParser.c	/^static int  user_num = 0;   \/\/ 몇개의 
 user_num	lib/libpointparser.c	/^int  user_num = 0;   \/\/ 몇개의 레코드가 저장되었는지 검사  $/;"	v
 user_num	lib/parser/configInfoParser.c	/^static int  user_num = 0;   \/\/ 몇개의 레코드가 저장되었는지 검사  $/;"	v	file:
 user_num	lib/parser/serialInfoParser.c	/^static int  user_num = 0;   \/\/ 몇개의 레코드가 저장되었는지 검사  $/;"	v	file:
-user_quit	PointManager.c	/^unsigned char user_quit = 0;$/;"	v
-user_quit	RealTimeDataManager_backup.c	/^unsigned char user_quit = 0;$/;"	v
+user_num	lib/parser/timeSyncInfoParser.c	/^static int  user_num = 0;   \/\/ 몇개의 레코드가 저장되었는지 검사  $/;"	v	file:
 user_quit	SetupManager.c	/^unsigned char user_quit = 0;$/;"	v
-user_quit	serialtonet.c	/^unsigned char user_quit = 0;$/;"	v
-user_quit	socket_test.c	/^unsigned char user_quit = 0;$/;"	v
 vGetDIStatus	ModbusRTU.c	/^int vGetDIStatus(void)$/;"	f
-value	ETRI_simulator.c	/^    char value[4];$/;"	m	struct:_PAC	file:
-value	M2MManager.c	/^	char value[4];$/;"	m	struct:_PAC	file:
-value	PLCS-12.c	/^    char value[4];$/;"	m	struct:_PAC	file:
-value	SetupManager.c	/^    char value[4];$/;"	m	struct:_PAC	file:
-value	UartManager.c	/^    unsigned char value[4]; $/;"	m	struct:CNTVALUE	file:
 value	include/CommManager.h	/^		unsigned char value[16];$/;"	m	struct:__anon13
 value	include/M2MManager.h	/^	unsigned char value[4];$/;"	m	struct:AustemSendData
 value	include/expat.h	/^  long int              value;$/;"	m	struct:__anon27
 value	include/iDCU.h	/^	UINT32 value;$/;"	m	struct:POINTINFO_VAR
-value	socket_test.c	/^	char value[4];$/;"	m	struct:_PAC	file:
-value	test/M2MManager.c	/^	char value[4];$/;"	m	struct:_PAC	file:
-value	test/M2MManager2.c	/^	char value[4];$/;"	m	struct:_PAC	file:
 value_blob	include/sqlite3ext.h	/^  const void * (*value_blob)(sqlite3_value*);$/;"	m	struct:sqlite3_api_routines
 value_bytes	include/sqlite3ext.h	/^  int  (*value_bytes)(sqlite3_value*);$/;"	m	struct:sqlite3_api_routines
 value_bytes16	include/sqlite3ext.h	/^  int  (*value_bytes16)(sqlite3_value*);$/;"	m	struct:sqlite3_api_routines
@@ -2562,7 +1962,8 @@ value_text16	include/sqlite3ext.h	/^  const void * (*value_text16)(sqlite3_value
 value_text16be	include/sqlite3ext.h	/^  const void * (*value_text16be)(sqlite3_value*);$/;"	m	struct:sqlite3_api_routines
 value_text16le	include/sqlite3ext.h	/^  const void * (*value_text16le)(sqlite3_value*);$/;"	m	struct:sqlite3_api_routines
 value_type	include/sqlite3ext.h	/^  int  (*value_type)(sqlite3_value*);$/;"	m	struct:sqlite3_api_routines
-verbose_set	serialtonet.c	/^int verbose_set=0;$/;"	v
+ver	include/iDCU.h	/^	UINT8 ver[32];$/;"	m	struct:VERSIONINFO_VAR
+version	include/iDCU.h	/^    VERSIONINFO_VAR version;$/;"	m	struct:DEVINFO
 vfs_find	include/sqlite3ext.h	/^  sqlite3_vfs *(*vfs_find)(const char*);$/;"	m	struct:sqlite3_api_routines
 vfs_register	include/sqlite3ext.h	/^  int (*vfs_register)(sqlite3_vfs*,int);$/;"	m	struct:sqlite3_api_routines
 vfs_unregister	include/sqlite3ext.h	/^  int (*vfs_unregister)(sqlite3_vfs*);$/;"	m	struct:sqlite3_api_routines
@@ -2570,7 +1971,6 @@ vmprintf	include/sqlite3ext.h	/^  char *(*vmprintf)(const char*,va_list);$/;"	m	
 vsnprintf	include/sqlite3ext.h	/^  char *(*vsnprintf)(int,char*,const char*,va_list);$/;"	m	struct:sqlite3_api_routines
 vtab_config	include/sqlite3ext.h	/^  int (*vtab_config)(sqlite3*,int op,...);$/;"	m	struct:sqlite3_api_routines
 vtab_on_conflict	include/sqlite3ext.h	/^  int (*vtab_on_conflict)(sqlite3*);$/;"	m	struct:sqlite3_api_routines
-wait_clients	sf.c	/^void wait_clients(fd_set *fds, int *maxfd)$/;"	f
 wal_autocheckpoint	include/sqlite3ext.h	/^  int (*wal_autocheckpoint)(sqlite3*,int);$/;"	m	struct:sqlite3_api_routines
 wal_checkpoint	include/sqlite3ext.h	/^  int (*wal_checkpoint)(sqlite3*,const char*);$/;"	m	struct:sqlite3_api_routines
 wal_checkpoint_v2	include/sqlite3ext.h	/^  int (*wal_checkpoint_v2)(sqlite3*,const char*,int,int*,int*);$/;"	m	struct:sqlite3_api_routines
@@ -2578,8 +1978,6 @@ wal_hook	include/sqlite3ext.h	/^  void *(*wal_hook)(sqlite3*,int(*)(void*,sqlite
 wep104	include/iDCU.h	/^    unsigned char wep104[4][13];$/;"	m	struct:security_var
 wep40	include/iDCU.h	/^    unsigned char wep40[4][5];$/;"	m	struct:security_var
 wev	include/hiredis/adaters/libevent.h	/^    struct event rev, wev;$/;"	m	struct:redisLibeventEvents	typeref:struct:redisLibeventEvents::
-wifi	M2MManager.c	/^int wifi = 0;$/;"	v
-wifi	test/M2MManager.c	/^int wifi = 0;$/;"	v
 wiringPiNodeStruct	include/wiringPi.h	/^struct wiringPiNodeStruct$/;"	s
 wlan	include/iDCU.h	/^    struct wlan_var	wlan;$/;"	m	struct:DEVINFO	typeref:struct:DEVINFO::wlan_var
 wlanAuto	include/iDCU.h	/^    UINT8   wlanAuto;$/;"	m	struct:DEVINFO
@@ -2588,23 +1986,12 @@ wlan_var	include/iDCU.h	/^struct wlan_var$/;"	s
 wo	include/CommManager.h	/^unsigned char wo[DI_PORT]; $/;"	m	struct:__anon12
 wo	include/RealTimeDataManager.h	/^	char 			wo[DI_PORT];$/;"	m	struct:__anon16
 wo	include/RealTimeDataManager.h	/^	unsigned char wo[DI_PORT]; $/;"	m	struct:__anon17
-wo	msgsnd.c	/^	char 			wo[DI_PORT];$/;"	m	struct:__anon31	file:
-wo	msgsnd.c	/^	unsigned char wo[DI_PORT]; $/;"	m	struct:__anon32	file:
-woPastData	driver/iDCU_IoT.c	/^static UINT8 woPastData;$/;"	v	file:
 writeLog	Makefile	/^writeLog = .\/lib\/writeLog.c$/;"	m
-writeLog	RealTimeDataManager(radiopulse_direct_getCnt).c	/^void writeLog( char* str )$/;"	f
-writeLog	driver/Makefile	/^writeLog = ..\/lib\/writeLog.c$/;"	m
 writeLog	lib/writeLog.c	/^void writeLog( UINT8 *path, UINT8 *str )$/;"	f
-writeLog	test/M2MManager.c	/^void writeLog( char* str )$/;"	f
-writeLog	test/M2MManager2.c	/^void writeLog( char* str )$/;"	f
 writeLogV2	lib/writeLog.c	/^void writeLogV2( UINT8 *path, UINT8 *filename, const char *str, ...)$/;"	f
 writeTextLog	lib/libcommprocess.c	/^void writeTextLog( char* str )$/;"	f
 writeTextLog	lib/libm2mprocess.c	/^void writeTextLog( char* str )$/;"	f
 writeTextLog	lib/librtdprocess.c	/^void writeTextLog( char* str )$/;"	f
-writeWlan0SecurityConfig	SetupManager.c	/^void writeWlan0SecurityConfig( unsigned char* buffer, int len)$/;"	f
-write_framed_packet	serialsource.c	/^static int write_framed_packet(serial_source src,$/;"	f	file:
-write_serial_packet	serialsource.c	/^int write_serial_packet(serial_source src, const void *packet, int len)$/;"	f
-write_sf_packet	sfsource.c	/^int write_sf_packet(int fd, const void *packet, int len)$/;"	f
 xAccess	include/sqlite3.h	/^  int (*xAccess)(sqlite3_vfs*, const char *zName, int flags, int *pResOut);$/;"	m	struct:sqlite3_vfs
 xBegin	include/sqlite3.h	/^  int (*xBegin)(sqlite3_vtab *pVTab);$/;"	m	struct:sqlite3_module
 xBestIndex	include/sqlite3.h	/^  int (*xBestIndex)(sqlite3_vtab *pVTab, sqlite3_index_info*);$/;"	m	struct:sqlite3_module
@@ -2698,16 +2085,10 @@ xUnpin	include/sqlite3.h	/^  void (*xUnpin)(sqlite3_pcache*, sqlite3_pcache_page
 xUnpin	include/sqlite3.h	/^  void (*xUnpin)(sqlite3_pcache*, void*, int discard);$/;"	m	struct:sqlite3_pcache_methods
 xUpdate	include/sqlite3.h	/^  int (*xUpdate)(sqlite3_vtab *, int, sqlite3_value **, sqlite3_int64 *);$/;"	m	struct:sqlite3_module
 xWrite	include/sqlite3.h	/^  int (*xWrite)(sqlite3_file*, const void*, int iAmt, sqlite3_int64 iOfst);$/;"	m	struct:sqlite3_io_methods
-xmalloc	sf.c	/^void *xmalloc(size_t s)$/;"	f
 xmlOffset	SerialToEthernet.c	/^static int xmlOffset = 0;$/;"	v	file:
-xmlOffset	driver/GN1200.c	/^static int xmlOffset = 0;$/;"	v	file:
-xmlOffset	driver/PLCS_12ex.c	/^static int xmlOffset = 0;$/;"	v	file:
-xmlOffset	driver/iDCU_IoT.c	/^static int xmlOffset = 0;$/;"	v	file:
 xmlinfo	SerialToEthernet.c	/^static SERIALINFO xmlinfo;$/;"	v	file:
-xmlinfo	driver/GN1200.c	/^static NODEINFO xmlinfo;$/;"	v	file:
-xmlinfo	driver/PLCS_12ex.c	/^static NODEINFO xmlinfo;$/;"	v	file:
-xmlinfo	driver/iDCU_IoT.c	/^static NODEINFO xmlinfo;$/;"	v	file:
 xmlinfo	lib/parser/configInfoParser.c	/^static CONFIGINFO xmlinfo;$/;"	v	file:
+xmlinfo	lib/parser/timeSyncInfoParser.c	/^static TIMESYNCINFO xmlinfo;$/;"	v	file:
 xthreadsafe	include/sqlite3ext.h	/^  int (*xthreadsafe)(void);$/;"	m	struct:sqlite3_api_routines
 year	include/M2MManager.h	/^	char year;$/;"	m	struct:QUERYTIME
 year	include/M2MManager.h	/^	char year;$/;"	m	struct:__anon20

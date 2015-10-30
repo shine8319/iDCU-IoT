@@ -1,0 +1,16 @@
+#!/bin/bash
+
+cd /work/smart
+cp -rn config/ ../
+cp -rn log/ ../
+cp -rn db/ ../
+cp -rn script/ ../
+
+cd /usr/local/lib
+ln -s libwiringPiDev.so.2.25 /usr/local/lib/libwiringPiDev.so
+ln -s libwiringPi.so.2.25 /usr/local/lib/libwiringPi.so
+
+ln -s /usr/local/lib/libwiringPiDev.so.2.25 /usr/lib/libwiringPiDev.so
+ln -s /usr/local/lib/libwiringPi.so.2.25 /usr/lib/libwiringPi.so
+
+ldconfig /usr/local/lib

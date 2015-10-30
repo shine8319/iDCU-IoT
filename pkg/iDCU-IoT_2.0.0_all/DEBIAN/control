@@ -1,0 +1,9 @@
+Package: iDCU-IoT
+Version: 2.0.0
+Section: devel
+Priority: optional
+Architecture: all
+Maintainer: Developers <hg_kang@acs.co.kr>
+Homepage: http://www.acs.co.kr
+Description: install package for iDCU-IoT
+    2.0.0 : first create, bug fix bind error(edit setsockopt)

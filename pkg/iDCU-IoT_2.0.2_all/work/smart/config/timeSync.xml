@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<SINK ver="1.0">
+
+   <TIMESYNCINFO>
+	<ADDRESS>10.1.0.66</ADDRESS>
+	<CYCLE>runHour</CYCLE>
+   </TIMESYNCINFO>
+
+</SINK>

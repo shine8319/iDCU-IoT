@@ -1,0 +1,5 @@
+network={
+	ssid="MiddlewareEdu"
+	#psk="acs1234567890"
+	psk=47da7185cdb8ce868e602fbc0445cf015ab8ff5216d547744dbe0125a5303cf5
+}

@@ -1,0 +1,7 @@
+* * * * * /work/script/run/runMinute.sh > /dev/console
+30 * * * * /work/script/run/run30Minute.sh > /dev/console
+0 * * * * /work/script/run/runHour.sh > /dev/console
+* 0-23/6 * * * /work/script/run/run6Hour.sh > /dev/console
+* 0-23/12 * * * /work/script/run/run12Hour.sh > /dev/console
+0 0 * * * /work/script/run/runDay.sh > /dev/console
+* * * * * /work/script/run/smartCheck.sh > /dev/console

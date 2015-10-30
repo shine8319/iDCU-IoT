@@ -1,0 +1,15 @@
+Package: iDCU-IoT
+Version: 2.1.1
+Section: devel
+Priority: optional
+Architecture: all
+Maintainer: Developers <hg_kang@acs.co.kr>
+Homepage: http://www.acs.co.kr
+Description: install package for iDCU-IoT
+    2.0.0 : first create, bug fix bind error(edit setsockopt)
+    2.0.1 : add reboot command
+    2.0.2 : add check digital throughput time, add DeviceStatusCheck.o
+    2.0.3 : add factory reset
+    2.0.4 : autoAdd crontab info, hot plug hdmi, auto copy rc.local
+    2.1.0 : add Austem project
+    2.1.1 : add DBSchedule.o, bug fix USNBridge.o(no exit, if Open fail)

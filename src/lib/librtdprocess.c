@@ -405,27 +405,19 @@ int UpdateAustemNodeData( sqlite3 **pSQLite3, t_getNode	node )
 	char	*szErrMsg;
 	int rst;
 
-	log_buf = sqlite3_mprintf("UPDATE TB_COMM_STATUS SET datetime = strftime('%%Y-%%m-%%d %%H:%%M:%%f', 'now','localtime'), port1 = %d, port2 = %d, port3 = %d, port4 = %d, port5 = %d, port6 = %d",
-			node.cnt[0],
-			node.cnt[1],
-			node.cnt[2],
-			node.cnt[3],
-			node.cnt[4],
-			node.cnt[5]
-			);
 
-	/*
-	log_buf = sqlite3_mprintf("UPDATE TB_COMM_STATUS SET datetime = strftime('%%Y-%%m-%%d %%H:%%M:%%f', 'now','localtime'), port1 = %d, port2 = %d, port3 = %d, port4 = %d, port5 = %d, port6 = %d, port7 = %d, port8 = %d",
+	log_buf = sqlite3_mprintf("UPDATE TB_COMM_STATUS SET datetime = strftime('%%Y-%%m-%%d %%H:%%M:%%f', 'now','localtime'), nodeid = %d, groupid = %d, seq = %d, port1 = %d, port2 = %d, port3 = %d, port4 = %d, port5 = %d, port6 = %d WHERE nodeid = %d",
+			node.nodeid,
+			node.group,
+			node.seq,
 			node.cnt[0],
 			node.cnt[1],
 			node.cnt[2],
 			node.cnt[3],
 			node.cnt[4],
 			node.cnt[5],
-			node.cnt[6],
-			node.cnt[7]
+			node.nodeid
 			);
-			*/
 
 	rst = sqlite3_exec(
 			*pSQLite3,

@@ -80,6 +80,17 @@ typedef struct TIMESYNCINFO_VAR {
 	UINT8 cycle;
 } __attribute__ ((__packed__)) TIMESYNCINFO_VAR;
 
+typedef struct VERSIONINFO_VAR {
+	UINT8 mac[32];
+	UINT8 ver[32];
+} __attribute__ ((__packed__)) VERSIONINFO_VAR;
+
+typedef struct CONFIGINFO_VAR {
+	UINT32 setupport;
+	UINT8 interval[8];
+} __attribute__ ((__packed__)) CONFIGINFO_VAR;
+
+
 
 
 typedef struct DEVINFO {
@@ -101,6 +112,11 @@ typedef struct DEVINFO {
     POINTINFO_VAR point[8];
 
     TIMESYNCINFO_VAR timeSync;
+
+    VERSIONINFO_VAR version;
+
+    // 2015.08.12
+    CONFIGINFO_VAR  config;
 
 } __attribute__ ((__packed__)) DEVINFO;
 
@@ -203,9 +219,15 @@ typedef struct SERIALINFO {
     CONNECTINFO connect;
 } SERIALINFO;
 
+
+typedef struct INTERVALINFO {
+	char interval[MAX_BUFFER];
+} INTERVALINFO;
+
 typedef struct CONFIGINFO {
 	char debug[MAX_BUFFER];
 	char setupport[MAX_BUFFER];
+	INTERVALINFO port[8];
 } CONFIGINFO;
 
 typedef struct TIMESYNCINFO {

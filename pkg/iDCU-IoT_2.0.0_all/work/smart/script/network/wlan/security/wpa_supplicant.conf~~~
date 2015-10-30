@@ -1,0 +1,9 @@
+network={
+	ssid="MiddlewareEdu"
+	key_mgmt=WPA-PSK
+	auth_alg=OPEN
+	psk="acs1234567890"
+	wep_key0="acs1234567890"
+	#proto=RSN
+	#pairwise=CCMP
+}

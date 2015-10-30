@@ -1,0 +1,7 @@
+network={
+ssid="iDCU-AP"
+key_mgmt=NONE
+auth_alg=OPEN
+group=WEP104
+wep_key0="acs1234567890"
+}

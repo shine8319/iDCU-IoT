@@ -3,18 +3,16 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <time.h>
 #include <sys/reboot.h>
 
 
+#define LOGPATH "/work/log/RealTimeDataManager"
+#include "./include/sqlite3.h"
 #include "./include/RealTimeDataManager.h"
 #include "./include/iDCU.h"
-#include "./include/sqlite3.h"
-#include "./include/writeLog.h"
-#include "./include/TCPSocket.h"
 
 extern int el1000_sqlite3_open( char *path, sqlite3 **pSQLite3 );
 extern int el1000_sqlite3_customize( sqlite3 **pSQLite3 );
@@ -28,7 +26,6 @@ static int busy(void *handle, int nTry);
 int commandDeleteNode( sqlite3 *pSQLite3, unsigned char nodeid );
 int commandUpdateNode( sqlite3 *pSQLite3, unsigned char nodeid, unsigned char changenodeid, unsigned char groupid );
 
-int tcp;
 int main( void)
 {
 	int      msqid;
@@ -58,7 +55,6 @@ int main( void)
 	//int	dataChanged = 0;
 	int	packetErr = 0;
 	unsigned char checkSumCompare = 0;
-	UINT8 sendBuffer[1024];
 
 	//clock_t start,end;
 	//double msec;
@@ -70,14 +66,119 @@ int main( void)
 	memset( lossCheckStart, 0, 256 ); 
 	memset( loss, 0, (sizeof(int) * DI_PORT) ); 
 
-	memset( sendBuffer, 0, 1024 );
+	//sleep(4);
 
-	tcp = TCPClient( "127.0.0.1", "50007");
-
-	if ( -1 == ( msqid = msgget( (key_t)1, IPC_CREAT | 0666)))
+	if ( -1 == ( msqid = msgget( (key_t)1111, IPC_CREAT | 0666)))
 	{
-		writeLog( ".", "error msgget() msqid" );
+		//writeLog( "error msgget() msqid" );
+		writeLogV2(LOGPATH, "[RealTimeDataManager]", "error msgget() msqid\n");
+		//perror( "msgget() 실패");
+		exit( 1);
+	}
+	if( -1 == ( eventid = msgget( (key_t)3333, IPC_CREAT | 0666)))
+	{
+		//writeLog( "error msgget() eventid" );
+		writeLogV2(LOGPATH, "[RealTimeDataManager]", "error msgget() eventid\n");
+		//perror( "msgget() 실패");
 		return -1;
+	}
+
+
+	/************** DB connect.. ***********************/
+	// DB Open
+	rc = el1000_sqlite3_open( DBPATH, &pSQLite3 );
+	//rc = el1000_sqlite3_open( argv[1], &pSQLite3 );
+	if( rc != 0 )
+	{
+		//writeLog( "error DB Open" );
+		writeLogV2(LOGPATH, "[RealTimeDataManager]", "error DB Open\n");
+		return -1;
+	}
+	else
+	{
+		printf("%s OPEN!!\n", DBPATH);
+		writeLogV2(LOGPATH, "[RealTimeDataManager]", "%s OPEN!!\n", DBPATH);
+		//printf("%s OPEN!!\n", argv[1]);
+	}
+
+	// DB Customize
+	rc = el1000_sqlite3_customize( &pSQLite3 );
+	if( rc != 0 )
+	{
+		//writeLog( "error DB Customize" );
+		writeLogV2(LOGPATH, "[RealTimeDataManager]", "error DB Customize\n");
+		return -1;
+	}
+
+	//sqlite3_busy_handler( pSQLite3, busy, NULL);
+	//sqlite3_busy_timeout( pSQLite3, 3000);
+	//sqlite3_busy_timeout( pSQLite3, 1000);
+
+
+	/**********************************************/
+
+	//start = clock();
+	rtrn = getNodeList( pSQLite3, nodelist );
+	if( rtrn > 0 )
+	{
+		do 
+		{
+			transaction = el1000_sqlite3_transaction( &pSQLite3, INSERT_BEGIN );
+			/*
+			if( transaction == -1 )
+				writeLog( "TRANSACTION BEGIN ERROR" );
+				*/
+		}while( transaction );
+
+
+		for( i = 0; i < rtrn; i++ )
+		{
+			printf( "list %d - %d\n", i+1, nodelist[i] );
+
+			value[nodelist[i]].exist = 1;
+			// get last sensing data
+			//query = sqlite3_mprintf("select strftime('%%Y%%m%%d%%H%%M%%S', datetime), port1, port2, port3, port4, port5, port6 from tb_comm_log where nodeid = '%d' order by id desc limit 1",
+			query = sqlite3_mprintf("select strftime('%%Y%%m%%d%%H%%M%%f', datetime), port1, port2, port3, port4, port5, port6 from tb_comm_status where nodeid = '%d' limit 1",
+					nodelist[i]		
+					);
+			
+			selectLastData = el1000_sqlite3_select( pSQLite3, query );
+			printf("select size = %d\n", selectLastData.size );
+
+			if( selectLastData.size > 0 )
+			{
+				for( j = selectLastData.size/2+1; j < selectLastData.size; j++ )
+				{
+					if( selectLastData.past_result[j] == NULL )
+					{
+						printf("data NULL\n");
+					}
+					else
+					{
+						value[nodelist[i]].cnt[getPortOffset] = atoi(selectLastData.past_result[j]);
+					}
+					printf("Port %d : %d\n", getPortOffset+1, value[nodelist[i]].cnt[getPortOffset++]);
+				}
+				getPortOffset = 0;
+
+			}
+			
+			sqlite3_free( query );
+			SQLITE_SAFE_FREE( query )
+			sqlite3_free_table( selectLastData.past_result );
+			SQLITE_SAFE_FREE( selectLastData.past_result )
+
+
+		}
+		do
+		{
+			transaction = el1000_sqlite3_transaction( &pSQLite3, INSERT_END ) ;
+			/*
+			if( transaction == -1 )
+				writeLog( "TRANSACTION END ERROR" );
+				*/
+		} while( transaction );
+
 	}
 
 	while( 1 )
@@ -91,21 +192,271 @@ int main( void)
 		}
 		else
 		{
-			printf("recv size = %d, type = %ld\n", data.data_num, data.data_type);
-				//printf("%s\n", data.data_buff);
-			for( i = 0; i < data.data_num; i++ )
+		    /*
+			printf("===>");
+			for( i = 0; i < 33; i++ )
 				printf("%02X ", data.data_buff[i]);
 			printf("\n");
-			memcpy( sendBuffer, data.data_buff, data.data_num );
-			//rtrn = sendto( tcp, data.data_buff, data.data_num, 0, NULL, NULL);
-			rtrn = send(tcp, sendBuffer, data.data_num, MSG_NOSIGNAL);
-			printf("send length = %d\n", rtrn);
-			if( rtrn == -1 )
+			*/
+
+			//memcpy( &node, data.data_buff, sizeof(t_getNode) );
+			checkSumCompare = 0;
+	
+
+			for( i = 0; i < data.data_num-1; i++ )
 			{
-			    close(tcp);
-			    tcp = TCPClient( "127.0.0.1", "50007");
+				checkSumCompare += data.data_buff[i];
 			}
 
+			/*
+			for( i = 0; i < data.data_num; i++ )
+			{
+				printf("%02X ",data.data_buff[i]);
+			}
+			printf("\n");
+			*/
+
+			if( (data.data_buff[data.data_num-1] != checkSumCompare) || data.data_num != 34 )
+			{
+				//writeLog( "error checkSum" );
+				writeLogV2(LOGPATH, "[RealTimeDataManager]", "error checkSum\n");
+				continue;
+			}
+
+			/*
+			printf("packet length %d, checksum %d == %d(checkSumCompare)\n",
+					data.data_num,
+					data.data_buff[data.data_num-1],
+					checkSumCompare);
+					*/
+
+			//if( data.data_num != eventData.data_buff[1] + 3 )
+
+			node.nodeid = data.data_buff[0];
+			node.group = data.data_buff[1];
+			node.seq = data.data_buff[2];
+			node.wo[0] = data.data_buff[3];
+			node.wo[1] = data.data_buff[4];
+			node.wo[2] = data.data_buff[5];
+			node.wo[3] = data.data_buff[6];
+			node.wo[4] = data.data_buff[7];
+			node.wo[5] = data.data_buff[8];
+			for( i = 0; i < DI_PORT; i++ )
+			{
+				node.cnt[i] = 0;
+
+				node.cnt[i] = data.data_buff[cntOffset++] << 24;
+				node.cnt[i] |= data.data_buff[cntOffset++] << 16;
+				node.cnt[i] |= data.data_buff[cntOffset++] << 8;
+				node.cnt[i] |= data.data_buff[cntOffset++] << 0;
+				
+			}
+			cntOffset = 9;
+
+			printf("node : %d, group : %d, seq : %d\n", node.nodeid, node.group, node.seq);
+			printf("%d %d %d %d %d %d\n",
+					node.wo[0],
+					node.wo[1],
+					node.wo[2],
+					node.wo[3],
+					node.wo[4],
+					node.wo[5] );
+			printf("%d %d %d %d %d %d\n",
+					node.cnt[0],
+					node.cnt[1],
+					node.cnt[2],
+					node.cnt[3],
+					node.cnt[4],
+					node.cnt[5] );
+
+			id = node.nodeid;
+			for( i = 0; i < DI_PORT; i++ )
+			{
+				value[id].curWo[i] = node.wo[i];
+				value[id].curCnt[i] = node.cnt[i];
+			}
+			//memcpy( value[id].curWo, node.wo, DI_PORT );
+			//memcpy( value[id].curCnt, node.cnt, DI_PORT*4);
+
+			memcpy( &lossNode, &node, sizeof( t_getNode ) );
+
+			for( i = 0; i < DI_PORT; i++ )
+			{
+
+				loss[i] = value[id].curCnt[i] - value[id].cnt[i];
+
+				if( lossCheckStart[id] )
+				{
+					if( loss[i] > 100 )
+					{
+						printf("loss[i] > 100\n");
+						node.changed[i] = 0;
+						packetErr = 1;
+						//dataChanged = 0;
+						value[id].cnt[i] = value[id].curCnt[i];	// add 2013.11.20
+					}
+					else
+					{
+
+						if( value[id].cnt[i] != value[id].curCnt[i] )
+						{
+
+							printf("[%d] Check pre( %d ) == cur ( %d ) | exist %d\n", id, value[id].cnt[i] , value[id].curCnt[i], value[id].exist );
+							node.changed[i] = 1;
+							packetErr = 0;
+							//dataChanged = 1;
+
+							lossNode.cnt[i] = value[id].cnt[i]+1;
+
+							value[id].cnt[i] = value[id].curCnt[i];
+						}
+
+					}
+
+
+				}
+				else
+				{
+
+						printf("New Start [%d] Check pre( %d ) == cur ( %d ) | exist %d\n", id, value[id].cnt[i] , value[id].curCnt[i], value[id].exist );
+					if( value[id].cnt[i] != value[id].curCnt[i] )
+					{
+
+
+						node.changed[i] = 1;
+						packetErr = 0;
+						//dataChanged = 1;
+
+						value[id].cnt[i] = value[id].curCnt[i];
+					}
+				}
+
+			}
+
+			// insert
+			//start = clock();
+			do 
+			{
+				transaction = el1000_sqlite3_transaction( &pSQLite3, INSERT_BEGIN );
+				/*
+				if( transaction == -1 )
+					writeLog( "TRANSACTION BEGIN ERROR" );
+					*/
+
+			}while( transaction );
+
+			for( i = 0; i < DI_PORT; i++ )
+			{
+				if( node.changed[i] )
+				{
+					if( lossCheckStart[id] == 1 && loss[i] > 1 )
+					{
+						//writeLog( "Packet Loss" );
+						for( lossOffset = 1; lossOffset < loss[i]; lossOffset++ )
+						{
+
+							//printf("loss[%d] = %d\n", i, loss[i] );
+							lossNode.port = i;
+							InsertAustemNodeData( &pSQLite3, lossNode );
+							lossNode.cnt[i]++; 
+						}
+						loss[i] = 0;
+					}
+					node.port = i;
+					InsertAustemNodeData( &pSQLite3, node );
+				}
+				node.changed[i] = 0;
+			}
+			lossCheckStart[id] = 1;
+			//memset( &lossNode, 0, sizeof( t_getNode ) );
+
+			if( !packetErr && value[id].exist )
+			{
+				//printf("Update!!\n");
+				UpdateAustemNodeData( &pSQLite3, node );
+			}
+			else if( !packetErr )
+			{
+				//printf("Insert!!\n");
+				value[id].exist = 1;
+				InsertAustemNodeStatusData( &pSQLite3, node );
+			}
+			printf("PacketErr %d\n", packetErr);
+			packetErr = 0;
+
+			do
+			{
+				transaction = el1000_sqlite3_transaction( &pSQLite3, INSERT_END ) ;
+				/*
+				if( transaction == -1 )
+					writeLog( "TRANSACTION END ERROR" );
+					*/
+
+			} while( transaction );
+
+		}
+
+
+		memset( &eventData, 0, sizeof(t_data) );
+		// event receive ( delete node, command reboot )
+		if( -1 == msgrcv( eventid, &eventData, sizeof( t_data) - sizeof( long), 0, IPC_NOWAIT) )
+		{
+			// error
+		}
+		else
+		{
+
+			if( eventData.data_num != eventData.data_buff[1] + 3 )
+				printf("packet error ( size %d == %d )\n", eventData.data_num, eventData.data_buff[1]);
+			else
+			{
+
+				for( i = 0; i < eventData.data_num; i++ )
+					printf("%02X ", eventData.data_buff[i]);
+				printf("\n");
+				switch(  eventData.data_buff[2] )
+				{
+					//reboot
+					case 1:
+						//reboot(RB_AUTOBOOT);
+						execl("/sbin/reboot", "/sbin/reboot", NULL);
+						break;
+					//CHANGENODEINFO
+					case 18:
+						/*
+						printf("exist Clear : %d\n", eventData.data_buff[4]);
+						value[eventData.data_buff[4]].exist = 0;
+						lossCheckStart[eventData.data_buff[4]] = 0;
+						value[eventData.data_buff[5]].exist = 1;
+						do 
+						{
+							transaction = el1000_sqlite3_transaction( &pSQLite3, INSERT_BEGIN );
+						}while( transaction );
+						commandUpdateNode( pSQLite3, eventData.data_buff[4], eventData.data_buff[5], eventData.data_buff[6] );
+						do
+						{
+							transaction = el1000_sqlite3_transaction( &pSQLite3, INSERT_END ) ;
+						} while( transaction );
+						break;
+						*/
+					//DELETENODE
+					case 4:
+						printf("exist Clear : %d\n", eventData.data_buff[4]);
+						value[eventData.data_buff[4]].exist = 0;
+						lossCheckStart[eventData.data_buff[4]] = 0;
+						do 
+						{
+							transaction = el1000_sqlite3_transaction( &pSQLite3, INSERT_BEGIN );
+						}while( transaction );
+						commandDeleteNode( pSQLite3, eventData.data_buff[4] );
+						do
+						{
+							transaction = el1000_sqlite3_transaction( &pSQLite3, INSERT_END ) ;
+						} while( transaction );
+
+						break;
+				}
+			}
 		}
 
 

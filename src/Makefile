@@ -58,6 +58,7 @@ networkInfo = ./lib/networkInfo.c
 uart = ./lib/uart.c
 debugPrintf = ./lib/debugPrintf.c
 RedisControl = ./lib/RedisControl.c
+UpgradeFirmware = ./lib/UpgradeFirmware.c
 
 #parser library
 libpointparser = ./lib/libpointparser.c
@@ -139,16 +140,26 @@ DataTranslator:
 
 M2MManager:
 	$(RASCC) -lpthread -o $(TARGET0)/M2MManager.o M2MManager.c $(writeLog) $(LIB5) $(LIB6) $(LIB9) $(LIB11) $(LIB_SQLITE3)
+USNManager:
+	$(RASCC) -lpthread -o $(TARGET0)/USNManager.o USNManager.c $(writeLog) $(LIB5) $(LIB6) $(LIB9) $(LIB11) $(LIB_SQLITE3)
+
 
 IoTManager:
 	$(RASCC) -o $(TARGET0)/IoTManager.o IoTManager.c $(writeLog) $(sqliteManager) $(debugPrintf) $(configInfoParser) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(LIB_SQLITE3) -lpthread
 
 ModbusRTU:
-	$(RASCC) -o $(TARGET0)/ModbusRTU.o ModbusRTU.c $(writeLog) $(sqliteManager) $(debugPrintf) $(configInfoParser) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(LDFLAGS) $(LDLIBS) $(LIB_SQLITE3) $(RedisControl) -lpthread
+	$(RASCC) -o $(TARGET0)/ModbusRTU.o ModbusRTU.c $(writeLog) $(sqliteManager) $(debugPrintf) $(configInfoParser) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(configRW) $(LDFLAGS) $(LDLIBS) $(LIB_SQLITE3) $(RedisControl) -lpthread
+
+USNBridge:
+	$(RASCC) -o $(TARGET0)/USNBridge.o USNBridge.c $(uart) $(writeLog) $(sqliteManager) $(debugPrintf) $(configInfoParser) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(configRW) $(LDFLAGS) $(LDLIBS) $(LIB_SQLITE3) $(RedisControl) -lpthread
+
+DeviceStatusCheck:
+	$(RASCC) -o $(TARGET0)/DeviceStatusCheck.o DeviceStatusCheck.c $(writeLog) $(debugPrintf) $(configInfoParser) $(LIB_EXPAT) $(configRW) $(LDFLAGS) $(LDLIBS)
+
 
 
 SetupManager:
-	$(RASCC) -o $(TARGET0)/SetupManager.o SetupManager.c $(uart) $(debugPrintf) $(sqliteManager) $(timeSyncInfoParser) $(configInfoParser) $(serialInfoParser) $(writeLog) $(networkInfo) $(LIB5) $(LIB6) $(LIB9) $(configRW) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(LIB_SQLITE3) $(RedisControl) -I./include -lpthread 
+	$(RASCC) -o $(TARGET0)/SetupManager.o SetupManager.c $(uart) $(debugPrintf) $(sqliteManager) $(timeSyncInfoParser) $(configInfoParser) $(serialInfoParser) $(writeLog) $(networkInfo) $(UpgradeFirmware) $(LIB5) $(LIB6) $(configRW) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(LIB_SQLITE3) $(RedisControl) -I./include -lpthread 
 
 udpRecv:
 	gcc -lpthread -o $(TARGET0)/udpRecv.o udpRecv.c 
@@ -166,7 +177,7 @@ CommunicationManager:
 	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_9) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_GN1200) $(LIB_EXPAT) $(LIB_REDIS) -I./include -lpthread
 
 SerialToEthernet:
-	$(RASCC)  -o $(TARGET0)/SerialToEthernet.o SerialToEthernet.c $(debugPrintf) $(configInfoParser) $(serialInfoParser) $(uart) $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_9) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_GN1200) $(LIB_EXPAT) $(LIB_REDIS) -I./include -lpthread
+	$(RASCC)  -o $(TARGET0)/SerialToEthernet.o SerialToEthernet.c $(debugPrintf) $(configInfoParser) $(serialInfoParser) $(uart) $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_EXPAT) $(LIB_REDIS) -I./include -lpthread
 
 
 
@@ -192,7 +203,8 @@ UDPConnect:
 	$(RASCC) -shared -o $(LIB_TARGET)/libudpconnectso.so.1.0.1 UDPConnect.o 
 
 DBSchedule:
-	$(RASCC) -lpthread -o $(TARGET0)/DBSchedule.o DBSchedule.c $(writeLog) $(SQLite3Interface) $(LIB_SQLITE3)
+	$(RASCC)  -o $(TARGET0)/DBSchedule.o DBSchedule.c $(writeLog) $(LIB4) $(LIB5) $(LIB_SQLITE3) -lpthread
+#$(RASCC) -lpthread -o $(TARGET0)/DBSchedule.o DBSchedule.c $(writeLog) $(SQLite3Interface) $(LIB_SQLITE3)
 
 clean:
 	rm *.o *.*~ -f
