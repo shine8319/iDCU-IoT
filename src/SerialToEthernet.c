@@ -275,6 +275,12 @@ static int startSerialToEthernetClient()
 
     while(1) {
 
+	if( tcp == -1 )
+	{
+	    debugPrintf(configInfo.debug, "client mode tcp disconnect\n");
+	    break;
+	}
+
 	FD_SET(tcp, &control_msg_readset);
 	if( timeout <= 0)	// no timeout
 	{
@@ -307,11 +313,6 @@ static int startSerialToEthernetClient()
 		break;
 	    }
 
-	    if( tcp == -1 )
-	    {
-		debugPrintf(configInfo.debug, "client mode tcp disconnect\n");
-		break;
-	    }
 	} 
 	else if( nd == 0 ) 
 	{
@@ -404,6 +405,12 @@ static int startSerialToEthernet()
  
 
     while(1) {
+
+	if( tcp == -1 )
+	{
+	    debugPrintf(configInfo.debug, "client mode tcp disconnect\n");
+	    break;
+	}
 
 	FD_SET(tcp, &control_msg_readset);
 	//control_msg_tv.tv_sec = 55;
