@@ -483,7 +483,7 @@ int Pack_Manager( unsigned char* buffer, int len )
 	    unsigned char addr[4] = {0,};
 	    char convertAddr[14];
 
-	    if( device.lanEnable && device.lanAuto )
+	    //if( device.lanEnable && device.lanAuto )
 	    {
 		memset( convertAddr, 0, 14);
 
@@ -493,7 +493,7 @@ int Pack_Manager( unsigned char* buffer, int len )
 		device.lan.lan_addr = inet_addr( convertAddr );
 		printf("inet_addr = %ld\n", device.lan.lan_addr );
 	    }
-	    if( device.wlanEnable && device.wlanAuto )
+	    //if( device.wlanEnable && device.wlanAuto )
 	    {
 		memset( convertAddr, 0, 14);
 

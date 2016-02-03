@@ -2,6 +2,7 @@
 #define  	PACKET_SIZE		29	
 
 
+/*
 enum {
 	REBOOTNODE		= 0x01,
 	TIMESYNC		= 0x02,
@@ -10,6 +11,21 @@ enum {
 	DELETENODE		= 0x04,
 	GETNODELIST 	= 0x05,
 };
+*/
+enum {
+    REBOOTNODE              = 0x01,
+    TIMESYNC                = 0x02,
+    GETDATA                 = 0x03,     
+    DELETENODE              = 0x04,      
+    GETNODELIST     = 0x05,
+
+    GETLANINFO              = 0x06, 
+    SETLANINFO              = 0x0B,
+    CHANGENODEINFO  = 0x12,
+    GETCNT          = 0x13,
+    SETCNT          = 0x14,
+};
+
 
 /*
 typedef struct { 
