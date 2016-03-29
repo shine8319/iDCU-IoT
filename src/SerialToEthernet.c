@@ -24,8 +24,6 @@
 
 #include "./include/uart.h"
 #include "./include/debugPrintf.h"
-#include "./include/libpointparser.h"
-#include "./include/libDeviceInfoParser.h"
 
 #include "./include/hiredis/hiredis.h"
 
@@ -33,6 +31,8 @@
 #define LOGPATH "/work/log/SerialToEthernet"
 #define CONFIGINFOPATH "/work/config/config.xml"
 #define SERIALINFOPATH "/work/config/serial_info.xml"
+//#define DRIVERINFOPATH "/work/config/driver_info.xml"
+//#define REPOSITORYINFOPATH "/work/config/repository_info.xml"
 static SERIALINFO xmlinfo;
 static CONFIGINFO configInfo;
 static int xmlOffset = 0;
@@ -441,6 +441,8 @@ static int startSerialToEthernet()
 	    {
 
 		tx_length = write(fd, &socket_rx_buffer, rx_length);	
+		for( i = 0; i < tx_length; i++)
+		    printf("%02X ", socket_rx_buffer[i] );
 		printf("tx_length %d byte\n", tx_length );
 	    } 
 	    else {

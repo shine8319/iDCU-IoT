@@ -59,6 +59,7 @@ uart = ./lib/uart.c
 debugPrintf = ./lib/debugPrintf.c
 RedisControl = ./lib/RedisControl.c
 UpgradeFirmware = ./lib/UpgradeFirmware.c
+DirectInterface = ./lib/DirectInterface.c
 
 #parser library
 libpointparser = ./lib/libpointparser.c
@@ -66,6 +67,8 @@ libDeivceInfoParser = ./lib/libDeviceInfoParser.c
 serialInfoParser = ./lib/parser/serialInfoParser.c
 configInfoParser = ./lib/parser/configInfoParser.c
 timeSyncInfoParser = ./lib/parser/timeSyncInfoParser.c
+driverInfoParser = ./lib/parser/driverInfoParser.c
+directInterfaceInfoParser = ./lib/parser/directInterfaceInfoParser.c
 
 TARGET0 = ./bin
 LIB_TARGET = ./lib
@@ -159,7 +162,7 @@ DeviceStatusCheck:
 
 
 SetupManager:
-	$(RASCC) -o $(TARGET0)/SetupManager.o SetupManager.c $(uart) $(debugPrintf) $(sqliteManager) $(timeSyncInfoParser) $(configInfoParser) $(serialInfoParser) $(writeLog) $(networkInfo) $(UpgradeFirmware) $(LIB5) $(LIB6) $(configRW) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(LIB_SQLITE3) $(RedisControl) -I./include -lpthread 
+	$(RASCC) -o $(TARGET0)/SetupManager.o SetupManager.c $(uart) $(debugPrintf) $(sqliteManager) $(timeSyncInfoParser) $(configInfoParser) $(serialInfoParser) $(driverInfoParser) $(directInterfaceInfoParser) $(writeLog) $(networkInfo) $(UpgradeFirmware) $(DirectInterface) $(LIB5) $(LIB6) $(stringTrim) $(configRW) $(LIB_EXPAT) $(LIB_LIBEVENT) $(LIB_REDIS) $(LIB_SQLITE3) $(RedisControl) -I./include -lpthread 
 
 udpRecv:
 	gcc -lpthread -o $(TARGET0)/udpRecv.o udpRecv.c 
@@ -177,7 +180,7 @@ CommunicationManager:
 	$(RASCC)  -o $(TARGET0)/CommunicationManager.o CommunicationManager.c $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_PLCS_9) $(LIB_PLCS_10) $(LIB_PLCS_12) $(LIB_PLCS_12ex) $(LIB_IDCU_IOT) $(LIB_GN1200) $(LIB_EXPAT) $(LIB_REDIS) -I./include -lpthread
 
 SerialToEthernet:
-	$(RASCC)  -o $(TARGET0)/SerialToEthernet.o SerialToEthernet.c $(debugPrintf) $(configInfoParser) $(serialInfoParser) $(uart) $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(libpointparser) $(libDeivceInfoParser) $(LIB_EXPAT) $(LIB_REDIS) -I./include -lpthread
+	$(RASCC)  -o $(TARGET0)/SerialToEthernet.o SerialToEthernet.c $(debugPrintf) $(configInfoParser) $(serialInfoParser) $(uart) $(stringTrim) $(TCPSocket) $(writeLog) $(configRW) $(LIB_EXPAT) $(LIB_REDIS) -I./include -lpthread
 
 
 

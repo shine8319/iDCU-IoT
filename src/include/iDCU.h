@@ -1,5 +1,6 @@
 #define MAX_POINT	64	
 #define MAX_DEVICE	32	
+#define MAX_DRIVER	64
 #define MAX_BUFFER	32	
 #define SQLITE_SAFE_FREE(x)	if(x){ x = NULL; }
 
@@ -236,19 +237,53 @@ typedef struct TIMESYNCINFO {
 } TIMESYNCINFO;
 
 
+// add 2016.03.22 for machine direct interface
+typedef struct DRIVERTINFO {
+	char name[MAX_BUFFER];
+	char id[MAX_BUFFER];
+	//char basescanrate[MAX_BUFFER];
+	//char address[MAX_BUFFER];
+	//char function[MAX_BUFFER];
+	//char data[MAX_BUFFER];
+	//char reserve1[MAX_BUFFER];
+	//char reserve2[MAX_BUFFER];
+	//char reserve3[MAX_BUFFER];
+} DRIVERTINFO;
 
-/*
-typedef struct NODEINFO {
-	char id[MAX_POINT];
-	char type[MAX_POINT];
-	char addr[MAX_POINT];
-	char size[MAX_POINT];
-	char getPointSize;
-	char ip[MAX_POINT][32];
-	char port[MAX_POINT][32];
-	char driver[MAX_POINT][32];
-	char basescanrate[MAX_POINT][32];
-} NODEINFO;
-*/
+typedef struct DRIVERLIST {
+	DRIVERTINFO driver[MAX_DRIVER];
+	char getListCount;
+} DRIVERLIST;
+
+typedef struct DIRECTINTERFACEINFO{
+	char driverId[MAX_BUFFER];
+	char baseScanRate[MAX_BUFFER];
+	char slaveId[MAX_BUFFER];
+	char function[MAX_BUFFER];
+	char address[MAX_BUFFER];
+	char offset[MAX_BUFFER];
+	char host[MAX_BUFFER];
+	char port[MAX_BUFFER];
+	char auth[MAX_BUFFER];
+	char db[MAX_BUFFER];
+	char key[MAX_BUFFER];
+} DIRECTINTERFACEINFO;
+
+typedef struct COMMAND_0X16_INFO {
+
+    UINT8   driverId;
+    UINT32   baseScanRate;
+    UINT8   slaveId;
+    UINT8   function;
+    UINT16   address;
+    UINT16   offset;
+
+    UINT32   host;
+    UINT16   port;
+    UINT8   auth[16];
+    UINT8   db;
+    UINT8   key[32];
+
+} __attribute__ ((__packed__)) COMMAND_0X16_INFO;
 
 

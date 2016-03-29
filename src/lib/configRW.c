@@ -17,6 +17,7 @@
 #include <sys/wait.h>
 
 #include "../include/iDCU.h"
+#include "../include/stringTrim.h"
 
 UINT32 ReadTransducer(UINT8 *name, UINT16 *transducerId )
 {
@@ -976,6 +977,56 @@ void WriteNetworkConfig(UINT8 *name, struct lan_var *lan)
     save[i].lan_dns = inet_ntoa(servaddr.sin_addr);
     printf("%s\n", save[i].lan_dns);
     fprintf( config_fp, "dns %s\n", save[i].lan_dns );
+
+    fclose( config_fp );
+}
+
+
+
+
+void WriteDirectInterfaceInfoConfig( UINT8 *name, COMMAND_0X16_INFO  *config)
+{
+
+    struct sockaddr_in convertHost;
+    FILE    *config_fp;
+    struct lan_var device;
+    SAVEINFO    save;
+
+    char    *strIP;
+    int i = 0;
+
+    config_fp = fopen( name, "w" ) ;
+
+
+    fprintf( config_fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" );
+    fprintf( config_fp, "\n" );
+    fprintf( config_fp, "<SINK ver=\"1.0\">\n" );
+    fprintf( config_fp, "\n" );
+
+    fprintf( config_fp, "   <DIRECTINTERFACE>\n" );
+    fprintf( config_fp, "	<DRIVERID>%d</DRIVERID>\n", config->driverId);
+    fprintf( config_fp, "	<BASESCANRATE>%ld</BASESCANRATE>\n", config->baseScanRate);
+    fprintf( config_fp, "	<SLAVEID>%d</SLAVEID>\n", config->slaveId);
+    fprintf( config_fp, "	<FUNCTION>%d</FUNCTION>\n", config->function);
+    fprintf( config_fp, "	<ADDRESS>%d</ADDRESS>\n", config->address);
+    fprintf( config_fp, "	<OFFSET>%d</OFFSET>\n", config->offset);
+
+    convertHost.sin_addr.s_addr = htonl(config->host);
+    fprintf( config_fp, "	<HOST>%s</HOST>\n", inet_ntoa(convertHost.sin_addr));
+    fprintf( config_fp, "	<PORT>%d</PORT>\n", config->port);
+    //fprintf( config_fp, "	<AUTH>%.16s</AUTH>\n", config->auth);
+    printf("auth size %d\n", strlen(config->auth) );
+    fprintf( config_fp, "	<AUTH>%s</AUTH>\n", trim(config->auth));
+    printf("auth size trim %d\n", strlen(config->auth) );
+    fprintf( config_fp, "	<DB>%d</DB>\n", config->db);
+    //fprintf( config_fp, "	<KEY>%.32s</KEY>\n", config->key);
+    printf("key size %d\n", strlen(config->key) );
+    fprintf( config_fp, "	<KEY>%s</KEY>\n", trim(config->key));
+    printf("key size trim %d\n", strlen(config->key) );
+    fprintf( config_fp, "   </DIRECTINTERFACE>\n" );
+    fprintf( config_fp, "\n" );
+    fprintf( config_fp, "</SINK>\n" );
+
 
     fclose( config_fp );
 }

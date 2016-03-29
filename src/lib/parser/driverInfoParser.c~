@@ -4,11 +4,13 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-#include "../include/expat.h" 
-#include "../include/iDCU.h"
-//#include "../include/PointManager.h"
+#include "../../include/expat.h" 
+#include "../../include/iDCU.h"
+
 
 #define BUFFSIZE	4096	
+
+static char Buff[BUFFSIZE]; 
 
 static int Depth = 0; 
 static int is_value = 0; 
@@ -17,7 +19,8 @@ static const char *current_el;   // 가장 최근 태그 기억용
 static const char **current_id;  // 태그의 특성값 기억용 
 
 static int  user_num = 0;   // 몇개의 레코드가 저장되었는지 검사  
-static NODEINFO devInfo;
+static DRIVERLIST info;
+
 
 static void parser(void *data, const char *s, int len) 
 { 
@@ -48,15 +51,28 @@ static void parser(void *data, const char *s, int len)
 	}
 	else 
 	{
+
 	    if (strcmp(current_el,"DRIVER") == 0) 
 	    {
-		sprintf(devInfo.device[user_num-1].driver, "%s",buf);
+		sprintf(info.driver, "%s",buf);
+		//printf("%s\n", info.driver);
 	    }
-	    else if (strcmp(current_el,"DEVICEID") == 0) 
-	    {
-		sprintf(devInfo.device[user_num-1].id, "%s",buf);
-	    }
-
+	    else if (strcmp(current_el,"DRIVERID") == 0) 
+		sprintf(info.driverid, "%s",buf);
+	    else if (strcmp(current_el,"BASESCANRATE") == 0) 
+		sprintf(info.basescanrate, "%s",buf);
+	    else if (strcmp(current_el,"ADDRESS") == 0) 
+		sprintf(info.address, "%s",buf);
+	    else if (strcmp(current_el,"FUNCTION") == 0) 
+		sprintf(info.function, "%s",buf);
+	    else if (strcmp(current_el,"DATA") == 0) 
+		sprintf(info.data, "%s",buf);
+	    else if (strcmp(current_el,"RESERVE1") == 0) 
+		sprintf(info.reserve1, "%s",buf);
+	    else if (strcmp(current_el,"RESERVE2") == 0) 
+		sprintf(info.reserve2, "%s",buf);
+	    else if (strcmp(current_el,"RESERVE3") == 0) 
+		sprintf(info.reserve3, "%s",buf);
 	}
 
     } 
@@ -65,7 +81,8 @@ static void parser(void *data, const char *s, int len)
 // xml (여는)태그를 만났을 때 호출되는 함수다. 
 // depth를 1증가 시키고, depth가 0즉 처음 만나나는 테그라면  
 // version을 검사한다. 물론 테그(el)를 직접 비교해도 될 것이다.        
-static void start(void *data, const char *el, const char **attr) { 
+static void 
+start(void *data, const char *el, const char **attr) { 
     is_value = 1; 
     current_el = el; 
 
@@ -74,25 +91,25 @@ static void start(void *data, const char *el, const char **attr) {
     { 
 	//printf("Version is %s\n\n", current_id[1]);  
     } 
-    if (strcmp(current_el,"DEVICEINFO") == 0) 
-    { 
+    //if (strcmp(current_el,"NODEINFO") == 0) 
+    //{ 
 	//printf("[%d] %s \n", user_num, current_el); 
-	user_num++; 
-    } 
+	//user_num++; 
+    //} 
     Depth++; 
 } 
 
 // xml (닫는)태그를 만났을 때 호출되는 함수다. 
 // 닫히게 되므로 depth가 1감소할 것이다.  
-static void end(void *data, const char *el)  
+    static 	void 
+end(void *data, const char *el)  
 { 
     is_value = 0; 
     Depth--; 
 }  
 
-NODEINFO deviceInfoParser(const char *path) { 
+DRIVERLIST serialInfoParser(const char *path) { 
 
-    char Buff[BUFFSIZE]; 
     FILE *fp;
     // xml 파서를 생성한다. 
     XML_Parser p = XML_ParserCreate(NULL); 
@@ -141,12 +158,12 @@ NODEINFO deviceInfoParser(const char *path) {
 	if (done) 
 	    break; 
     } 
-    printf("\n\nDevice is : %dea\n", user_num); 
-    devInfo.getPointSize = user_num;
+    //printf("\n\nTag is : %dea\n", user_num); 
+    //taginfo.getPointSize = user_num;
 
     XML_ParserFree(p);
     close((int)fp);
 
-    return devInfo;
+    return info;
 
 } 

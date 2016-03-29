@@ -24,6 +24,7 @@
 #include "./include/writeLog.h"
 #include "./include/networkInfo.h"
 #include "./include/UpgradeFirmware.h"
+#include "./include/DirectInterface.h"
 //#include "./include/UDPConnect.h"
 
 #include "./include/debugPrintf.h"
@@ -50,6 +51,8 @@
 #define NETWORKUSEINFOPATH  "/work/config/networkUse.config"
 #define OPTIONSINFOPATH "/work/config/options.config"
 #define TIMESYNCINFOPATH "/work/config/timeSync.xml"
+#define DIRECTINTERFACEINFOPATH "/work/config/directInterface.xml"	// add 2016.03.22 for machine direct interface test
+
 
 #define SQLITE_SAFE_FREE(x)	if(x){ x = NULL; }
 #define	BUFF_SIZE 1024
@@ -67,6 +70,8 @@ int Pack_Manager( unsigned char* buffer, int len );
 int UDPConnect( int port );
 void *thread_main(void *);
 
+void command_GetDirectInterfaceInfo();
+void command_SetDirectInterfaceInfo(unsigned char* buffer);
 
 static redisContext *c;
 
@@ -420,6 +425,7 @@ int Pack_Manager( unsigned char* buffer, int len )
     redisReply *reply;
     UINT8 point;
 
+
     switch( type )
     {
 	case TIMESYNC:
@@ -434,6 +440,34 @@ int Pack_Manager( unsigned char* buffer, int len )
 	    execl("/sbin/reboot", "/sbin/reboot", NULL);
 	    break;
 
+	case GETDRIVERLIST:
+
+	    memset( sendBuffer, 0, sizeof( sendBuffer) );
+	    vLength = getDriverList(sendBuffer);
+	    totalLength = vLength + 3;	// type 1byte, length 2byte
+
+	    sendBuffer[0] = 0xFE;
+	    sendBuffer[1] = totalLength >> 8;	// total length;
+	    sendBuffer[2] = totalLength;	// total length;
+	    sendBuffer[3] = GETDRIVERLIST;
+	    sendBuffer[4] = vLength >> 8;
+	    sendBuffer[5] = vLength;
+
+	    sendBuffer[totalLength+3] = 0xFF;
+	    rtrn = sendto( udp, sendBuffer, totalLength+4, 0,( struct sockaddr*)&client_addr, sizeof( client_addr));
+	    break;
+
+	case GETDIRECTINTERFACEINFO:
+	    command_GetDirectInterfaceInfo();
+	    break;
+
+	case SETDIRECTINTERFACEINFO:
+
+	    printf("SETDIRECTINTERFACEINFO\n");
+	    command_SetDirectInterfaceInfo(buffer);
+	    break;
+
+
 	case SETCNT:
 	    point = buffer[6];
 	    reply = redisCommand(c,"PUBLISH clear %d",   point+34);
@@ -444,7 +478,6 @@ int Pack_Manager( unsigned char* buffer, int len )
 	    break;
 
 	case GETLANINFO:
-
 
 	    memset( sendBuffer, 0, sizeof( sendBuffer) );
 
@@ -632,6 +665,97 @@ int Pack_Manager( unsigned char* buffer, int len )
 
     return 0;
 
+}
+
+// call in Pack_Manager case GETDIRECTINTERFACEINFO:
+void command_GetDirectInterfaceInfo()
+{
+    unsigned char sendBuffer[1024];
+
+    int totalLength = 0;
+    int vLength = 0;
+    int rtrn,i = 0;
+    COMMAND_0X16_INFO pack;
+
+    memset( sendBuffer, 0, sizeof( sendBuffer ) );
+    memset( &pack, 0, sizeof( COMMAND_0X16_INFO ) );
+
+    DIRECTINTERFACEINFO info = getDirectInterfaceInfo(DIRECTINTERFACEINFOPATH);
+    printf("end parser\n");
+
+    pack.driverId = atoi( info.driverId );
+    pack.baseScanRate = atoi( info.baseScanRate );
+    pack.slaveId = atoi( info.slaveId );
+    pack.function = atoi( info.function );
+    pack.address = atoi( info.address );
+    pack.offset = atoi( info.offset);
+
+    pack.host = inet_addr( info.host );
+    pack.port = atoi( info.port );
+
+    memcpy( pack.auth, info.auth, strlen(info.auth) );
+    pack.db = atoi( info.db );
+    memcpy( pack.key, info.key, strlen(info.key) );
+
+    vLength = sizeof(COMMAND_0X16_INFO);
+    totalLength = vLength + 3;	// type 1byte, length 2byte
+
+    sendBuffer[0] = 0xFE;
+    sendBuffer[1] = totalLength >> 8;	// total length;
+    sendBuffer[2] = totalLength;	// total length;
+    sendBuffer[3] = GETDIRECTINTERFACEINFO;	// 0x16
+    sendBuffer[4] = vLength >> 8;
+    sendBuffer[5] = vLength;
+
+    memcpy( sendBuffer+6, &pack, vLength );
+
+    sendBuffer[totalLength+3] = 0xFF;
+
+    rtrn = sendto( udp, sendBuffer, totalLength+4, 0,( struct sockaddr*)&client_addr, sizeof( client_addr));
+
+    for( i = 0; i < rtrn; i++ )
+	printf("%02X ", sendBuffer[i]);
+    printf("\n");
+   
+}
+
+// call in Pack_Manager case SETDIRECTINTERFACEINFO:
+void command_SetDirectInterfaceInfo(unsigned char* buffer)
+{
+    unsigned char sendBuffer[1024];
+    COMMAND_0X16_INFO pack;
+
+    int totalLength = 0;
+    int vLength = 0;
+    int rtrn,i = 0;
+
+
+    memset( sendBuffer, 0, sizeof( sendBuffer ) );
+    memset( &pack, 0, sizeof( COMMAND_0X16_INFO ) );	// COMMAND_0X16_INFO data start offset 6
+    memcpy( &pack, buffer+6, sizeof( COMMAND_0X16_INFO ) );
+
+    WriteDirectInterfaceInfoConfig( DIRECTINTERFACEINFOPATH, &pack);
+
+    vLength = sizeof(COMMAND_0X16_INFO);
+    totalLength = vLength + 3;	// type 1byte, length 2byte
+
+    sendBuffer[0] = 0xFE;
+    sendBuffer[1] = totalLength >> 8;	// total length;
+    sendBuffer[2] = totalLength;	// total length;
+    sendBuffer[3] = SETDIRECTINTERFACEINFO;	// 0x17
+    sendBuffer[4] = vLength >> 8;
+    sendBuffer[5] = vLength;
+
+    memcpy( sendBuffer+6, &pack, vLength );
+
+    sendBuffer[totalLength+3] = 0xFF;
+
+    rtrn = sendto( udp, sendBuffer, totalLength+4, 0,( struct sockaddr*)&client_addr, sizeof( client_addr));
+
+    for( i = 0; i < rtrn; i++ )
+	printf("%02X ", sendBuffer[i]);
+    printf("\n");
+   
 }
 
 

@@ -24,6 +24,10 @@ enum {
     CHANGENODEINFO  = 0x12,
     GETCNT          = 0x13,
     SETCNT          = 0x14,
+
+    GETDRIVERLIST   = 0x15,
+    GETDIRECTINTERFACEINFO  = 0x16,
+    SETDIRECTINTERFACEINFO  = 0x17,
 };
 
 
